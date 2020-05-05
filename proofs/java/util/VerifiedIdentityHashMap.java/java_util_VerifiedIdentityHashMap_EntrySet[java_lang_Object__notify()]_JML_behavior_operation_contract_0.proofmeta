@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proofMetaFile proofFileMD5="61dfb159aa1a85106df8ad807d429d5c" proofClosed="false" proofOutdated="false">
+   <markerMessage>
+Open Proof:
+java.util.VerifiedIdentityHashMap.EntrySet[java.lang.Object::notify()].JML behavior operation contract.0
+
+Reason: Goal can&apos;t be closed automatically.
+Hint: Check code and specifications for bugs or continue proof interactively.
+
+Time: 0.98 s
+Nodes: 19
+Branches: 2
+   </markerMessage>
+   <references rep="pre: {heap=java.lang.Object::&lt;inv&gt;(heap,self)}; mby: null; post: {heap=and(imp(equals(exc,null),java.lang.Object::&lt;inv&gt;(heap,self)),imp(not(equals(exc,null)),and(imp(equals(java.lang.Throwable::instance(exc),TRUE),java.lang.Object::&lt;inv&gt;(heap,self)),or(equals(java.lang.Error::instance(exc),TRUE),equals(java.lang.RuntimeException::instance(exc),TRUE)))))}; mods: {heap=setMinus(allLocs,freshLocs(heap)), savedHeap=null}; hasMod: {heap=true, savedHeap=true}; termination: diamond; transaction: false">
+      <type name="java.util.VerifiedIdentityHashMap.EntrySet">
+         <axiomReferences>
+            <axiomReference kjt="java.util.VerifiedIdentityHashMap.EntrySet" name="Class invariant axiom for java.util.VerifiedIdentityHashMap.EntrySet" rep="equiv(java.lang.Object::&lt;inv&gt;(heap,self),true)"/>
+         </axiomReferences>
+      </type>
+   </references>
+</proofMetaFile>

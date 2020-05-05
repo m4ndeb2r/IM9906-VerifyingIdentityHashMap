@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proofMetaFile proofFileMD5="8dc42d8e4998e8cea0a8ba101aa29693" proofClosed="false" proofOutdated="false">
+   <markerMessage>
+Open Proof:
+java.util.VerifiedIdentityHashMap.KeySet[java.util.Set::toArray()].JML behavior operation contract.0
+
+Reason: Goal can&apos;t be closed automatically.
+Hint: Check code and specifications for bugs or continue proof interactively.
+
+Time: 0.142 s
+Nodes: 49
+Branches: 2
+   </markerMessage>
+   <references rep="pre: {heap=java.lang.Object::&lt;inv&gt;(heap,self)}; mby: null; post: {heap=and(imp(equals(exc,null),and(java.lang.Object::&lt;inv&gt;(heap,self),nonNull(heap,result,Z(1(#))))),imp(not(equals(exc,null)),and(imp(equals(java.lang.Throwable::instance(exc),TRUE),java.lang.Object::&lt;inv&gt;(heap,self)),or(equals(java.lang.Error::instance(exc),TRUE),equals(java.lang.RuntimeException::instance(exc),TRUE)))))}; mods: {heap=setMinus(allLocs,freshLocs(heap)), savedHeap=null}; hasMod: {heap=true, savedHeap=true}; termination: diamond; transaction: false">
+      <type name="java.util.VerifiedIdentityHashMap.KeySet">
+         <axiomReferences>
+            <axiomReference kjt="java.util.VerifiedIdentityHashMap.KeySet" name="Class invariant axiom for java.util.VerifiedIdentityHashMap.KeySet" rep="equiv(java.lang.Object::&lt;inv&gt;(heap,self),true)"/>
+         </axiomReferences>
+      </type>
+   </references>
+</proofMetaFile>

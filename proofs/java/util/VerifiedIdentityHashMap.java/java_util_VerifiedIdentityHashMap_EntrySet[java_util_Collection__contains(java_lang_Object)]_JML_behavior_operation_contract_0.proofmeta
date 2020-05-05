@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proofMetaFile proofFileMD5="9cdb627677912814ef00a34a1591db77" proofClosed="false" proofOutdated="false">
+   <markerMessage>
+Open Proof:
+java.util.VerifiedIdentityHashMap.EntrySet[java.util.Collection::contains(java.lang.Object)].JML behavior operation contract.0
+
+Reason: Goal can&apos;t be closed automatically.
+Hint: Check code and specifications for bugs or continue proof interactively.
+
+Time: 0.180 s
+Nodes: 78
+Branches: 7
+   </markerMessage>
+   <calledMethods>
+      <calledMethod fullQualifiedName="java.util.VerifiedIdentityHashMap#containsMapping(java.lang.Object, java.lang.Object)"/>
+   </calledMethods>
+   <assumptions>
+      <assumption kind="Use Contract" name="JML behavior operation contract 0" target="getKey()" type="java.util.Map.Entry"/>
+   </assumptions>
+   <references rep="pre: {heap=and(java.lang.Object::&lt;inv&gt;(heap,self),not(equals(param0,null)))}; mby: null; post: {heap=and(imp(equals(exc,null),java.lang.Object::&lt;inv&gt;(heap,self)),imp(not(equals(exc,null)),and(imp(equals(java.lang.Throwable::instance(exc),TRUE),java.lang.Object::&lt;inv&gt;(heap,self)),or(equals(java.lang.Error::instance(exc),TRUE),equals(java.lang.RuntimeException::instance(exc),TRUE)))))}; mods: {heap=setMinus(allLocs,freshLocs(heap)), savedHeap=null}; hasMod: {heap=true, savedHeap=true}; termination: diamond; transaction: false">
+      <callMethodReferences>
+         <callMethodReference kjt="java.util.VerifiedIdentityHashMap" name="containsMapping" parameters="Object;Object;" implementations="java.util.VerifiedIdentityHashMap;"/>
+      </callMethodReferences>
+      <type name="java.util.VerifiedIdentityHashMap.EntrySet">
+         <axiomReferences>
+            <axiomReference kjt="java.util.VerifiedIdentityHashMap.EntrySet" name="Class invariant axiom for java.util.VerifiedIdentityHashMap.EntrySet" rep="equiv(java.lang.Object::&lt;inv&gt;(heap,self),true)"/>
+         </axiomReferences>
+         <inlineMethodReferences>
+            <inlineMethodReference kjt="java.util.VerifiedIdentityHashMap.EntrySet" name="contains" parameters="Object;" src="publicbooleancontains (Object o) {if (!(o instanceof Map.Entry))                 return  false;Map.Entry entry = (Map.Entry)o;             return  containsMapping(entry.getKey(),entry.getValue()); }"/>
+         </inlineMethodReferences>
+      </type>
+      <type name="java.util.VerifiedIdentityHashMap">
+         <inlineMethodReferences>
+            <inlineMethodReference kjt="java.util.VerifiedIdentityHashMap" name="containsMapping" parameters="Object;Object;" src="privatebooleancontainsMapping (Object key,Object value) {Object k = maskNull(key);java.lang.Object[] tab = this.table;int len = tab.length;int i = hash(k,len);while ( true ) {     Object item = tab[i];             if (item==k)                 return        tab[i+1]==value;             if (item==null)                 return  false;     i=nextKeyIndex(i,len);   } }"/>
+         </inlineMethodReferences>
+      </type>
+   </references>
+</proofMetaFile>

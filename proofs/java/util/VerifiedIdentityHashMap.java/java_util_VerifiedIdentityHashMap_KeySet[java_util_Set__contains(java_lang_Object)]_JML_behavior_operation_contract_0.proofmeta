@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proofMetaFile proofFileMD5="17c53f753755aacce1d8f467481c94f9" proofClosed="false" proofOutdated="false">
+   <markerMessage>
+Open Proof:
+java.util.VerifiedIdentityHashMap.KeySet[java.util.Set::contains(java.lang.Object)].JML behavior operation contract.0
+
+Reason: Goal can&apos;t be closed automatically.
+Hint: Check code and specifications for bugs or continue proof interactively.
+
+Time: 0.456 s
+Nodes: 357
+Branches: 20
+   </markerMessage>
+   <calledMethods>
+      <calledMethod fullQualifiedName="java.util.VerifiedIdentityHashMap#containsKey(java.lang.Object)"/>
+      <calledMethod fullQualifiedName="java.util.VerifiedIdentityHashMap#maskNull(java.lang.Object)"/>
+      <calledMethod fullQualifiedName="java.util.VerifiedIdentityHashMap#hash(java.lang.Object, int)"/>
+   </calledMethods>
+   <assumptions>
+      <assumption kind="Use Contract" name="JML behavior operation contract 0" target="NullPointerException()" type="java.lang.NullPointerException"/>
+      <assumption kind="Use Contract" name="JML behavior operation contract 0" target="identityHashCode(java.lang.Object)" type="java.lang.System"/>
+   </assumptions>
+   <references rep="pre: {heap=and(java.lang.Object::&lt;inv&gt;(heap,self),not(equals(param0,null)))}; mby: null; post: {heap=and(imp(equals(exc,null),java.lang.Object::&lt;inv&gt;(heap,self)),imp(not(equals(exc,null)),and(imp(equals(java.lang.Throwable::instance(exc),TRUE),java.lang.Object::&lt;inv&gt;(heap,self)),or(equals(java.lang.Error::instance(exc),TRUE),equals(java.lang.RuntimeException::instance(exc),TRUE)))))}; mods: {heap=setMinus(allLocs,freshLocs(heap)), savedHeap=null}; hasMod: {heap=true, savedHeap=true}; termination: diamond; transaction: false">
+      <callMethodReferences>
+         <callMethodReference kjt="java.util.VerifiedIdentityHashMap" name="containsKey" parameters="Object;" implementations="java.util.VerifiedIdentityHashMap;"/>
+         <callMethodReference kjt="java.util.VerifiedIdentityHashMap" name="maskNull" parameters="Object;" implementations="java.util.VerifiedIdentityHashMap;"/>
+         <callMethodReference kjt="java.util.VerifiedIdentityHashMap" name="hash" parameters="Object;int;" implementations="java.util.VerifiedIdentityHashMap;"/>
+      </callMethodReferences>
+      <type name="java.util.VerifiedIdentityHashMap.KeySet">
+         <axiomReferences>
+            <axiomReference kjt="java.util.VerifiedIdentityHashMap.KeySet" name="Class invariant axiom for java.util.VerifiedIdentityHashMap.KeySet" rep="equiv(java.lang.Object::&lt;inv&gt;(heap,self),true)"/>
+         </axiomReferences>
+         <inlineMethodReferences>
+            <inlineMethodReference kjt="java.util.VerifiedIdentityHashMap.KeySet" name="contains" parameters="Object;" src="publicbooleancontains (Object o) {return containsKey(o);}"/>
+         </inlineMethodReferences>
+      </type>
+      <type name="java.util.VerifiedIdentityHashMap">
+         <accessReferences>
+            <accessReference kjt="java.util.VerifiedIdentityHashMap" name="java.util.VerifiedIdentityHashMap::NULL_KEY" type="Object" visibility="private" isStatic="true" isFinal="true" initializer="new Object ()"/>
+            <accessReference kjt="java.util.VerifiedIdentityHashMap" name="java.util.VerifiedIdentityHashMap::table" type="" visibility="private" isStatic="false" isFinal="false" initializer=""/>
+         </accessReferences>
+         <inlineMethodReferences>
+            <inlineMethodReference kjt="java.util.VerifiedIdentityHashMap" name="containsKey" parameters="Object;" src="publicbooleancontainsKey (Object key) {Object k = maskNull(key);java.lang.Object[] tab = this.table;int len = tab.length;int i = hash(k,len);while ( true ) {     Object item = tab[i];             if (item==k)                 return  true;             if (item==null)                 return  false;     i=nextKeyIndex(i,len);   } }"/>
+            <inlineMethodReference kjt="java.util.VerifiedIdentityHashMap" name="maskNull" parameters="Object;" src="privatestaticObjectmaskNull (Object key) {return (key==null ?NULL_KEY :key);}"/>
+            <inlineMethodReference kjt="java.util.VerifiedIdentityHashMap" name="hash" parameters="Object;int;" src="privatestaticinthash (Object x,int length) {int h = System.identityHashCode(x);return ((h&lt;&lt;1)-(h&lt;&lt;8))&amp;(length-1);}"/>
+         </inlineMethodReferences>
+      </type>
+   </references>
+</proofMetaFile>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proofMetaFile proofFileMD5="984feab832cd8a4db947ccc838427573" proofClosed="false" proofOutdated="false">
+   <markerMessage>
+Open Proof:
+java.util.VerifiedIdentityHashMap[java.util.AbstractMap::clone()].JML behavior operation contract.0
+
+Reason: Goal can&apos;t be closed automatically.
+Hint: Check code and specifications for bugs or continue proof interactively.
+
+Time: 1.590 s
+Nodes: 1057
+Branches: 39
+   </markerMessage>
+   <assumptions>
+      <assumption kind="Use Contract" name="INVALID_ID -2147483648 for java.lang.Object" target="clone()" type="java.util.AbstractMap"/>
+      <assumption kind="Use Contract" name="JML behavior operation contract 0" target="ClassCastException()" type="java.lang.ClassCastException"/>
+   </assumptions>
+   <references rep="pre: {heap=java.lang.Object::&lt;inv&gt;(heap,self)}; mby: null; post: {heap=and(imp(equals(exc,null),and(java.lang.Object::&lt;inv&gt;(heap,self),not(equals(result,null)))),imp(not(equals(exc,null)),and(imp(equals(java.lang.Throwable::instance(exc),TRUE),java.lang.Object::&lt;inv&gt;(heap,self)),or(or(equals(java.lang.Error::instance(exc),TRUE),equals(java.lang.RuntimeException::instance(exc),TRUE)),equals(java.lang.CloneNotSupportedException::instance(exc),TRUE)))))}; mods: {heap=setMinus(allLocs,freshLocs(heap)), savedHeap=null}; hasMod: {heap=true, savedHeap=true}; termination: diamond; transaction: false">
+      <type name="java.util.VerifiedIdentityHashMap">
+         <axiomReferences>
+            <axiomReference kjt="java.util.VerifiedIdentityHashMap" name="Class invariant axiom for java.util.VerifiedIdentityHashMap" rep="equiv(java.lang.Object::&lt;inv&gt;(heap,self),and(and(nonNull(heap,java.lang.Object[]::select(heap,self,java.util.VerifiedIdentityHashMap::$table),Z(1(#))),not(equals(java.lang.Object::select(heap,null,java.util.VerifiedIdentityHashMap::$NULL_KEY),null))),not(equals(java.util.Set::select(heap,self,java.util.VerifiedIdentityHashMap::$entrySet),null))))"/>
+         </axiomReferences>
+         <inlineMethodReferences>
+            <inlineMethodReference kjt="java.util.VerifiedIdentityHashMap" name="clone" parameters="" src="publicObjectclone () {try {VerifiedIdentityHashMap m = (VerifiedIdentityHashMap)super.clone();m.entrySet=null;m.table=this.table.clone();return m;} catch (CloneNotSupportedException e) {             throw  new  InternalError ();   } }"/>
+         </inlineMethodReferences>
+      </type>
+   </references>
+</proofMetaFile>

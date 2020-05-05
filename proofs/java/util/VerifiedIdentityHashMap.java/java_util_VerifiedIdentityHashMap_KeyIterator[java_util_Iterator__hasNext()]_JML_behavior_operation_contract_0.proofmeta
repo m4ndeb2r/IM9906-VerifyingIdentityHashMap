@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proofMetaFile proofFileMD5="41c463c80d832ae8e91027df455684bf" proofClosed="false" proofOutdated="false">
+   <markerMessage>
+Open Proof:
+java.util.VerifiedIdentityHashMap.KeyIterator[java.util.Iterator::hasNext()].JML behavior operation contract.0
+
+Reason: Goal can&apos;t be closed automatically.
+Hint: Check code and specifications for bugs or continue proof interactively.
+
+Time: 0.81 s
+Nodes: 31
+Branches: 2
+   </markerMessage>
+   <references rep="pre: {heap=java.lang.Object::&lt;inv&gt;(heap,self)}; mby: null; post: {heap=and(imp(equals(exc,null),java.lang.Object::&lt;inv&gt;(heap,self)),imp(not(equals(exc,null)),and(imp(equals(java.lang.Throwable::instance(exc),TRUE),java.lang.Object::&lt;inv&gt;(heap,self)),or(equals(java.lang.Error::instance(exc),TRUE),equals(java.lang.RuntimeException::instance(exc),TRUE)))))}; mods: {heap=setMinus(allLocs,freshLocs(heap)), savedHeap=null}; hasMod: {heap=true, savedHeap=true}; termination: diamond; transaction: false">
+      <type name="java.util.VerifiedIdentityHashMap.KeyIterator">
+         <axiomReferences>
+            <axiomReference kjt="java.util.VerifiedIdentityHashMap.KeyIterator" name="Class invariant axiom for java.util.VerifiedIdentityHashMap.KeyIterator" rep="equiv(java.lang.Object::&lt;inv&gt;(heap,self),true)"/>
+         </axiomReferences>
+      </type>
+      <type name="java.util.VerifiedIdentityHashMap.IdentityHashMapIterator">
+         <accessReferences>
+            <accessReference kjt="java.util.VerifiedIdentityHashMap.IdentityHashMapIterator" name="java.util.VerifiedIdentityHashMap.IdentityHashMapIterator::traversalTable" type="" visibility="" isStatic="false" isFinal="false" initializer=""/>
+            <accessReference kjt="java.util.VerifiedIdentityHashMap.IdentityHashMapIterator" name="java.util.VerifiedIdentityHashMap.IdentityHashMapIterator::index" type="int" visibility="" isStatic="false" isFinal="false" initializer=""/>
+         </accessReferences>
+         <inlineMethodReferences>
+            <inlineMethodReference kjt="java.util.VerifiedIdentityHashMap.IdentityHashMapIterator" name="hasNext" parameters="" src="publicbooleanhasNext () {java.lang.Object[] tab = this.traversalTable;for ( int i = this.index; i&lt;tab.length; i+=2 ) {     Object key = tab[i];                 if (key!=null) {       this.index=i;                     return        this.indexValid=true;     }   }   this.index=tab.length;             return  false; }"/>
+         </inlineMethodReferences>
+      </type>
+   </references>
+</proofMetaFile>

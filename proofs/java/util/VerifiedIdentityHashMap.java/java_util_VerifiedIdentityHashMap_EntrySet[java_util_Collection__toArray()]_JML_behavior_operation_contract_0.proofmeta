@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proofMetaFile proofFileMD5="522c8b9a6b7fae7c3ca551c0cd8b87ac" proofClosed="false" proofOutdated="false">
+   <markerMessage>
+Open Proof:
+java.util.VerifiedIdentityHashMap.EntrySet[java.util.Collection::toArray()].JML behavior operation contract.0
+
+Reason: Goal can&apos;t be closed automatically.
+Hint: Check code and specifications for bugs or continue proof interactively.
+
+Time: 0.527 s
+Nodes: 406
+Branches: 29
+   </markerMessage>
+   <usedContracts>
+      <usedContract proofFile="/IM9906 - VerifyingIdentityHashMap/proofs/java/util/VerifiedIdentityHashMap.java/java_util_VerifiedIdentityHashMap_EntrySet[java_util_Set__size()]_JML_behavior_operation_contract_0.proof"/>
+      <usedContract proofFile="/IM9906 - VerifyingIdentityHashMap/proofs/java/util/VerifiedIdentityHashMap.java/java_util_VerifiedIdentityHashMap_EntrySet[java_util_Collection__size()]_JML_behavior_operation_contract_0.proof"/>
+      <usedContract proofFile="/IM9906 - VerifyingIdentityHashMap/proofs/java/util/VerifiedIdentityHashMap.java/java_util_VerifiedIdentityHashMap_EntrySet[java_util_Set__iterator()]_JML_behavior_operation_contract_0.proof"/>
+      <usedContract proofFile="/IM9906 - VerifyingIdentityHashMap/proofs/java/util/VerifiedIdentityHashMap.java/java_util_VerifiedIdentityHashMap_EntrySet[java_util_Collection__iterator()]_JML_behavior_operation_contract_0.proof"/>
+      <usedContract proofFile="/IM9906 - VerifyingIdentityHashMap/proofs/java/util/VerifiedIdentityHashMap.java/java_util_VerifiedIdentityHashMap_EntrySet[java_lang_Iterable__iterator()]_JML_behavior_operation_contract_0.proof"/>
+   </usedContracts>
+   <calledMethods>
+      <calledMethod fullQualifiedName="[Ljava.lang.Object#&lt;createArray&gt;(int)"/>
+      <calledMethod fullQualifiedName="[Ljava.lang.Object#&lt;allocate&gt;(int)"/>
+      <calledMethod fullQualifiedName="[Ljava.lang.Object#&lt;createArrayHelper&gt;()"/>
+      <calledMethod fullQualifiedName="[Ljava.lang.Object#&lt;prepare&gt;()"/>
+   </calledMethods>
+   <references rep="pre: {heap=java.lang.Object::&lt;inv&gt;(heap,self)}; mby: null; post: {heap=and(imp(equals(exc,null),and(java.lang.Object::&lt;inv&gt;(heap,self),nonNull(heap,result,Z(1(#))))),imp(not(equals(exc,null)),and(imp(equals(java.lang.Throwable::instance(exc),TRUE),java.lang.Object::&lt;inv&gt;(heap,self)),or(equals(java.lang.Error::instance(exc),TRUE),equals(java.lang.RuntimeException::instance(exc),TRUE)))))}; mods: {heap=setMinus(allLocs,freshLocs(heap)), savedHeap=null}; hasMod: {heap=true, savedHeap=true}; termination: diamond; transaction: false">
+      <type name="java.util.VerifiedIdentityHashMap.EntrySet">
+         <axiomReferences>
+            <axiomReference kjt="java.util.VerifiedIdentityHashMap.EntrySet" name="Class invariant axiom for java.util.VerifiedIdentityHashMap.EntrySet" rep="equiv(java.lang.Object::&lt;inv&gt;(heap,self),true)"/>
+         </axiomReferences>
+         <inlineMethodReferences>
+            <inlineMethodReference kjt="java.util.VerifiedIdentityHashMap.EntrySet" name="toArray" parameters="" src="publicjava.lang.Object[]toArray () {int size = size();java.lang.Object[] result = new Object[size];Iterator it = iterator();for ( int i = 0; i&lt;size; i++ )     result[i]=new AbstractMap.SimpleEntry (((java.util.Map.Entry)it.next()));             return  result; }"/>
+         </inlineMethodReferences>
+         <contractReferences>
+            <contractReference kjt="java.util.VerifiedIdentityHashMap.EntrySet" name="java.util.VerifiedIdentityHashMap.EntrySet[java.util.Collection::size()].JML behavior operation contract.0#java.util.VerifiedIdentityHashMap.EntrySet[java.util.Set::size()].JML behavior operation contract.0" rep="pre: {heap=or(java.lang.Object::&lt;inv&gt;(heap,self),java.lang.Object::&lt;inv&gt;(heap,self))}; mby: null; post: {heap=and(imp(java.lang.Object::&lt;inv&gt;(heapAtPre,self),and(imp(equals(exc,null),java.lang.Object::&lt;inv&gt;(heap,self)),imp(not(equals(exc,null)),and(imp(equals(java.lang.Throwable::instance(exc),TRUE),java.lang.Object::&lt;inv&gt;(heap,self)),or(equals(java.lang.Error::instance(exc),TRUE),equals(java.lang.RuntimeException::instance(exc),TRUE)))))),imp(java.lang.Object::&lt;inv&gt;(heapAtPre,self),and(imp(equals(exc,null),java.lang.Object::&lt;inv&gt;(heap,self)),imp(not(equals(exc,null)),and(imp(equals(java.lang.Throwable::instance(exc),TRUE),java.lang.Object::&lt;inv&gt;(heap,self)),or(equals(java.lang.Error::instance(exc),TRUE),equals(java.lang.RuntimeException::instance(exc),TRUE)))))))}; mods: {heap=intersect(if-then-else(java.lang.Object::&lt;inv&gt;(heap,self),intersect(if-then-else(java.lang.Object::&lt;inv&gt;(heap,self),setMinus(allLocs,freshLocs(heap)),allLocs),if-then-else(java.lang.Object::&lt;inv&gt;(heap,self),setMinus(allLocs,freshLocs(heap)),allLocs)),allLocs),if-then-else(java.lang.Object::&lt;inv&gt;(heap,self),setMinus(allLocs,freshLocs(heap)),allLocs)), savedHeap=null}; hasMod: {heap=true, savedHeap=true}; termination: diamond; transaction: false"/>
+            <contractReference kjt="java.util.VerifiedIdentityHashMap.EntrySet" name="java.util.VerifiedIdentityHashMap.EntrySet[java.lang.Iterable::iterator()].JML behavior operation contract.0#java.util.VerifiedIdentityHashMap.EntrySet[java.util.Collection::iterator()].JML behavior operation contract.0#java.util.VerifiedIdentityHashMap.EntrySet[java.util.Set::iterator()].JML behavior operation contract.0" rep="pre: {heap=or(or(java.lang.Object::&lt;inv&gt;(heap,self),java.lang.Object::&lt;inv&gt;(heap,self)),java.lang.Object::&lt;inv&gt;(heap,self))}; mby: null; post: {heap=and(and(imp(java.lang.Object::&lt;inv&gt;(heapAtPre,self),and(imp(equals(exc,null),and(java.lang.Object::&lt;inv&gt;(heap,self),not(equals(result,null)))),imp(not(equals(exc,null)),and(imp(equals(java.lang.Throwable::instance(exc),TRUE),java.lang.Object::&lt;inv&gt;(heap,self)),or(equals(java.lang.Error::instance(exc),TRUE),equals(java.lang.RuntimeException::instance(exc),TRUE)))))),imp(java.lang.Object::&lt;inv&gt;(heapAtPre,self),and(imp(equals(exc,null),and(java.lang.Object::&lt;inv&gt;(heap,self),not(equals(result,null)))),imp(not(equals(exc,null)),and(imp(equals(java.lang.Throwable::instance(exc),TRUE),java.lang.Object::&lt;inv&gt;(heap,self)),or(equals(java.lang.Error::instance(exc),TRUE),equals(java.lang.RuntimeException::instance(exc),TRUE))))))),imp(java.lang.Object::&lt;inv&gt;(heapAtPre,self),and(imp(equals(exc,null),and(java.lang.Object::&lt;inv&gt;(heap,self),not(equals(result,null)))),imp(not(equals(exc,null)),and(imp(equals(java.lang.Throwable::instance(exc),TRUE),java.lang.Object::&lt;inv&gt;(heap,self)),or(equals(java.lang.Error::instance(exc),TRUE),equals(java.lang.RuntimeException::instance(exc),TRUE)))))))}; mods: {heap=intersect(if-then-else(or(java.lang.Object::&lt;inv&gt;(heap,self),java.lang.Object::&lt;inv&gt;(heap,self)),intersect(if-then-else(java.lang.Object::&lt;inv&gt;(heap,self),intersect(if-then-else(or(java.lang.Object::&lt;inv&gt;(heap,self),java.lang.Object::&lt;inv&gt;(heap,self)),intersect(if-then-else(java.lang.Object::&lt;inv&gt;(heap,self),setMinus(allLocs,freshLocs(heap)),allLocs),if-then-else(java.lang.Object::&lt;inv&gt;(heap,self),setMinus(allLocs,freshLocs(heap)),allLocs)),allLocs),if-then-else(java.lang.Object::&lt;inv&gt;(heap,self),setMinus(allLocs,freshLocs(heap)),allLocs)),allLocs),if-then-else(java.lang.Object::&lt;inv&gt;(heap,self),setMinus(allLocs,freshLocs(heap)),allLocs)),allLocs),if-then-else(java.lang.Object::&lt;inv&gt;(heap,self),setMinus(allLocs,freshLocs(heap)),allLocs)), savedHeap=null}; hasMod: {heap=true, savedHeap=true}; termination: diamond; transaction: false"/>
+         </contractReferences>
+      </type>
+   </references>
+</proofMetaFile>

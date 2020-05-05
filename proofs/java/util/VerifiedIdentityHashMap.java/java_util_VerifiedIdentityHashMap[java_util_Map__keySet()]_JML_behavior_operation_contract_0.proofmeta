@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proofMetaFile proofFileMD5="714f1422d32576a24ebb9dee6db94316" proofClosed="false" proofOutdated="false">
+   <markerMessage>
+Open Proof:
+java.util.VerifiedIdentityHashMap[java.util.Map::keySet()].JML behavior operation contract.0
+
+Reason: Goal can&apos;t be closed automatically.
+Hint: Check code and specifications for bugs or continue proof interactively.
+
+Time: 0.236 s
+Nodes: 162
+Branches: 3
+   </markerMessage>
+   <calledMethods>
+      <calledMethod fullQualifiedName="java.util.VerifiedIdentityHashMap.KeySet#&lt;createObject&gt;()"/>
+      <calledMethod fullQualifiedName="java.util.VerifiedIdentityHashMap.Values#&lt;allocate&gt;()"/>
+      <calledMethod fullQualifiedName="java.util.VerifiedIdentityHashMap.Values#&lt;prepareEnter&gt;()"/>
+      <calledMethod fullQualifiedName="java.util.AbstractCollection#&lt;prepare&gt;()"/>
+      <calledMethod fullQualifiedName="java.lang.Object#&lt;prepare&gt;()"/>
+      <calledMethod fullQualifiedName="java.util.AbstractSet#&lt;init&gt;()"/>
+      <calledMethod fullQualifiedName="java.util.AbstractCollection#&lt;init&gt;()"/>
+      <calledMethod fullQualifiedName="java.lang.Object#&lt;init&gt;()"/>
+   </calledMethods>
+   <references rep="pre: {heap=java.lang.Object::&lt;inv&gt;(heap,self)}; mby: null; post: {heap=and(imp(equals(exc,null),and(java.lang.Object::&lt;inv&gt;(heap,self),not(equals(result,null)))),imp(not(equals(exc,null)),and(imp(equals(java.lang.Throwable::instance(exc),TRUE),java.lang.Object::&lt;inv&gt;(heap,self)),or(equals(java.lang.Error::instance(exc),TRUE),equals(java.lang.RuntimeException::instance(exc),TRUE)))))}; mods: {heap=setMinus(allLocs,freshLocs(heap)), savedHeap=null}; hasMod: {heap=true, savedHeap=true}; termination: diamond; transaction: false">
+      <type name="java.util.VerifiedIdentityHashMap">
+         <axiomReferences>
+            <axiomReference kjt="java.util.VerifiedIdentityHashMap" name="Class invariant axiom for java.util.VerifiedIdentityHashMap" rep="equiv(java.lang.Object::&lt;inv&gt;(heap,self),and(and(nonNull(heap,java.lang.Object[]::select(heap,self,java.util.VerifiedIdentityHashMap::$table),Z(1(#))),not(equals(java.lang.Object::select(heap,null,java.util.VerifiedIdentityHashMap::$NULL_KEY),null))),not(equals(java.util.Set::select(heap,self,java.util.VerifiedIdentityHashMap::$entrySet),null))))"/>
+         </axiomReferences>
+         <inlineMethodReferences>
+            <inlineMethodReference kjt="java.util.VerifiedIdentityHashMap" name="keySet" parameters="" src="publicSetkeySet () {Set ks = this.keySet;if (ks!=null)             return  ks;          else              return      this.keySet=new KeySet (); }"/>
+         </inlineMethodReferences>
+      </type>
+      <type name="java.util.VerifiedIdentityHashMap.KeySet">
+         <accessReferences>
+            <accessReference kjt="java.util.VerifiedIdentityHashMap.KeySet" name="java.util.VerifiedIdentityHashMap.KeySet::&lt;enclosingThis&gt;" type="VerifiedIdentityHashMap" visibility="private" isStatic="false" isFinal="false" initializer=""/>
+         </accessReferences>
+         <inlineMethodReferences>
+            <inlineMethodReference kjt="java.util.VerifiedIdentityHashMap.KeySet" name="&lt;init&gt;" parameters="VerifiedIdentityHashMap;" src="public void &lt;init&gt; (VerifiedIdentityHashMap _ENCLOSING_THIS) {this.&lt;enclosingThis&gt;=_ENCLOSING_THIS;super.&lt;init&gt;();}"/>
+         </inlineMethodReferences>
+      </type>
+   </references>
+</proofMetaFile>

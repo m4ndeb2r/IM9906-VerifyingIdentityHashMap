@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proofMetaFile proofFileMD5="da56a585ccf292fdf1188113410f8a7c" proofClosed="true" proofOutdated="false">
+   <markerMessage>
+Closed Proof:
+java.util.VerifiedIdentityHashMap.IdentityHashMapIterator[java.util.Iterator::next()].JML behavior operation contract.0
+
+Time: 0.149 s
+Nodes: 13
+Branches: 1
+   </markerMessage>
+   <references rep="pre: {heap=java.lang.Object::&lt;inv&gt;(heap,self)}; mby: null; post: {heap=and(imp(equals(exc,null),and(java.lang.Object::&lt;inv&gt;(heap,self),not(equals(result,null)))),imp(not(equals(exc,null)),and(imp(equals(java.lang.Throwable::instance(exc),TRUE),java.lang.Object::&lt;inv&gt;(heap,self)),or(equals(java.lang.Error::instance(exc),TRUE),equals(java.lang.RuntimeException::instance(exc),TRUE)))))}; mods: {heap=setMinus(allLocs,freshLocs(heap)), savedHeap=null}; hasMod: {heap=true, savedHeap=true}; termination: diamond; transaction: false">
+   </references>
+</proofMetaFile>

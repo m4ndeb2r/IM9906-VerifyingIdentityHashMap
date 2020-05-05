@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proofMetaFile proofFileMD5="aeaea8e5ff1d429b6db86d376a18ecc2" proofClosed="true" proofOutdated="false">
+   <markerMessage>
+Closed Proof:
+java.util.VerifiedIdentityHashMap.EntrySet[java.util.Collection::size()].JML behavior operation contract.0
+
+Time: 0.92 s
+Nodes: 37
+Branches: 3
+   </markerMessage>
+   <references rep="pre: {heap=java.lang.Object::&lt;inv&gt;(heap,self)}; mby: null; post: {heap=and(imp(equals(exc,null),java.lang.Object::&lt;inv&gt;(heap,self)),imp(not(equals(exc,null)),and(imp(equals(java.lang.Throwable::instance(exc),TRUE),java.lang.Object::&lt;inv&gt;(heap,self)),or(equals(java.lang.Error::instance(exc),TRUE),equals(java.lang.RuntimeException::instance(exc),TRUE)))))}; mods: {heap=intersect(if-then-else(java.lang.Object::&lt;inv&gt;(heap,self),intersect(if-then-else(java.lang.Object::&lt;inv&gt;(heap,self),setMinus(allLocs,freshLocs(heap)),allLocs),if-then-else(java.lang.Object::&lt;inv&gt;(heap,self),setMinus(allLocs,freshLocs(heap)),allLocs)),allLocs),if-then-else(java.lang.Object::&lt;inv&gt;(heap,self),setMinus(allLocs,freshLocs(heap)),allLocs)), savedHeap=null}; hasMod: {heap=true, savedHeap=true}; termination: diamond; transaction: false">
+      <type name="java.util.VerifiedIdentityHashMap.EntrySet">
+         <axiomReferences>
+            <axiomReference kjt="java.util.VerifiedIdentityHashMap.EntrySet" name="Class invariant axiom for java.util.VerifiedIdentityHashMap.EntrySet" rep="equiv(java.lang.Object::&lt;inv&gt;(heap,self),true)"/>
+         </axiomReferences>
+         <inlineMethodReferences>
+            <inlineMethodReference kjt="java.util.VerifiedIdentityHashMap.EntrySet" name="size" parameters="" src="publicintsize () {return this.size;}"/>
+         </inlineMethodReferences>
+      </type>
+      <type name="java.util.VerifiedIdentityHashMap">
+         <accessReferences>
+            <accessReference kjt="java.util.VerifiedIdentityHashMap" name="java.util.VerifiedIdentityHashMap::size" type="int" visibility="private" isStatic="false" isFinal="false" initializer=""/>
+         </accessReferences>
+      </type>
+   </references>
+</proofMetaFile>

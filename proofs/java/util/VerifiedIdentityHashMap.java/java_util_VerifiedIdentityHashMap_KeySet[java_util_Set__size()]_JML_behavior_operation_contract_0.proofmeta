@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proofMetaFile proofFileMD5="6ba5a208f4ae321d9a8b67bd14fd6d72" proofClosed="true" proofOutdated="false">
+   <markerMessage>
+Closed Proof:
+java.util.VerifiedIdentityHashMap.KeySet[java.util.Set::size()].JML behavior operation contract.0
+
+Time: 0.63 s
+Nodes: 38
+Branches: 3
+   </markerMessage>
+   <references rep="pre: {heap=java.lang.Object::&lt;inv&gt;(heap,self)}; mby: null; post: {heap=and(imp(equals(exc,null),java.lang.Object::&lt;inv&gt;(heap,self)),imp(not(equals(exc,null)),and(imp(equals(java.lang.Throwable::instance(exc),TRUE),java.lang.Object::&lt;inv&gt;(heap,self)),or(equals(java.lang.Error::instance(exc),TRUE),equals(java.lang.RuntimeException::instance(exc),TRUE)))))}; mods: {heap=setMinus(allLocs,freshLocs(heap)), savedHeap=null}; hasMod: {heap=true, savedHeap=true}; termination: diamond; transaction: false">
+      <type name="java.util.VerifiedIdentityHashMap.KeySet">
+         <axiomReferences>
+            <axiomReference kjt="java.util.VerifiedIdentityHashMap.KeySet" name="Class invariant axiom for java.util.VerifiedIdentityHashMap.KeySet" rep="equiv(java.lang.Object::&lt;inv&gt;(heap,self),true)"/>
+         </axiomReferences>
+         <inlineMethodReferences>
+            <inlineMethodReference kjt="java.util.VerifiedIdentityHashMap.KeySet" name="size" parameters="" src="publicintsize () {return this.size;}"/>
+         </inlineMethodReferences>
+      </type>
+      <type name="java.util.VerifiedIdentityHashMap">
+         <accessReferences>
+            <accessReference kjt="java.util.VerifiedIdentityHashMap" name="java.util.VerifiedIdentityHashMap::size" type="int" visibility="private" isStatic="false" isFinal="false" initializer=""/>
+         </accessReferences>
+      </type>
+   </references>
+</proofMetaFile>
