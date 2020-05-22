@@ -136,12 +136,31 @@ public class VerifiedIdentityHashMap
     implements Map, java.io.Serializable, Cloneable {
 	
 	/*@ invariant
-      @ table.length >= MINIMUM_CAPACITY && table.length <= MAXIMUM_CAPACITY && table.length % 2 == 0 &&
-      @ size >= 0 && size <= table.length &&
-      @ modCount >= 0 && modCount <= Integer.MAX_VALUE &&
-      @ threshold >= 0 && threshold <= Integer.MAX_VALUE && threshold == table.length * 2 / 3
-      @ ;
-	  @*/
+      @   table.length >= MINIMUM_CAPACITY && 
+      @   table.length <= MAXIMUM_CAPACITY && 
+      @   table.length % 2 == 0 &&
+      @   size >= 0 && 
+      @   size <= (table.length / 2) && 
+      @   size == (\num_of int i; 
+      @       0 <= i < table.length - 1 && i % 2 == 0;
+      @       table[i] != null) &&
+      @   threshold >= 0 && 
+      @   threshold <= Integer.MAX_VALUE && 
+      @   threshold == table.length * 2 / 3 &&
+      @   (\forall int i, j; 
+      @       0 <= i && j == i + 1 && j < table.length; 
+      @       table[i] == null ==> table[j] == null) &&
+      @   (\forall int i, j; 
+      @       0 <= i && j == i + 1 && j < table.length; 
+      @       table[j] != null ==> table[i] != null) &&
+      @   (\forall int i; 
+      @       0 <= i < table.length - 1 && i % 2 == 0;
+      @       table[i] != null &&
+      @       !(\exists int j; 
+      @           i + 2 <= j < table.length - 1 && j % 2 == 0;
+      @           table[i] == table[j]))
+      @   ;
+      @*/
 	
     /**
      * The initial capacity used by the no-args constructor.
