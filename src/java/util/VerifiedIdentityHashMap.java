@@ -135,7 +135,7 @@ public class VerifiedIdentityHashMap
     extends AbstractMap
     implements Map, java.io.Serializable, Cloneable {
 	
-	/*@ invariant
+    /*@ invariant
       @   table.length >= MINIMUM_CAPACITY && 
       @   table.length <= MAXIMUM_CAPACITY && 
       @   table.length % 2 == 0 &&
