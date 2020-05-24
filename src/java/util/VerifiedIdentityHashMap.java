@@ -146,7 +146,7 @@ public class VerifiedIdentityHashMap
       @       table[i] != null) &&
       @   threshold >= 0 && 
       @   threshold <= Integer.MAX_VALUE && 
-      @   threshold == table.length * 2 / 3 &&
+      @   threshold == table.length / 3 &&
       @   (\forall int i, j; 
       @       0 <= i && j == i + 1 && j < table.length; 
       @       table[i] == null ==> table[j] == null) &&
