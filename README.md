@@ -63,7 +63,7 @@ Some trivial problems occur after removing the generics. These have to be fixed 
 
 Now, the class can be loaded in KeY. 
 
-TODO: KeY complains about the `remove` method on line 979 (Cycle detected). We have to look in to that one...
+Note: The KeY plugin Eclipse complains about the `remove` method on line 979 (Cycle detected). However, this does not seem to be a real problem. Threrefore, it is ignored. 
 
 ## Load VerifiedIdentityHashMap in KeY
 * select your project, and right-click on it for the context menu

@@ -134,6 +134,30 @@ import java.io.*;
 public class VerifiedIdentityHashMap
     extends AbstractMap
     implements Map, java.io.Serializable, Cloneable {
+	
+    /*@ invariant
+      @   table.length >= MINIMUM_CAPACITY && 
+      @   table.length <= MAXIMUM_CAPACITY && 
+      @   table.length % 2 == 0 &&
+      @   size == (\num_of int i; 
+      @       0 <= i < table.length - 1 && i % 2 == 0;
+      @       table[i] != null) &&
+      @   threshold == table.length / 3 &&
+      @   (\forall int i, j; 
+      @       0 <= i && j == i + 1 && j < table.length; 
+      @       table[i] == null ==> table[j] == null) &&
+      @   (\forall int i, j; 
+      @       0 <= i && j == i + 1 && j < table.length; 
+      @       table[j] != null ==> table[i] != null) &&
+      @   (\forall int i; 
+      @       0 <= i < table.length - 1 && i % 2 == 0;
+      @       table[i] != null &&
+      @       !(\exists int j; 
+      @           i + 2 <= j < table.length - 1 && j % 2 == 0;
+      @           table[i] == table[j]))
+      @   ;
+      @*/
+	
     /**
      * The initial capacity used by the no-args constructor.
      * MUST be a power of two.  The value 32 corresponds to the
