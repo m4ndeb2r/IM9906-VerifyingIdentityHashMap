@@ -139,13 +139,9 @@ public class VerifiedIdentityHashMap
       @   table.length >= MINIMUM_CAPACITY && 
       @   table.length <= MAXIMUM_CAPACITY && 
       @   table.length % 2 == 0 &&
-      @   size >= 0 && 
-      @   size <= (table.length / 2) && 
       @   size == (\num_of int i; 
       @       0 <= i < table.length - 1 && i % 2 == 0;
       @       table[i] != null) &&
-      @   threshold >= 0 && 
-      @   threshold <= Integer.MAX_VALUE && 
       @   threshold == table.length / 3 &&
       @   (\forall int i, j; 
       @       0 <= i && j == i + 1 && j < table.length; 
