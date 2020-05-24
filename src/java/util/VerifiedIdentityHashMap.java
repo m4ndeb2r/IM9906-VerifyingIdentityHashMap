@@ -136,13 +136,9 @@ public class VerifiedIdentityHashMap
     implements Map, java.io.Serializable, Cloneable {
 	
     /*@ invariant
-      @   table.length >= MINIMUM_CAPACITY && 
-      @   table.length <= MAXIMUM_CAPACITY && 
+      @   table != null &&
+      @   MINIMUM_CAPACITY <= table.length <= MAXIMUM_CAPACITY && 
       @   table.length % 2 == 0 &&
-      @   size == (\num_of int i; 
-      @       0 <= i < table.length - 1 && i % 2 == 0;
-      @       table[i] != null) &&
-      @   threshold == table.length / 3 &&
       @   (\forall int i, j; 
       @       0 <= i && j == i + 1 && j < table.length; 
       @       table[i] == null ==> table[j] == null) &&
@@ -154,7 +150,12 @@ public class VerifiedIdentityHashMap
       @       table[i] != null &&
       @       !(\exists int j; 
       @           i + 2 <= j < table.length - 1 && j % 2 == 0;
-      @           table[i] == table[j]))
+      @           table[i] == table[j])) &&
+      @   size == (\num_of int i; 
+      @       0 <= i < table.length - 1 && i % 2 == 0;
+      @       table[i] != null) &&
+      @   threshold == table.length / 3 &&
+      @   entrySet != null ==> entrySet.size() == size
       @   ;
       @*/
 	
@@ -211,14 +212,14 @@ public class VerifiedIdentityHashMap
     /**
      * Use NULL_KEY for key if it is null.
      */
-    private static Object maskNull(Object key) {
+    private static /*@ pure @*/ Object maskNull(Object key) {
         return (key == null ? NULL_KEY : key);
     }
 
     /**
      * Returns internal representation of null key back to caller as null.
      */
-    private static Object unmaskNull(Object key) {
+    private static /*@ pure @*/ Object unmaskNull(Object key) {
         return (key == NULL_KEY ? null : key);
     }
 
@@ -254,7 +255,7 @@ public class VerifiedIdentityHashMap
      * returns MAXIMUM_CAPACITY.  If (3 * expectedMaxSize)/2 is negative, it
      * is assumed that overflow has occurred, and MAXIMUM_CAPACITY is returned.
      */
-    private int capacity(int expectedMaxSize)
+    private /*@ pure @*/ int capacity(int expectedMaxSize)
         // Compute min capacity for expectedMaxSize given a load factor of 2/3
     {
         int minCapacity =  (3 * expectedMaxSize) / 2;
@@ -303,7 +304,7 @@ public class VerifiedIdentityHashMap
      *
      * @return the number of key-value mappings in this map
      */
-    public int size() {
+    public /*@ pure @*/ int size() {
         return size;
     }
 
@@ -314,14 +315,14 @@ public class VerifiedIdentityHashMap
      * @return <tt>true</tt> if this identity hash map contains no key-value
      *         mappings
      */
-    public boolean isEmpty() {
+    public /*@ pure @*/ boolean isEmpty() {
         return size == 0;
     }
 
     /**
      * Returns index for Object x.
      */
-    private static int hash(Object x, int length) {
+    private static /*@ pure @*/ int hash(Object x, int length) {
         int h =  System.identityHashCode(x);
         // Multiply by -127, and left-shift to use least bit as part of hash
         return ((h << 1) - (h << 8)) & (length - 1);
@@ -330,7 +331,7 @@ public class VerifiedIdentityHashMap
     /**
      * Circularly traverses table of size len.
      */
-    private static int nextKeyIndex(int i, int len) {
+    private static /*@ pure @*/ int nextKeyIndex(int i, int len) {
         return (i + 2 < len ? i + 2 : 0);
     }
 
@@ -351,7 +352,7 @@ public class VerifiedIdentityHashMap
      *
      * @see #put(Object, Object)
      */
-    public java.lang.Object get(Object key) {
+    public /*@ pure @*/ java.lang.Object get(Object key) {
         Object k =  maskNull(key);
         Object[] tab =  table;
         int len =  tab.length;
@@ -375,7 +376,7 @@ public class VerifiedIdentityHashMap
      *          in this map
      * @see     #containsValue(Object)
      */
-    public boolean containsKey(Object key) {
+    public /*@ pure @*/ boolean containsKey(Object key) {
         Object k =  maskNull(key);
         Object[] tab =  table;
         int len =  tab.length;
@@ -399,7 +400,7 @@ public class VerifiedIdentityHashMap
      *         specified object reference
      * @see     #containsKey(Object)
      */
-    public boolean containsValue(Object value) {
+    public /*@ pure @*/ boolean containsValue(Object value) {
         Object[] tab =  table;
         for (int i =  1; i < tab.length; i += 2)
             if (tab[i] == value && tab[i - 1] != null)
@@ -416,7 +417,7 @@ public class VerifiedIdentityHashMap
      * @return  <code>true</code> if and only if the specified key-value
      *          mapping is in the map
      */
-    private boolean containsMapping(Object key, Object value) {
+    private /*@ pure @*/ boolean containsMapping(Object key, Object value) {
         Object k =  maskNull(key);
         Object[] tab =  table;
         int len =  tab.length;
@@ -662,7 +663,7 @@ public class VerifiedIdentityHashMap
      * @return <tt>true</tt> if the specified object is equal to this map
      * @see Object#equals(Object)
      */
-    public boolean equals(Object o) {
+    public /*@ pure @*/ boolean equals(Object o) {
         if (o == this) {
             return true;
         } else if (o instanceof VerifiedIdentityHashMap) {
@@ -704,7 +705,7 @@ public class VerifiedIdentityHashMap
      * @see Object#equals(Object)
      * @see #equals(Object)
      */
-    public int hashCode() {
+    public /*@ pure @*/ int hashCode() {
         int result =  0;
         Object[] tab =  table;
         for (int i =  0; i < tab.length; i += 2) {
@@ -724,7 +725,7 @@ public class VerifiedIdentityHashMap
      *
      * @return a shallow copy of this map
      */
-    public Object clone() {
+    public /*@ pure @*/ Object clone() {
         try {
             VerifiedIdentityHashMap m =  (VerifiedIdentityHashMap) super.clone();
             m.entrySet = null;
@@ -901,7 +902,7 @@ public class VerifiedIdentityHashMap
                 return oldValue;
             }
 
-            public boolean equals(Object o) {
+            public /*@ pure @*/ boolean equals(Object o) {
                 if (index < 0)
                     return super.equals(o);
 
@@ -912,7 +913,7 @@ public class VerifiedIdentityHashMap
                        e.getValue() == traversalTable[index + 1]);
             }
 
-            public int hashCode() {
+            public /*@ pure @*/ int hashCode() {
                 if (lastReturnedIndex < 0)
                     return super.hashCode();
 
@@ -920,7 +921,7 @@ public class VerifiedIdentityHashMap
                        System.identityHashCode(traversalTable[index + 1]));
             }
 
-            public String toString() {
+            public /*@ pure @*/ String toString() {
                 if (index < 0)
                     return super.toString();
 
@@ -994,7 +995,7 @@ public class VerifiedIdentityHashMap
         public Iterator iterator() {
             return new KeyIterator();
         }
-        public int size() {
+        public /*@ pure @*/ int size() {
             return size;
         }
         public boolean contains(Object o) {
@@ -1023,7 +1024,7 @@ public class VerifiedIdentityHashMap
         public void clear() {
             VerifiedIdentityHashMap.this.clear();
         }
-        public int hashCode() {
+        public /*@ pure @*/ int hashCode() {
             int result =  0;
             for (java.lang.Object key: this)
                 result += System.identityHashCode(key);
@@ -1063,10 +1064,10 @@ public class VerifiedIdentityHashMap
         public Iterator iterator() {
             return new ValueIterator();
         }
-        public int size() {
+        public /*@ pure @*/ int size() {
             return size;
         }
-        public boolean contains(Object o) {
+        public /*@ pure @*/ boolean contains(Object o) {
             return containsValue(o);
         }
         public boolean remove(Object o) {
@@ -1133,7 +1134,7 @@ public class VerifiedIdentityHashMap
         public Iterator iterator() {
             return new EntryIterator();
         }
-        public boolean contains(Object o) {
+        public /*@ pure @*/ boolean contains(Object o) {
             if (!(o instanceof Map.Entry))
                 return false;
             Map.Entry entry =  (Map.Entry)o;
@@ -1145,7 +1146,7 @@ public class VerifiedIdentityHashMap
             Map.Entry entry =  (Map.Entry)o;
             return removeMapping(entry.getKey(), entry.getValue());
         }
-        public int size() {
+        public /*@ pure @*/ int size() {
             return size;
         }
         public void clear() {
