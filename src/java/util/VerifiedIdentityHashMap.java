@@ -139,23 +139,28 @@ public class VerifiedIdentityHashMap
       @   table != null &&
       @   MINIMUM_CAPACITY <= table.length <= MAXIMUM_CAPACITY && 
       @   table.length % 2 == 0 &&
-      @   (\forall int i, j; 
+      @   (\forall \bigint i, j; 
       @       0 <= i && j == i + 1 && j < table.length; 
       @       table[i] == null ==> table[j] == null) &&
-      @   (\forall int i, j; 
+      @   (\forall \bigint i, j; 
       @       0 <= i && j == i + 1 && j < table.length; 
       @       table[j] != null ==> table[i] != null) &&
-      @   (\forall int i; 
+      @   (\forall \bigint i; 
       @       0 <= i < table.length - 1 && i % 2 == 0;
       @       table[i] != null &&
-      @       !(\exists int j; 
+      @       !(\exists \bigint j; 
       @           i + 2 <= j < table.length - 1 && j % 2 == 0;
       @           table[i] == table[j])) &&
-      @   size == (\num_of int i; 
+      @   size == (\num_of \bigint i; 
       @       0 <= i < table.length - 1 && i % 2 == 0;
       @       table[i] != null) &&
       @   threshold == table.length / 3 &&
-      @   entrySet != null ==> entrySet.size() == size
+      @   entrySet != null ==> 
+      @       (\forall Entry e; 
+      @           entrySet.contains(e); 
+      @           (\exists \bigint i; 
+      @               0 <= i < table.length - 1 && i % 2 == 0;
+      @               table[i] == e.getKey() && table[i+1] == e.getValue()))  
       @   ;
       @*/
 	
@@ -737,6 +742,11 @@ public class VerifiedIdentityHashMap
     }
 
     private abstract class IdentityHashMapIterator implements Iterator {
+        /*@ invariant
+          @   0 <= index <= table.length &&
+          @   -1 <= lastReturnedIndex <= table.length
+          @   ; 
+          @*/
         int index =  (size != 0 ? 0 : table.length); // current slot.
         int expectedModCount =  modCount; // to support fast-fail
         int lastReturnedIndex =  -1;      // to allow remove()
