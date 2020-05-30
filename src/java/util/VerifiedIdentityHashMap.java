@@ -137,8 +137,9 @@ public class VerifiedIdentityHashMap
 	
     /*@ invariant
       @   table != null &&
+      @   MINIMUM_CAPACITY == 4 && MAXIMUM_CAPACITY == 1 << 29 &&
       @   MINIMUM_CAPACITY <= table.length <= MAXIMUM_CAPACITY && 
-      @   table.length % 2 == 0 &&
+      @   (table.length & (table.length - 1)) == 0 &&
       @   (\forall \bigint i, j; 
       @       0 <= i && j == i + 1 && j < table.length; 
       @       table[i] == null ==> table[j] == null) &&
