@@ -745,7 +745,11 @@ public class VerifiedIdentityHashMap
     private abstract class IdentityHashMapIterator implements Iterator {
         /*@ invariant
           @   0 <= index <= table.length &&
-          @   -1 <= lastReturnedIndex <= table.length
+          @   -1 <= lastReturnedIndex <= table.length &&
+          @   traversalTable.length == table.length &&
+          @   (\forall \bigint i; 
+          @       0 <= i && i < table.length; 
+          @       table[i] == traversalTable[i])
           @   ; 
           @*/
         int index =  (size != 0 ? 0 : table.length); // current slot.
