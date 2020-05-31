@@ -891,6 +891,10 @@ public class VerifiedIdentityHashMap
         }
 
         private class Entry implements Map.Entry {
+            /*@ invariant
+            @   0 <= index < traversalTable.length - 1
+            @   ; 
+            @*/
             private int index;
 
             private Entry(int index) {
