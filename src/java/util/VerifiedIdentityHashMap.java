@@ -875,6 +875,11 @@ public class VerifiedIdentityHashMap
 
     private class EntryIterator
         extends IdentityHashMapIterator {
+    	/*@ invariant
+    	  @   lastReturnedEntry != null ==> lastReturnedIndex == lastReturnedEntry.index &&
+    	  @   lastReturnedEntry == null ==> lastReturnedIndex == -1
+    	  @   ;
+    	  @*/
         private Entry lastReturnedEntry =  null;
 
         public Map.Entry next() {
@@ -892,9 +897,9 @@ public class VerifiedIdentityHashMap
 
         private class Entry implements Map.Entry {
             /*@ invariant
-            @   0 <= index < traversalTable.length - 1
-            @   ; 
-            @*/
+              @   0 <= index < traversalTable.length - 1
+              @   ; 
+              @*/
             private int index;
 
             private Entry(int index) {
