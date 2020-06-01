@@ -1,8 +1,10 @@
 # IM9906-VerifyingIdentityHashMap
-SE Graduation Assignment
+Part of the SE Graduation Assignment
 
 # Purpose
-Formal analysis of OpenJDK's `IdentityHashMap` ([http://hg.openjdk.java.net/jdk7/jdk7/jdk/file/9b8c96f96a0f/src/share/classes/java/util/IdentityHashMap.java]).
+Formal analysis of OpenJDK's `IdentityHashMap` (http://hg.openjdk.java.net/jdk7/jdk7/jdk/file/9b8c96f96a0f/src/share/classes/java/util/IdentityHashMap.java).
+This projected is related to the IM9906-IdentityHashMapSpecTester project (see: https://github.com/m4ndeb2r/IM9906-IdentityHashMapSpecTester), providing
+unittests for testing the JML-specs, for example to see if the specified class invariants hold at all time.
 
 # Setup
 To replicate the setup of the project, follow the steps below:
