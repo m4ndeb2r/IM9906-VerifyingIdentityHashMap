@@ -1,15 +1,15 @@
 package java.lang;
 
 /**
- * A constant holding the maximum value an {@code int} can
- * have, 2<sup>31</sup>-1.
- */
-public final static int MAX_VALUE = 2147483647;
-
-/**
  * @generated
  */
 public final class Integer extends java.lang.Number implements java.lang.Comparable {
+	/**
+	 * A constant holding the maximum value an {@code int} can
+	 * have, 2<sup>31</sup>-1.
+	 */
+	public final static int MAX_VALUE = 2147483647;
+
    /**
     * @generated
     */
