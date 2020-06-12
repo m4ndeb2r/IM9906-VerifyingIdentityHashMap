@@ -138,7 +138,7 @@ public class VerifiedIdentityHashMap
     /*@ invariant
       @   table != null &&
       @   MINIMUM_CAPACITY == 4 && MAXIMUM_CAPACITY == 1 << 29 &&
-      @   MINIMUM_CAPACITY <= table.length <= MAXIMUM_CAPACITY && 
+      @   MINIMUM_CAPACITY <= table.length && table.length <= MAXIMUM_CAPACITY && 
       @   (table.length & (table.length - 1)) == 0 &&
       @   (\forall \bigint i, j; 
       @       0 <= i && j == i + 1 && j < table.length; 
@@ -157,7 +157,7 @@ public class VerifiedIdentityHashMap
       @       table[i] != null) &&
       @   threshold == table.length / 3 &&
       @   entrySet != null ==> 
-      @       (\forall Entry e; 
+      @       (\forall Map.Entry e; 
       @           entrySet.contains(e); 
       @           (\exists \bigint i; 
       @               0 <= i < table.length - 1 && i % 2 == 0;
@@ -744,8 +744,8 @@ public class VerifiedIdentityHashMap
 
     private abstract class IdentityHashMapIterator implements Iterator {
         /*@ invariant
-          @   0 <= index <= table.length &&
-          @   -1 <= lastReturnedIndex <= table.length &&
+          @   0 <= index && index <= table.length &&
+          @   -1 <= lastReturnedIndex && lastReturnedIndex <= table.length &&
           @   traversalTable.length == table.length &&
           @   (\forall \bigint i; 
           @       0 <= i && i < table.length; 
