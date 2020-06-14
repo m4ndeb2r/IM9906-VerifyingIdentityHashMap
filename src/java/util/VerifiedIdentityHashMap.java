@@ -138,7 +138,7 @@ public class VerifiedIdentityHashMap
     /*@ invariant
       @   table != null &&
       @   MINIMUM_CAPACITY == 4 && MAXIMUM_CAPACITY == 1 << 29 &&
-      @   MINIMUM_CAPACITY <= table.length <= MAXIMUM_CAPACITY && 
+      @   MINIMUM_CAPACITY <= table.length && table.length <= MAXIMUM_CAPACITY && 
       @   (table.length & (table.length - 1)) == 0 &&
       @   (\forall \bigint i, j; 
       @       0 <= i && j == i + 1 && j < table.length; 
@@ -155,9 +155,9 @@ public class VerifiedIdentityHashMap
       @   size == (\num_of \bigint i; 
       @       0 <= i < table.length - 1 && i % 2 == 0;
       @       table[i] != null) &&
-      @   threshold == table.length / 3 &&
+      @   threshold == table.length / (\bigint)3 &&
       @   entrySet != null ==> 
-      @       (\forall Entry e; 
+      @       (\forall Map.Entry e; 
       @           entrySet.contains(e); 
       @           (\exists \bigint i; 
       @               0 <= i < table.length - 1 && i % 2 == 0;
@@ -233,6 +233,12 @@ public class VerifiedIdentityHashMap
      * Constructs a new, empty identity hash map with a default expected
      * maximum size (21).
      */
+    /*@ public normal_behavior
+      @   ensures 
+      @     DEFAULT_CAPACITY == 32 &&
+      @     table.length == (\bigint)2 * DEFAULT_CAPACITY &&
+      @     size == 0;
+      @*/
     public VerifiedIdentityHashMap() {
         init(DEFAULT_CAPACITY);
     }
@@ -246,6 +252,20 @@ public class VerifiedIdentityHashMap
      * @param expectedMaxSize the expected maximum size of the map
      * @throws IllegalArgumentException if <tt>expectedMaxSize</tt> is negative
      */
+    /*@ public exceptional_behavior
+      @   requires 
+      @     expectedMaxSize < 0;
+      @   signals_only 
+      @     IllegalArgumentException;
+      @   signals 
+      @     (IllegalArgumentException e) true;
+      @ public normal_behavior
+      @   requires 
+      @     expectedMaxSize >= 0;
+      @   ensures 
+      @     table.length == (\bigint)2 * capacity(expectedMaxSize) &&
+      @     size == 0;
+      @*/
     public VerifiedIdentityHashMap(int expectedMaxSize) {
         if (expectedMaxSize < 0)
             throw new IllegalArgumentException("expectedMaxSize is negative: "
@@ -283,6 +303,18 @@ public class VerifiedIdentityHashMap
      * capacity, which is assumed to be a power of two between
      * MINIMUM_CAPACITY and MAXIMUM_CAPACITY inclusive.
      */
+    /*@ private normal_behavior
+      @   requires 
+      @     MINIMUM_CAPACITY == 4 && 
+      @     MAXIMUM_CAPACITY == 1 << 29 &&
+      @     (initCapacity & -initCapacity) == initCapacity &&
+      @     initCapacity >= MINIMUM_CAPACITY &&
+      @     initCapacity <= MAXIMUM_CAPACITY;
+      @   ensures
+      @     threshold == ((\bigint)2 * initCapacity) / (\bigint)3 && 
+      @     table.length == (\bigint)2 * initCapacity &&
+      @     size == 0;
+      @*/
     private void init(int initCapacity) {
         // assert (initCapacity & -initCapacity) == initCapacity; // power of 2
         // assert initCapacity >= MINIMUM_CAPACITY;
@@ -299,6 +331,22 @@ public class VerifiedIdentityHashMap
      * @param m the map whose mappings are to be placed into this map
      * @throws NullPointerException if the specified map is null
      */
+    /*@ public exceptional_behavior
+      @   requires 
+      @     m == null;
+      @   signals_only 
+      @     NullPointerException;
+      @   signals
+      @     (NullPointerException e) true;
+      @ public normal_behavior
+      @   requires
+      @     m != null;
+      @   ensures
+      @     size == m.size() &&  
+      @     (\forall \bigint i; 
+      @         0 <= i < table.length - 1 && i % 2 == 0;
+      @         m.get(table[i]) == table[i+1]);
+      @*/
     public VerifiedIdentityHashMap(Map m) {
         // Allow for a bit of growth
         this((int) ((1 + m.size()) * 1.1));
@@ -310,6 +358,11 @@ public class VerifiedIdentityHashMap
      *
      * @return the number of key-value mappings in this map
      */
+    /*@ also
+      @ public normal_behavior
+      @   ensures
+      @     \result == size;
+      @*/
     public /*@ pure @*/ int size() {
         return size;
     }
@@ -321,6 +374,11 @@ public class VerifiedIdentityHashMap
      * @return <tt>true</tt> if this identity hash map contains no key-value
      *         mappings
      */
+    /*@ also
+      @ public normal_behavior
+      @   ensures
+      @     \result <==> size == 0;
+      @*/
     public /*@ pure @*/ boolean isEmpty() {
         return size == 0;
     }
@@ -337,6 +395,20 @@ public class VerifiedIdentityHashMap
     /**
      * Circularly traverses table of size len.
      */
+    /*@ private normal_behavior
+      @   requires 
+      @     i >= 0 &&
+      @     i + (\bigint)2 <= Integer.MAX_VALUE &&
+      @     (i & -i) == i &&
+      @     len > 2 &&
+      @     (len & -len) == len;
+      @   ensures
+      @     \result < len &&
+      @     \result >= 0 &&
+      @     (\result & -(\result)) == \result &&
+      @     i + (\bigint)2 < len ==> \result == i + (\bigint)2 &&
+      @     i + (\bigint)2 >= len ==> \result == 0;  
+      @*/
     private static /*@ pure @*/ int nextKeyIndex(int i, int len) {
         return (i + 2 < len ? i + 2 : 0);
     }
@@ -358,6 +430,17 @@ public class VerifiedIdentityHashMap
      *
      * @see #put(Object, Object)
      */
+    /*@ also
+      @ public normal_behavior
+      @   ensures 
+      @     \result != null ==>
+      @         (\exists \bigint i; 
+      @             0 <= i < table.length - 1 && i % 2 == 0;
+      @             table[i] == key) && 
+      @     \result == null ==> !(\exists \bigint i; 
+      @         0 <= i < table.length - 1 && i % 2 == 0;
+      @         table[i] == key); 
+      @*/
     public /*@ pure @*/ java.lang.Object get(Object key) {
         Object k =  maskNull(key);
         Object[] tab =  table;
@@ -382,6 +465,13 @@ public class VerifiedIdentityHashMap
      *          in this map
      * @see     #containsValue(Object)
      */
+    /*@ also
+      @ public normal_behavior
+      @   ensures 
+      @     \result <==> (\exists \bigint i; 
+      @         0 <= i < table.length - 1 && i % 2 == 0;
+      @         table[i] == key); 
+      @*/
     public /*@ pure @*/ boolean containsKey(Object key) {
         Object k =  maskNull(key);
         Object[] tab =  table;
@@ -406,6 +496,13 @@ public class VerifiedIdentityHashMap
      *         specified object reference
      * @see     #containsKey(Object)
      */
+    /*@ also
+      @ public normal_behavior
+      @   ensures 
+      @     \result <==> (\exists \bigint i; 
+      @         1 <= i < table.length && i % 2 == 0;
+      @         table[i] == value); 
+      @*/
     public /*@ pure @*/ boolean containsValue(Object value) {
         Object[] tab =  table;
         for (int i =  1; i < tab.length; i += 2)
@@ -423,6 +520,12 @@ public class VerifiedIdentityHashMap
      * @return  <code>true</code> if and only if the specified key-value
      *          mapping is in the map
      */
+    /*@ public normal_behavior
+      @   ensures 
+      @     \result <==> (\exists \bigint i; 
+      @         0 <= i < table.length - 1 && i % 2 == 0;
+      @         table[i] == key && table[i + 1] == value); 
+      @*/
     private /*@ pure @*/ boolean containsMapping(Object key, Object value) {
         Object k =  maskNull(key);
         Object[] tab =  table;
@@ -453,6 +556,21 @@ public class VerifiedIdentityHashMap
      * @see     #get(Object)
      * @see     #containsKey(Object)
      */
+    /*@ also
+      @ public normal_behavior
+      @   ensures 
+      @     ((\exists \bigint i; 
+      @         0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
+      @         table[i] == key) 
+      @         ==> size == \old(size)) && 
+      @     (!(\exists \bigint i; 
+      @         0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
+      @         table[i] == key) 
+      @         ==> size == \old(size) + (\bigint)1) &&
+      @     (\exists \bigint i; 
+      @         0 <= i < table.length - 1 && i % 2 == 0;
+      @         table[i] == key && table[i + 1] == value);
+      @*/
     public java.lang.Object put(java.lang.Object key, java.lang.Object value) {
         Object k =  maskNull(key);
         Object[] tab =  table;
@@ -482,6 +600,22 @@ public class VerifiedIdentityHashMap
      *
      * @param newCapacity the new capacity, must be a power of two.
      */
+    /*@ private exceptional_behavior
+      @   requires 
+      @     MAXIMUM_CAPACITY == 1 << 29 &&
+      @     \old(table.length) == (\bigint)2 * MAXIMUM_CAPACITY && 
+      @     \old(threshold) == MAXIMUM_CAPACITY - (\bigint)1;
+      @   signals_only 
+      @     IllegalStateException;
+      @   signals
+      @     (IllegalStateException e) true; 
+      @ private normal_behavior 
+      @   requires 
+      @     MAXIMUM_CAPACITY == 1 << 29 &&
+      @     (newCapacity & -newCapacity) == newCapacity &&
+      @     \old(table.length) < (\bigint)2 * MAXIMUM_CAPACITY && 
+      @     \old(threshold) < MAXIMUM_CAPACITY - (\bigint)1;
+      @*/
     private void resize(int newCapacity)
         // assert (newCapacity & -newCapacity) == newCapacity; // power of 2
     {
@@ -744,8 +878,8 @@ public class VerifiedIdentityHashMap
 
     private abstract class IdentityHashMapIterator implements Iterator {
         /*@ invariant
-          @   0 <= index <= table.length &&
-          @   -1 <= lastReturnedIndex <= table.length &&
+          @   0 <= index && index <= table.length &&
+          @   -1 <= lastReturnedIndex && lastReturnedIndex <= table.length &&
           @   traversalTable.length == table.length &&
           @   (\forall \bigint i; 
           @       0 <= i && i < table.length; 
