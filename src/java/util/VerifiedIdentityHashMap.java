@@ -434,13 +434,18 @@ public class VerifiedIdentityHashMap
     /*@ also
       @ public normal_behavior
       @   ensures 
-      @     \result != null ==>
+      @     \result == table[i + 1] <==> 
       @         (\exists \bigint i; 
       @             0 <= i < table.length - 1 && i % 2 == 0;
       @             table[i] == key) && 
-      @     \result == null ==> !(\exists \bigint i; 
-      @         0 <= i < table.length - 1 && i % 2 == 0;
-      @         table[i] == key); 
+      @     \result == null <==> 
+      @         (!(\exists \bigint i; 
+      @             0 <= i < table.length - 1 && i % 2 == 0;
+      @             table[i] == key) ||
+      @         (\exists \bigint i; 
+      @             0 <= i < table.length - 1 && i % 2 == 0;
+      @             table[i] == key && table[i + 1] == null)
+      @         ); 
       @*/
     public /*@ pure @*/ java.lang.Object get(Object key) {
         Object k =  maskNull(key);
@@ -779,6 +784,16 @@ public class VerifiedIdentityHashMap
      * Removes all of the mappings from this map.
      * The map will be empty after this call returns.
      */
+    /*@ also
+      @ public normal_behavior
+      @   ensures
+      @     \old(modCount) != modCount &&
+      @     \old(table.length) == table.length &&
+      @     size == 0 &&
+      @     (\forall \bigint i; 
+      @        0 <= i < table.length;
+      @        table[i] == null);
+      @*/
     public void clear() {
         modCount++;
         Object[] tab =  table;
@@ -1088,7 +1103,7 @@ public class VerifiedIdentityHashMap
                         + traversalTable[index + 1]);
             }
 
-            private void checkIndexForEntryUse() {
+            private /*@ pure @*/ void checkIndexForEntryUse() {
                 if (index < 0)
                     throw new IllegalStateException("Entry was removed");
             }
@@ -1327,7 +1342,7 @@ public class VerifiedIdentityHashMap
             return modified;
         }
 
-        public Object[] toArray() {
+        public /*@ pure @*/ Object[] toArray() {
             int size =  size();
             Object[] result =  new Object[size];
             Iterator it =  iterator();
@@ -1336,7 +1351,7 @@ public class VerifiedIdentityHashMap
             return result;
         }
         @SuppressWarnings("unchecked")
-         public java.lang.Object[] toArray(java.lang.Object[] a) {
+        public /*@ pure @*/ java.lang.Object[] toArray(java.lang.Object[] a) {
             int size =  size();
             if (a.length < size)
                 a = (java.lang.Object[])java.lang.reflect
