@@ -309,11 +309,12 @@ public class VerifiedIdentityHashMap
       @     MAXIMUM_CAPACITY == 1 << 29 &&
       @     (initCapacity & -initCapacity) == initCapacity &&
       @     initCapacity >= MINIMUM_CAPACITY &&
-      @     initCapacity <= MAXIMUM_CAPACITY;
+      @     initCapacity <= MAXIMUM_CAPACITY &&
+      @     size == 0;
       @   ensures
       @     threshold == ((\bigint)2 * initCapacity) / (\bigint)3 && 
       @     table.length == (\bigint)2 * initCapacity &&
-      @     size == 0;
+      @     \old(size) == size;
       @*/
     private void init(int initCapacity) {
         // assert (initCapacity & -initCapacity) == initCapacity; // power of 2
