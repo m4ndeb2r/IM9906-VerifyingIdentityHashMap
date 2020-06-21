@@ -434,10 +434,10 @@ public class VerifiedIdentityHashMap
     /*@ also
       @ public normal_behavior
       @   ensures 
-      @     \result == table[i + 1] <==> 
+      @     \result != null <==> 
       @         (\exists \bigint i; 
       @             0 <= i < table.length - 1 && i % 2 == 0;
-      @             table[i] == key) && 
+      @             table[i] == key && \result == table[i + 1]) && 
       @     \result == null <==> 
       @         (!(\exists \bigint i; 
       @             0 <= i < table.length - 1 && i % 2 == 0;
