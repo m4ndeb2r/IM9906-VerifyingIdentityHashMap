@@ -406,7 +406,7 @@ public class VerifiedIdentityHashMap
       @   ensures
       @     \result < len &&
       @     \result >= 0 &&
-      @     (\result & -(\result)) == \result &&
+      @     \result % (\bigint)2 == 0 &&
       @     i + (\bigint)2 < len ==> \result == i + (\bigint)2 &&
       @     i + (\bigint)2 >= len ==> \result == 0;  
       @*/
