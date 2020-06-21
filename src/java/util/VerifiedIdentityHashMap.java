@@ -526,7 +526,7 @@ public class VerifiedIdentityHashMap
      * @return  <code>true</code> if and only if the specified key-value
      *          mapping is in the map
      */
-    /*@ public normal_behavior
+    /*@ private normal_behavior
       @   ensures 
       @     \result <==> (\exists \bigint i; 
       @         0 <= i < table.length - 1 && i % 2 == 0;
@@ -563,6 +563,16 @@ public class VerifiedIdentityHashMap
      * @see     #containsKey(Object)
      */
     /*@ also
+      @ public exceptional_behavior
+      @   requires 
+      @     MAXIMUM_CAPACITY == 1 << 29 &&
+      @     \old(size) + (\bigint)1 >= \old(threshold) &&
+      @     \old(table.length) == (\bigint)2 * MAXIMUM_CAPACITY && 
+      @     \old(threshold) == MAXIMUM_CAPACITY - (\bigint)1;
+      @   signals_only 
+      @     IllegalStateException;
+      @   signals
+      @     (IllegalStateException e) true; 
       @ public normal_behavior
       @   ensures 
       @     ((\exists \bigint i; 
@@ -621,6 +631,19 @@ public class VerifiedIdentityHashMap
       @     (newCapacity & -newCapacity) == newCapacity &&
       @     \old(table.length) < (\bigint)2 * MAXIMUM_CAPACITY && 
       @     \old(threshold) < MAXIMUM_CAPACITY - (\bigint)1;
+      @   ensures
+      @     \old(table.length) == (\bigint)2 * MAXIMUM_CAPACITY ==> 
+      @       (threshold == MAXIMUM_CAPACITY - (\bigint)1 && 
+      @         table.length == \old(table.length)) &&
+      @     (\old(table.length) != (\bigint)2 * MAXIMUM_CAPACITY && \old(table.length) >= (newCapacity * (\bigint)2)) ==> 
+      @       table.length == \old(table.length) &&
+      @     (\old(table.length) != (\bigint)2 * MAXIMUM_CAPACITY && \old(table.length) < (newCapacity * (\bigint)2)) ==> 
+      @       table.length == (newCapacity * (\bigint)2) &&
+      @     (\forall \bigint i; 
+      @         0 <= i < \old(table.length) - 1 && i % 2 == 0;
+      @         (\exists \bigint j; 
+      @             0 <= j < table.length - 1 && j % 2 == 0;
+      @             table[i] == \old(table[j]) && table[i + 1] == \old(table[j + 1])));
       @*/
     private void resize(int newCapacity)
         // assert (newCapacity & -newCapacity) == newCapacity; // power of 2
