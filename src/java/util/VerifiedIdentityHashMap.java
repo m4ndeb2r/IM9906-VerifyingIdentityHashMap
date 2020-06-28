@@ -599,14 +599,14 @@ public class VerifiedIdentityHashMap
       @     ((\exists \bigint i; 
       @         0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
       @         table[i] == key) 
-      @         ==> size == \old(size) && 
+      @         ==> size == \old(size) && modCount == \old(modCount) && 
       @         (\forall \bigint j;
       @             0 <= j < \old(table.length) - (\bigint)1 && j % 2 == 0;
       @             table[j] == key ==> \result == table[j + 1])) &&
       @     (!(\exists \bigint i; 
       @         0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
       @         table[i] == key) 
-      @         ==> (size == \old(size) + (\bigint)1) && \result == null) &&
+      @         ==> (size == \old(size) + (\bigint)1) && modCount != \old(modCount) && \result == null) &&
       @     (\exists \bigint i; 
       @         0 <= i < table.length - 1 && i % 2 == 0;
       @         table[i] == key && table[i + 1] == value);
@@ -770,14 +770,14 @@ public class VerifiedIdentityHashMap
       @     ((\exists \bigint i; 
       @         0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
       @         table[i] == key) 
-      @         ==> size == \old(size) - (\bigint)1 &&
+      @         <==> size == \old(size) - (\bigint)1 && modCount != \old(modCount) &&
       @         (\forall \bigint j;
       @             0 <= j < \old(table.length) - (\bigint)1 && j % 2 == 0;
       @             table[j] == key ==> \result == table[j + 1])) && 
       @     (!(\exists \bigint i; 
       @         0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
       @         table[i] == key) 
-      @         ==> (size == \old(size)) && \result == null) &&
+      @         <==> (size == \old(size)) && modCount == \old(modCount) && \result == null) &&
       @     (!(\exists \bigint i; 
       @         0 <= i < table.length - 1 && i % 2 == 0;
       @         table[i] == key));
@@ -813,6 +813,22 @@ public class VerifiedIdentityHashMap
      * @return  <code>true</code> if and only if the specified key-value
      *          mapping was in the map
      */
+    /*@ private normal_behavior
+      @   assignable
+      @     size, table, modCount;
+      @   ensures
+      @     ((\exists \bigint i; 
+      @         0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
+      @         table[i] == key && table[i + 1] == value) 
+      @         <==> size == \old(size) - (\bigint)1 && modCount != \old(modCount) && \result == true) &&
+      @     (!(\exists \bigint i; 
+      @         0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
+      @         table[i] == key && table[i + 1] == value) 
+      @         <==> (size == \old(size)) && modCount == \old(modCount) && \result == false) &&
+      @     (!(\exists \bigint i; 
+      @         0 <= i < table.length - 1 && i % 2 == 0;
+      @         table[i] == key && table[i + 1] == value));
+      @*/
     private boolean removeMapping(Object key, Object value) {
         Object k =  maskNull(key);
         Object[] tab =  table;
@@ -916,6 +932,11 @@ public class VerifiedIdentityHashMap
      * @return <tt>true</tt> if the specified object is equal to this map
      * @see Object#equals(Object)
      */
+    /*@ also
+      @ public normal_behavior
+      @   ensures
+      @     true;
+      @*/
     public /*@ pure @*/ boolean equals(Object o) {
         if (o == this) {
             return true;
@@ -937,7 +958,7 @@ public class VerifiedIdentityHashMap
         } else {
             return false;  // o is not a Map
         }
-    }
+    } // skipped
 
     /**
      * Returns the hash code value for this map.  The hash code of a map is
@@ -958,6 +979,11 @@ public class VerifiedIdentityHashMap
      * @see Object#equals(Object)
      * @see #equals(Object)
      */
+    /*@ also
+      @ public normal_behavior
+      @   ensures
+      @     true;
+      @*/
     public /*@ pure @*/ int hashCode() {
         int result =  0;
         Object[] tab =  table;
@@ -970,7 +996,7 @@ public class VerifiedIdentityHashMap
             }
         }
         return result;
-    }
+    } // skipped
 
     /**
      * Returns a shallow copy of this identity hash map: the keys and values
@@ -978,6 +1004,11 @@ public class VerifiedIdentityHashMap
      *
      * @return a shallow copy of this map
      */
+    /*@ also
+      @ public normal_behavior
+      @   ensures
+      @     true;
+      @*/
     public /*@ pure @*/ Object clone() {
         try {
             VerifiedIdentityHashMap m =  (VerifiedIdentityHashMap) super.clone();
@@ -987,7 +1018,7 @@ public class VerifiedIdentityHashMap
         } catch (CloneNotSupportedException e) {
             throw new InternalError();
         }
-    }
+    } // skipped
 
     private abstract class IdentityHashMapIterator implements Iterator {
         /*@ invariant
@@ -1323,6 +1354,11 @@ public class VerifiedIdentityHashMap
      * behavior of its <tt>contains</tt>, <tt>remove</tt> and
      * <tt>containsAll</tt> methods.</b>
      */
+    /*@ also
+      @ public normal_behavior
+      @   ensures
+      @     values != null && \result == values;
+      @*/
     public Collection values() {
         Collection vs =  values;
         if (vs != null)
@@ -1393,6 +1429,11 @@ public class VerifiedIdentityHashMap
      *
      * @return a set view of the identity-mappings contained in this map
      */
+    /*@ also
+      @ public normal_behavior
+      @   ensures
+      @     entrySet != null && \result == entrySet;
+      @*/
     public Set entrySet() {
         Set es =  entrySet;
         if (es != null)
@@ -1402,7 +1443,7 @@ public class VerifiedIdentityHashMap
     }
 
     private class EntrySet extends AbstractSet {
-        public Iterator iterator() {
+        public /*@ pure @*/ Iterator iterator() {
             return new EntryIterator();
         }
         public /*@ pure @*/ boolean contains(Object o) {
@@ -1505,6 +1546,8 @@ public class VerifiedIdentityHashMap
 
         // Read in size (number of Mappings)
         int size =  s.readInt();
+        
+        //@ set initialised = false;
 
         // Allow for 33% growth (i.e., capacity is >= 2* size()).
         init(capacity((size * 4) / 3));
