@@ -236,8 +236,6 @@ public class VerifiedIdentityHashMap
      * maximum size (21).
      */
     /*@ public normal_behavior
-      @   assignable 
-      @     threshold, table; 
       @   ensures 
       @     DEFAULT_CAPACITY == 32 &&
       @     table.length == (\bigint)2 * DEFAULT_CAPACITY &&
@@ -259,8 +257,6 @@ public class VerifiedIdentityHashMap
     /*@ public exceptional_behavior
       @   requires 
       @     expectedMaxSize < 0;
-      @   assignable
-      @     \nothing;
       @   signals_only 
       @     IllegalArgumentException;
       @   signals 
@@ -268,8 +264,6 @@ public class VerifiedIdentityHashMap
       @ public normal_behavior
       @   requires 
       @     expectedMaxSize >= 0;
-      @   assignable 
-      @     threshold, table; 
       @   ensures 
       @     table.length == (\bigint)2 * capacity(expectedMaxSize) &&
       @     size == 0;
@@ -321,7 +315,7 @@ public class VerifiedIdentityHashMap
       @     initCapacity <= MAXIMUM_CAPACITY &&
       @     size == 0;
       @   assignable
-      @     threshold, table;
+      @     table, threshold;
       @   ensures
       @     initialised &&
       @     threshold == ((\bigint)2 * initCapacity) / (\bigint)3 && 
@@ -348,8 +342,6 @@ public class VerifiedIdentityHashMap
     /*@ public exceptional_behavior
       @   requires 
       @     m == null;
-      @   assignable
-      @     \nothing;
       @   signals_only 
       @     NullPointerException;
       @   signals
@@ -357,8 +349,6 @@ public class VerifiedIdentityHashMap
       @ public normal_behavior
       @   requires
       @     m != null;
-      @   assignable
-      @     threshold, table, size, modCount;
       @   ensures
       @     size == m.size() &&  
       @     (\forall \bigint i; 
@@ -661,8 +651,7 @@ public class VerifiedIdentityHashMap
       @     threshold, table;
       @   ensures
       @     \old(table.length) == (\bigint)2 * MAXIMUM_CAPACITY ==> 
-      @       (threshold == MAXIMUM_CAPACITY - (\bigint)1 && 
-      @         table.length == \old(table.length)) &&
+      @       (threshold == MAXIMUM_CAPACITY - (\bigint)1 && table.length == \old(table.length)) &&
       @     (\old(table.length) != (\bigint)2 * MAXIMUM_CAPACITY && \old(table.length) >= (newCapacity * (\bigint)2)) ==> 
       @       table.length == \old(table.length) &&
       @     (\old(table.length) != (\bigint)2 * MAXIMUM_CAPACITY && \old(table.length) < (newCapacity * (\bigint)2)) ==> 
