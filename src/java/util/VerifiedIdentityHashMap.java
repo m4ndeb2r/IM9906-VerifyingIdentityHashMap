@@ -407,7 +407,7 @@ public class VerifiedIdentityHashMap
       @   requires 
       @     i >= 0 &&
       @     i + (\bigint)2 <= Integer.MAX_VALUE &&
-      @     (i & -i) == i &&
+      @     i % 2 == 0 &&
       @     len > 2 &&
       @     (len & -len) == len;
       @   ensures
