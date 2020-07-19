@@ -405,10 +405,12 @@ public class VerifiedIdentityHashMap
      */
     /*@ private normal_behavior
       @   requires 
+      @     MAXIMUM_CAPACITY == 1 << 29 &&
       @     i >= 0 &&
-      @     i + (\bigint)2 <= Integer.MAX_VALUE &&
+      @     i + (\bigint)2 <= MAXIMUM_CAPACITY &&
       @     i % 2 == 0 &&
       @     len > 2 &&
+      @     len <= MAXIMUM_CAPACITY &&
       @     (len & -len) == len;
       @   ensures
       @     \result < len &&
