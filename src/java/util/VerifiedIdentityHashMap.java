@@ -150,7 +150,7 @@ public class VerifiedIdentityHashMap
       @       table[j] != null ==> table[i] != null) &&
       @   (\forall \bigint i; 
       @       0 <= i < table.length - 1 && i % 2 == 0;
-      @       table[i] != null &&
+      @       table[i] != null ==>
       @       !(\exists \bigint j; 
       @           i + 2 <= j < table.length - 1 && j % 2 == 0;
       @           table[i] == table[j])) &&
@@ -220,6 +220,11 @@ public class VerifiedIdentityHashMap
     /**
      * Use NULL_KEY for key if it is null.
      */
+    /*@ private normal_behavior
+      @   ensures
+      @     key == null ==> \result == NULL_KEY &&
+      @     key != null ==> \result == key;
+      @*/
     private static /*@ pure @*/ Object maskNull(Object key) {
         return (key == null ? NULL_KEY : key);
     }
@@ -227,6 +232,11 @@ public class VerifiedIdentityHashMap
     /**
      * Returns internal representation of null key back to caller as null.
      */
+    /*@ private normal_behavior
+      @   ensures
+      @     key == NULL_KEY ==> \result == null &&
+      @     key != NULL_KEY ==> \result == key;
+      @*/
     private static /*@ pure @*/ /*@ nullable @*/ Object unmaskNull(Object key) {
         return (key == NULL_KEY ? null : key);
     }
