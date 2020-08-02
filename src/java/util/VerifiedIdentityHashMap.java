@@ -293,6 +293,44 @@ public class VerifiedIdentityHashMap
      * returns MAXIMUM_CAPACITY.  If (3 * expectedMaxSize)/2 is negative, it
      * is assumed that overflow has occurred, and MAXIMUM_CAPACITY is returned.
      */
+    /*@ private normal_behavior
+      @   requires 
+      @     MAXIMUM_CAPACITY == 1 << 29 &&
+      @     (((\bigint)3 * expectedMaxSize) / (\bigint)2) < 0;
+      @   ensures 
+      @     \result == MAXIMUM_CAPACITY;
+      @     
+      @   also
+      @   
+      @   requires
+      @     MAXIMUM_CAPACITY == 1 << 29 &&
+      @     (((\bigint)3 * expectedMaxSize) / (\bigint)2) > MAXIMUM_CAPACITY;
+      @   ensures 
+      @     \result == MAXIMUM_CAPACITY;
+      @     
+      @   also
+      @   
+      @   requires 
+      @     MINIMUM_CAPACITY == 4 &&
+      @     MAXIMUM_CAPACITY == 1 << 29 &&
+      @     (((\bigint)3 * expectedMaxSize) / (\bigint)2) >= MINIMUM_CAPACITY &&
+      @     (((\bigint)3 * expectedMaxSize) / (\bigint)2) <= MAXIMUM_CAPACITY;
+      @   ensures 
+      @     \result >= (((\bigint)3 * expectedMaxSize) / (\bigint)2) &&
+      @     \result < ((\bigint)3 * expectedMaxSize) &&
+      @     (\result & (\result - 1)) == 0;
+      @     
+      @   also
+      @   
+      @   requires
+      @     MINIMUM_CAPACITY == 4 &&
+      @     (((\bigint)3 * expectedMaxSize) / (\bigint)2) >= 0 &&
+      @     (((\bigint)3 * expectedMaxSize) / (\bigint)2) < MINIMUM_CAPACITY;
+      @   ensures 
+      @     \result < MINIMUM_CAPACITY * (\bigint)2 &&
+      @     \result >= MINIMUM_CAPACITY &&
+      @     (\result & (\result - 1)) == 0;
+      @*/
     private /*@ pure @*/ int capacity(int expectedMaxSize)
         // Compute min capacity for expectedMaxSize given a load factor of 2/3
     {
@@ -600,14 +638,14 @@ public class VerifiedIdentityHashMap
       @   ensures 
       @     ((\exists \bigint i; 
       @         0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
-      @         table[i] == key) 
+      @         \old(table[i]) == key) 
       @         ==> size == \old(size) && modCount == \old(modCount) && 
       @         (\forall \bigint j;
       @             0 <= j < \old(table.length) - (\bigint)1 && j % 2 == 0;
-      @             table[j] == key ==> \result == table[j + 1])) &&
+      @             \old(table[j]) == key ==> \result == \old(table[j + 1]))) &&
       @     (!(\exists \bigint i; 
       @         0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
-      @         table[i] == key) 
+      @         \old(table[i]) == key) 
       @         ==> (size == \old(size) + (\bigint)1) && modCount != \old(modCount) && \result == null) &&
       @     (\exists \bigint i; 
       @         0 <= i < table.length - 1 && i % 2 == 0;
