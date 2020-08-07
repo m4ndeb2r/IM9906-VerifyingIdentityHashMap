@@ -1336,9 +1336,17 @@ public class VerifiedIdentityHashMap
         public Iterator iterator() {
             return new KeyIterator();
         }
+        /*@ also
+          @ public normal_behavior
+          @   ensures \result == size;
+          @*/
         public /*@ pure @*/ int size() {
             return size;
         }
+        /*@ also
+          @ public normal_behavior
+          @   ensures \result == containsKey(o);
+          @*/
         public boolean contains(Object o) {
             return containsKey(o);
         }
@@ -1410,9 +1418,17 @@ public class VerifiedIdentityHashMap
         public Iterator iterator() {
             return new ValueIterator();
         }
+        /*@ also
+          @ public normal_behavior
+          @   ensures \result == size;
+          @*/
         public /*@ pure @*/ int size() {
             return size;
         }
+        /*@ also
+          @ public normal_behavior
+          @   ensures \result == containsValue(o);
+          @*/
         public /*@ pure @*/ boolean contains(Object o) {
             return containsValue(o);
         }
@@ -1497,6 +1513,10 @@ public class VerifiedIdentityHashMap
             Map.Entry entry =  (Map.Entry)o;
             return removeMapping(entry.getKey(), entry.getValue());
         }
+        /*@ also
+          @ public normal_behavior
+          @   ensures \result == size;
+          @*/
         public /*@ pure @*/ int size() {
             return size;
         }
