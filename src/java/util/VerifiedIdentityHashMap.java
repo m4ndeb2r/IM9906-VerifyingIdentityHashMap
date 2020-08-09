@@ -139,9 +139,11 @@ public class VerifiedIdentityHashMap
 	
     /*@ invariant
       @   table != null &&
-      @   MINIMUM_CAPACITY == 4 && MAXIMUM_CAPACITY == 1 << 29 &&
+      @   MINIMUM_CAPACITY == 4 && MAXIMUM_CAPACITY == 536870912 &&
       @   MINIMUM_CAPACITY <= table.length && table.length <= MAXIMUM_CAPACITY && 
-      @   (table.length & (table.length - 1)) == 0 &&
+      @   (\exists \bigint i; 
+	  @       0 <= i < table.length;
+	  @       \dl_pow(2,i) == table.length) &&
       @   (\forall \bigint i, j; 
       @       0 <= i && j == i + 1 && j < table.length; 
       @       table[i] == null ==> table[j] == null) &&
@@ -295,7 +297,7 @@ public class VerifiedIdentityHashMap
      */
     /*@ private normal_behavior
       @   requires 
-      @     MAXIMUM_CAPACITY == 1 << 29 &&
+      @     MAXIMUM_CAPACITY == 536870912 &&
       @     (((\bigint)3 * expectedMaxSize) / (\bigint)2) < 0;
       @   ensures 
       @     \result == MAXIMUM_CAPACITY;
@@ -303,25 +305,29 @@ public class VerifiedIdentityHashMap
       @   also
       @   
       @   requires
-      @     MAXIMUM_CAPACITY == 1 << 29 &&
+      @     MAXIMUM_CAPACITY == 536870912 &&
       @     (((\bigint)3 * expectedMaxSize) / (\bigint)2) > MAXIMUM_CAPACITY;
       @   ensures 
       @     \result == MAXIMUM_CAPACITY;
       @     
       @   also
       @   
+      @ private normal_behavior
       @   requires 
       @     MINIMUM_CAPACITY == 4 &&
-      @     MAXIMUM_CAPACITY == 1 << 29 &&
+      @     MAXIMUM_CAPACITY == 536870912 &&
       @     (((\bigint)3 * expectedMaxSize) / (\bigint)2) >= MINIMUM_CAPACITY &&
       @     (((\bigint)3 * expectedMaxSize) / (\bigint)2) <= MAXIMUM_CAPACITY;
       @   ensures 
       @     \result >= (((\bigint)3 * expectedMaxSize) / (\bigint)2) &&
       @     \result < ((\bigint)3 * expectedMaxSize) &&
-      @     (\result & (\result - 1)) == 0;
+      @     (\exists \bigint i; 
+	  @       0 <= i < \result;
+	  @       \dl_pow(2,i) == \result);
       @     
       @   also
       @   
+      @ private normal_behavior
       @   requires
       @     MINIMUM_CAPACITY == 4 &&
       @     (((\bigint)3 * expectedMaxSize) / (\bigint)2) >= 0 &&
@@ -329,7 +335,9 @@ public class VerifiedIdentityHashMap
       @   ensures 
       @     \result < MINIMUM_CAPACITY * (\bigint)2 &&
       @     \result >= MINIMUM_CAPACITY &&
-      @     (\result & (\result - 1)) == 0;
+      @     (\exists \bigint i; 
+	  @       0 <= i < \result;
+	  @       \dl_pow(2,i) == \result);
       @*/
     private /*@ pure @*/ int capacity(int expectedMaxSize)
         // Compute min capacity for expectedMaxSize given a load factor of 2/3
@@ -357,8 +365,10 @@ public class VerifiedIdentityHashMap
       @   requires 
       @     !initialised &&
       @     MINIMUM_CAPACITY == 4 && 
-      @     MAXIMUM_CAPACITY == 1 << 29 &&
-      @     (initCapacity & -initCapacity) == initCapacity &&
+      @     MAXIMUM_CAPACITY == 536870912 &&
+      @     (\exists \bigint i; 
+	  @       0 <= i < initCapacity;
+	  @       \dl_pow(2,i) == initCapacity) &&
       @     initCapacity >= MINIMUM_CAPACITY &&
       @     initCapacity <= MAXIMUM_CAPACITY &&
       @     size == 0;
@@ -453,13 +463,15 @@ public class VerifiedIdentityHashMap
      */
     /*@ private normal_behavior
       @   requires 
-      @     MAXIMUM_CAPACITY == 1 << 29 &&
+      @     MAXIMUM_CAPACITY == 536870912 &&
       @     i >= 0 &&
       @     i + (\bigint)2 <= MAXIMUM_CAPACITY &&
       @     i % 2 == 0 &&
       @     len > 2 &&
       @     len <= MAXIMUM_CAPACITY &&
-      @     (len & -len) == len;
+      @     (\exists \bigint i;
+      @       0 <= i < len;
+      @       \dl_pow(2,i) == len);
       @   ensures
       @     \result < len &&
       @     \result >= 0 &&
@@ -622,7 +634,7 @@ public class VerifiedIdentityHashMap
     /*@ also
       @ public exceptional_behavior
       @   requires 
-      @     MAXIMUM_CAPACITY == 1 << 29 &&
+      @     MAXIMUM_CAPACITY == 536870912 &&
       @     \old(size) + (\bigint)1 >= \old(threshold) &&
       @     \old(table.length) == (\bigint)2 * MAXIMUM_CAPACITY && 
       @     \old(threshold) == MAXIMUM_CAPACITY - (\bigint)1;
@@ -682,7 +694,7 @@ public class VerifiedIdentityHashMap
      */
     /*@ private exceptional_behavior
       @   requires 
-      @     MAXIMUM_CAPACITY == 1 << 29 &&
+      @     MAXIMUM_CAPACITY == 536870912 &&
       @     \old(table.length) == (\bigint)2 * MAXIMUM_CAPACITY && 
       @     \old(threshold) == MAXIMUM_CAPACITY - (\bigint)1;
       @   assignable
@@ -693,8 +705,10 @@ public class VerifiedIdentityHashMap
       @     (IllegalStateException e) true; 
       @ private normal_behavior 
       @   requires 
-      @     MAXIMUM_CAPACITY == 1 << 29 &&
-      @     (newCapacity & -newCapacity) == newCapacity &&
+      @     MAXIMUM_CAPACITY == 536870912 &&
+      @     (\exists \bigint i;
+      @       0 <= i < newCapacity;
+      @       \dl_pow(2,i) == newCapacity) &&
       @     \old(table.length) < (\bigint)2 * MAXIMUM_CAPACITY && 
       @     \old(threshold) < MAXIMUM_CAPACITY - (\bigint)1;
       @   assignable
