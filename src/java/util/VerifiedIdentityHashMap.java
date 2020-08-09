@@ -134,16 +134,16 @@ import java.io.*;
 public class VerifiedIdentityHashMap
     extends AbstractMap
     implements Map, java.io.Serializable, Cloneable {
-	
-	//@ private ghost boolean initialised;
-	
+    
+    //@ private ghost boolean initialised;
+    
     /*@ invariant
       @   table != null &&
       @   MINIMUM_CAPACITY == 4 && MAXIMUM_CAPACITY == 536870912 &&
       @   MINIMUM_CAPACITY <= table.length && table.length <= MAXIMUM_CAPACITY && 
       @   (\exists \bigint i; 
-	  @       0 <= i < table.length;
-	  @       \dl_pow(2,i) == table.length) &&
+      @       0 <= i < table.length;
+      @       \dl_pow(2,i) == table.length) &&
       @   (\forall \bigint i, j; 
       @       0 <= i && j == i + 1 && j < table.length; 
       @       table[i] == null ==> table[j] == null) &&
@@ -168,7 +168,7 @@ public class VerifiedIdentityHashMap
       @               table[i] == e.getKey() && table[i+1] == e.getValue()))  
       @   ;
       @*/
-	
+    
     /**
      * The initial capacity used by the no-args constructor.
      * MUST be a power of two.  The value 32 corresponds to the
@@ -322,8 +322,8 @@ public class VerifiedIdentityHashMap
       @     \result >= (((\bigint)3 * expectedMaxSize) / (\bigint)2) &&
       @     \result < ((\bigint)3 * expectedMaxSize) &&
       @     (\exists \bigint i; 
-	  @       0 <= i < \result;
-	  @       \dl_pow(2,i) == \result);
+      @       0 <= i < \result;
+      @       \dl_pow(2,i) == \result);
       @     
       @   also
       @   
@@ -336,8 +336,8 @@ public class VerifiedIdentityHashMap
       @     \result < MINIMUM_CAPACITY * (\bigint)2 &&
       @     \result >= MINIMUM_CAPACITY &&
       @     (\exists \bigint i; 
-	  @       0 <= i < \result;
-	  @       \dl_pow(2,i) == \result);
+      @       0 <= i < \result;
+      @       \dl_pow(2,i) == \result);
       @*/
     private /*@ pure @*/ int capacity(int expectedMaxSize)
         // Compute min capacity for expectedMaxSize given a load factor of 2/3
@@ -367,8 +367,8 @@ public class VerifiedIdentityHashMap
       @     MINIMUM_CAPACITY == 4 && 
       @     MAXIMUM_CAPACITY == 536870912 &&
       @     (\exists \bigint i; 
-	  @       0 <= i < initCapacity;
-	  @       \dl_pow(2,i) == initCapacity) &&
+      @       0 <= i < initCapacity;
+      @       \dl_pow(2,i) == initCapacity) &&
       @     initCapacity >= MINIMUM_CAPACITY &&
       @     initCapacity <= MAXIMUM_CAPACITY &&
       @     size == 0;
@@ -802,7 +802,7 @@ public class VerifiedIdentityHashMap
             resize(capacity(n));
 
         for (Object o: m.entrySet()) {
-        	Entry e = (Entry) o;
+            Entry e = (Entry) o;
             put(e.getKey(), e.getValue());
         }
     }
@@ -1206,11 +1206,11 @@ public class VerifiedIdentityHashMap
 
     private class EntryIterator
         extends IdentityHashMapIterator {
-    	/*@ invariant
-    	  @   lastReturnedEntry != null ==> lastReturnedIndex == lastReturnedEntry.index &&
-    	  @   lastReturnedEntry == null ==> lastReturnedIndex == -1
-    	  @   ;
-    	  @*/
+        /*@ invariant
+          @   lastReturnedEntry != null ==> lastReturnedIndex == lastReturnedEntry.index &&
+          @   lastReturnedEntry == null ==> lastReturnedIndex == -1
+          @   ;
+          @*/
         private Entry lastReturnedEntry =  null;
 
         public Map.Entry next() {
