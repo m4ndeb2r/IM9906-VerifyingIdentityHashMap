@@ -1515,12 +1515,27 @@ public class VerifiedIdentityHashMap
         public /*@ pure @*/ Iterator iterator() {
             return new EntryIterator();
         }
+        /*@ public normal_behavior
+          @   requires
+          @     o != null;
+          @   ensures 
+          @     \result == ((o instanceof Map.Entry) &&
+          @       containsMapping(((Map.Entry)o).getKey(), ((Map.Entry)o).getValue()));
+          @*/
         public /*@ pure @*/ boolean contains(Object o) {
             if (!(o instanceof Map.Entry))
                 return false;
             Map.Entry entry =  (Map.Entry)o;
             return containsMapping(entry.getKey(), entry.getValue());
         }
+        /*@ public normal_behavior
+          @   requires
+          @     o != null;
+          @   ensures 
+          @     \result == ((o instanceof Map.Entry) &&
+          @       removeMapping(((Map.Entry)o).getKey(), ((Map.Entry)o).getValue())) &&
+          @     !contains(o);
+          @*/
         public boolean remove(Object o) {
             if (!(o instanceof Map.Entry))
                 return false;
