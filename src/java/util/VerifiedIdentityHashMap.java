@@ -1336,6 +1336,13 @@ public class VerifiedIdentityHashMap
      * @see Object#equals(Object)
      * @see System#identityHashCode(Object)
      */
+    /*@ also
+      @ public normal_behavior
+      @   assignable
+      @     keySet;
+      @   ensures
+      @     keySet != null && \result == keySet;
+      @*/
     public Set keySet() {
         Set ks =  keySet;
         if (ks != null)
@@ -1438,6 +1445,8 @@ public class VerifiedIdentityHashMap
      */
     /*@ also
       @ public normal_behavior
+      @   assignable
+      @     values;
       @   ensures
       @     values != null && \result == values;
       @*/
@@ -1544,6 +1553,8 @@ public class VerifiedIdentityHashMap
      */
     /*@ also
       @ public normal_behavior
+      @   assignable
+      @     entrySet;
       @   ensures
       @     entrySet != null && \result == entrySet;
       @*/
@@ -1575,6 +1586,8 @@ public class VerifiedIdentityHashMap
         }
         /*@ also
           @ public normal_behavior
+          @   assignable
+          @     size, table, modCount;
           @   requires
           @     o != null && 
           @     contains(o);
