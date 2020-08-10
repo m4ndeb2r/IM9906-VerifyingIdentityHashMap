@@ -1058,7 +1058,15 @@ public class VerifiedIdentityHashMap
     /*@ also
       @ public normal_behavior
       @   ensures
-      @     true;
+      @     ((VerifiedIdentityHashMap)\result).size == size &&
+      @     ((VerifiedIdentityHashMap)\result).threshold == threshold &&
+      @     ((VerifiedIdentityHashMap)\result).entrySet == null &&
+      @     ((VerifiedIdentityHashMap)\result).values == null &&
+      @     ((VerifiedIdentityHashMap)\result).keySet == null &&
+      @     (\forall \bigint i;
+      @       0 <= i && i < table.length;
+      @       table[i] == ((VerifiedIdentityHashMap)\result).table[i]) &&
+      @     \invariant_for((VerifiedIdentityHashMap)\result);
       @*/
     public /*@ pure @*/ Object clone() {
         try {
