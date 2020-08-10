@@ -302,16 +302,15 @@ public class VerifiedIdentityHashMap
       @   ensures 
       @     \result == MAXIMUM_CAPACITY;
       @     
-      @   also
-      @   
+      @ also
+      @ private normal_behavior
       @   requires
       @     MAXIMUM_CAPACITY == 536870912 &&
       @     (((\bigint)3 * expectedMaxSize) / (\bigint)2) > MAXIMUM_CAPACITY;
       @   ensures 
       @     \result == MAXIMUM_CAPACITY;
       @     
-      @   also
-      @   
+      @ also
       @ private normal_behavior
       @   requires 
       @     MINIMUM_CAPACITY == 4 &&
@@ -325,8 +324,7 @@ public class VerifiedIdentityHashMap
       @       0 <= i < \result;
       @       \dl_pow(2,i) == \result);
       @     
-      @   also
-      @   
+      @ also
       @ private normal_behavior
       @   requires
       @     MINIMUM_CAPACITY == 4 &&
@@ -1359,11 +1357,34 @@ public class VerifiedIdentityHashMap
         }
         /*@ also
           @ public normal_behavior
-          @   ensures \result == containsKey(o);
+          @   requires
+          @     o != null;
+          @   ensures 
+          @     \result == containsKey(o);
           @*/
         public boolean contains(Object o) {
             return containsKey(o);
         }
+        /*@ also
+          @ public normal_behavior
+          @   requires
+          @     o != null && 
+          @     contains(o);
+          @   ensures 
+          @     !contains(o) &&
+          @     \old(size()) - (\bigint)1 == size() &&
+          @     \result == true;
+          @     
+          @ also
+          @ public normal_behavior
+          @   requires
+          @     o != null && 
+          @     !contains(o);
+          @   ensures 
+          @     !contains(o) &&
+          @     \old(size()) == size() &&
+          @     \result == false;
+          @*/
         public boolean remove(Object o) {
             int oldSize =  size;
             VerifiedIdentityHashMap.this.remove(o);
@@ -1441,11 +1462,34 @@ public class VerifiedIdentityHashMap
         }
         /*@ also
           @ public normal_behavior
-          @   ensures \result == containsValue(o);
+          @   requires
+          @     o != null;
+          @   ensures 
+          @     \result == containsValue(o);
           @*/
         public /*@ pure @*/ boolean contains(Object o) {
             return containsValue(o);
         }
+        /*@ also
+          @ public normal_behavior
+          @   requires
+          @     o != null && 
+          @     contains(o);
+          @   ensures 
+          @     !contains(o) &&
+          @     \old(size()) - (\bigint)1 == size() &&
+          @     \result == true;
+          @     
+          @ also
+          @ public normal_behavior
+          @   requires
+          @     o != null && 
+          @     !contains(o);
+          @   ensures 
+          @     !contains(o) &&
+          @     \old(size()) == size() &&
+          @     \result == false;
+          @*/
         public boolean remove(Object o) {
             for (Iterator i =  iterator(); i.hasNext();) {
                 if (i.next() == o) {
@@ -1515,7 +1559,8 @@ public class VerifiedIdentityHashMap
         public /*@ pure @*/ Iterator iterator() {
             return new EntryIterator();
         }
-        /*@ public normal_behavior
+        /*@ also
+          @ public normal_behavior
           @   requires
           @     o != null;
           @   ensures 
@@ -1528,13 +1573,25 @@ public class VerifiedIdentityHashMap
             Map.Entry entry =  (Map.Entry)o;
             return containsMapping(entry.getKey(), entry.getValue());
         }
-        /*@ public normal_behavior
+        /*@ also
+          @ public normal_behavior
           @   requires
-          @     o != null;
+          @     o != null && 
+          @     contains(o);
           @   ensures 
-          @     \result == ((o instanceof java.util.Map.Entry) &&
-          @       removeMapping(((java.util.Map.Entry)o).getKey(), ((java.util.Map.Entry)o).getValue())) &&
+          @     !contains(o) &&
+          @     \old(size()) - (\bigint)1 == size() &&
+          @     \result == true;
+          @     
+          @ also
+          @ public normal_behavior
+          @   requires
+          @     o != null && 
           @     !contains(o);
+          @   ensures 
+          @     !contains(o) &&
+          @     \old(size()) == size() &&
+          @     \result == false;
           @*/
         public boolean remove(Object o) {
             if (!(o instanceof Map.Entry))
