@@ -1519,8 +1519,8 @@ public class VerifiedIdentityHashMap
           @   requires
           @     o != null;
           @   ensures 
-          @     \result == ((o instanceof Map.Entry) &&
-          @       containsMapping(((Map.Entry)o).getKey(), ((Map.Entry)o).getValue()));
+          @     \result == ((o instanceof java.util.Map.Entry) &&
+          @       containsMapping(((java.util.Map.Entry)o).getKey(), ((java.util.Map.Entry)o).getValue()));
           @*/
         public /*@ pure @*/ boolean contains(Object o) {
             if (!(o instanceof Map.Entry))
@@ -1532,8 +1532,8 @@ public class VerifiedIdentityHashMap
           @   requires
           @     o != null;
           @   ensures 
-          @     \result == ((o instanceof Map.Entry) &&
-          @       removeMapping(((Map.Entry)o).getKey(), ((Map.Entry)o).getValue())) &&
+          @     \result == ((o instanceof java.util.Map.Entry) &&
+          @       removeMapping(((java.util.Map.Entry)o).getKey(), ((java.util.Map.Entry)o).getValue())) &&
           @     !contains(o);
           @*/
         public boolean remove(Object o) {
