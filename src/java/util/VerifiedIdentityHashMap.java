@@ -1095,6 +1095,26 @@ public class VerifiedIdentityHashMap
         boolean indexValid; // To avoid unnecessary next computation
         Object[] traversalTable =  table; // reference to main table or copy
 
+        /*@ also
+          @ public normal_behavior
+          @   requires
+          @     (\exists \bigint i; 
+          @       \old(index) <= i < traversalTable.length && i % 2 == 0;
+          @       traversalTable[i] != null);
+          @   ensures
+          @     index == (\min int i; \old(index) <= i < traversalTable.length && traversalTable[i] != null; i) &&
+          @     \result == true;
+          @    
+          @ also
+          @ public normal_behavior
+          @   requires
+          @     !(\exists \bigint i; 
+          @       \old(index) <= i < traversalTable.length && i % 2 == 0;
+          @       traversalTable[i] != null);
+          @   ensures
+          @     index == traversalTable.length &&
+          @     \result == false;
+          @*/
         public boolean hasNext() {
             Object[] tab =  traversalTable;
             for (int i =  index; i < tab.length; i += 2) {
