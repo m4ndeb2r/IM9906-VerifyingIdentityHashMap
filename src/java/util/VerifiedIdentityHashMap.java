@@ -815,23 +815,29 @@ public class VerifiedIdentityHashMap
      *         previously associated <tt>null</tt> with <tt>key</tt>.)
      */
     /*@ public normal_behavior
+      @   requires
+      @     (\exists \bigint i; 
+      @        0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
+      @        table[i] == key); 
       @   assignable
       @     size, table, modCount;
       @   ensures
-      @     ((\exists \bigint i; 
-      @         0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
-      @         table[i] == key) 
-      @         <==> size == \old(size) - (\bigint)1 && modCount != \old(modCount) &&
-      @         (\forall \bigint j;
-      @             0 <= j < \old(table.length) - (\bigint)1 && j % 2 == 0;
-      @             table[j] == key ==> \result == table[j + 1])) && 
-      @     (!(\exists \bigint i; 
-      @         0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
-      @         table[i] == key) 
-      @         <==> (size == \old(size)) && modCount == \old(modCount) && \result == null) &&
-      @     (!(\exists \bigint i; 
-      @         0 <= i < table.length - 1 && i % 2 == 0;
-      @         table[i] == key));
+      @     size == \old(size) - (\bigint)1 && 
+      @     modCount != \old(modCount) &&
+      @     (\forall \bigint j;
+      @       0 <= j < \old(table.length) - (\bigint)1 && j % 2 == 0;
+      @       table[j] == key ==> \result == table[j + 1]); 
+      @ public normal_behavior
+      @   requires
+      @     !(\exists \bigint i; 
+      @        0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
+      @        table[i] == key); 
+      @   assignable
+      @     size, table, modCount;
+      @   ensures
+      @     size == \old(size) && 
+      @     modCount == \old(modCount) && 
+      @     \result == null;
       @*/
     public java.lang.Object remove(Object key) {
         Object k =  maskNull(key);
