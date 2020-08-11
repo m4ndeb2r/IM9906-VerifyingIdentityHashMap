@@ -1165,8 +1165,9 @@ public class VerifiedIdentityHashMap
           @     lastReturnedIndex > -1;
           @   ensures
           @     size == \old(size) - 1 &&
+          @     \old(table.length) == table.length &&
           @     (\num_of \bigint i; 0 <= i && i < \old(table.length); \old(table[i]) == null) + (\bigint)2 ==
-          @     (\num_of \bigint i; 0 <= i && i < table.length; table[i] == null);
+          @       (\num_of \bigint i; 0 <= i && i < table.length; table[i] == null);
           @*/
         public void remove() {
             if (lastReturnedIndex == -1)
@@ -1212,6 +1213,13 @@ public class VerifiedIdentityHashMap
             size--;
 
             Object item;
+            /*@ maintaining
+              @   \old(table.length) == table.length &&
+              @   (\num_of \bigint i; 0 <= i && i < \old(table.length); \old(table[i]) == null) ==
+              @     (\num_of \bigint i; 0 <= i && i < table.length; table[i] == null);
+              @ assignable
+              @   table, traversalTable, index;
+              @*/
             for (int i =  nextKeyIndex(d, len); (item = tab[i]) != null;
                  i = nextKeyIndex(i, len)) {
                 int r =  hash(item, len);
