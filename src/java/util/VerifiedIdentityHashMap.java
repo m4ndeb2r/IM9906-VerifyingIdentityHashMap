@@ -1140,6 +1140,34 @@ public class VerifiedIdentityHashMap
             return lastReturnedIndex;
         }
 
+        /*@ also
+          @ public exceptional_behavior
+          @   requires 
+          @     lastReturnedIndex == -1;
+          @   assignable
+          @     \nothing;
+          @   signals_only 
+          @     IllegalStateException;
+          @   signals
+          @     (IllegalStateException e) true;
+          @ public exceptional_behavior
+          @   requires 
+          @     modCount != expectedModCount;
+          @   assignable
+          @     \nothing;
+          @   signals_only 
+          @     IllegalStateException;
+          @   signals
+          @     (IllegalStateException e) true;
+          @ public normal_behavior
+          @   requires
+          @     modCount == expectedModCount &&
+          @     lastReturnedIndex > -1;
+          @   ensures
+          @     size == \old(size) - 1 &&
+          @     (\num_of \bigint i; 0 <= i && i < \old(table.length); \old(table[i]) == null) + (\bigint)2 ==
+          @     (\num_of \bigint i; 0 <= i && i < table.length; table[i] == null);
+          @*/
         public void remove() {
             if (lastReturnedIndex == -1)
                 throw new IllegalStateException();
