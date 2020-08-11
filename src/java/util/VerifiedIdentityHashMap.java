@@ -302,16 +302,15 @@ public class VerifiedIdentityHashMap
       @   ensures 
       @     \result == MAXIMUM_CAPACITY;
       @     
-      @   also
-      @   
+      @ also
+      @ private normal_behavior
       @   requires
       @     MAXIMUM_CAPACITY == 536870912 &&
       @     (((\bigint)3 * expectedMaxSize) / (\bigint)2) > MAXIMUM_CAPACITY;
       @   ensures 
       @     \result == MAXIMUM_CAPACITY;
       @     
-      @   also
-      @   
+      @ also
       @ private normal_behavior
       @   requires 
       @     MINIMUM_CAPACITY == 4 &&
@@ -325,8 +324,7 @@ public class VerifiedIdentityHashMap
       @       0 <= i < \result;
       @       \dl_pow(2,i) == \result);
       @     
-      @   also
-      @   
+      @ also
       @ private normal_behavior
       @   requires
       @     MINIMUM_CAPACITY == 4 &&
@@ -817,23 +815,29 @@ public class VerifiedIdentityHashMap
      *         previously associated <tt>null</tt> with <tt>key</tt>.)
      */
     /*@ public normal_behavior
+      @   requires
+      @     (\exists \bigint i; 
+      @        0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
+      @        table[i] == key); 
       @   assignable
       @     size, table, modCount;
       @   ensures
-      @     ((\exists \bigint i; 
-      @         0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
-      @         table[i] == key) 
-      @         <==> size == \old(size) - (\bigint)1 && modCount != \old(modCount) &&
-      @         (\forall \bigint j;
-      @             0 <= j < \old(table.length) - (\bigint)1 && j % 2 == 0;
-      @             table[j] == key ==> \result == table[j + 1])) && 
-      @     (!(\exists \bigint i; 
-      @         0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
-      @         table[i] == key) 
-      @         <==> (size == \old(size)) && modCount == \old(modCount) && \result == null) &&
-      @     (!(\exists \bigint i; 
-      @         0 <= i < table.length - 1 && i % 2 == 0;
-      @         table[i] == key));
+      @     size == \old(size) - (\bigint)1 && 
+      @     modCount != \old(modCount) &&
+      @     (\forall \bigint j;
+      @       0 <= j < \old(table.length) - (\bigint)1 && j % 2 == 0;
+      @       table[j] == key ==> \result == table[j + 1]); 
+      @ public normal_behavior
+      @   requires
+      @     !(\exists \bigint i; 
+      @        0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
+      @        table[i] == key); 
+      @   assignable
+      @     size, table, modCount;
+      @   ensures
+      @     size == \old(size) && 
+      @     modCount == \old(modCount) && 
+      @     \result == null;
       @*/
     public java.lang.Object remove(Object key) {
         Object k =  maskNull(key);
@@ -1060,7 +1064,15 @@ public class VerifiedIdentityHashMap
     /*@ also
       @ public normal_behavior
       @   ensures
-      @     true;
+      @     ((VerifiedIdentityHashMap)\result).size == size &&
+      @     ((VerifiedIdentityHashMap)\result).threshold == threshold &&
+      @     ((VerifiedIdentityHashMap)\result).entrySet == null &&
+      @     ((VerifiedIdentityHashMap)\result).values == null &&
+      @     ((VerifiedIdentityHashMap)\result).keySet == null &&
+      @     (\forall \bigint i;
+      @       0 <= i && i < table.length;
+      @       table[i] == ((VerifiedIdentityHashMap)\result).table[i]) &&
+      @     \invariant_for((VerifiedIdentityHashMap)\result);
       @*/
     public /*@ pure @*/ Object clone() {
         try {
@@ -1089,6 +1101,26 @@ public class VerifiedIdentityHashMap
         boolean indexValid; // To avoid unnecessary next computation
         Object[] traversalTable =  table; // reference to main table or copy
 
+        /*@ also
+          @ public normal_behavior
+          @   requires
+          @     (\exists \bigint i; 
+          @       \old(index) <= i < traversalTable.length && i % 2 == 0;
+          @       traversalTable[i] != null);
+          @   ensures
+          @     index == (\min int i; \old(index) <= i < traversalTable.length && traversalTable[i] != null; i) &&
+          @     \result == true;
+          @    
+          @ also
+          @ public normal_behavior
+          @   requires
+          @     !(\exists \bigint i; 
+          @       \old(index) <= i < traversalTable.length && i % 2 == 0;
+          @       traversalTable[i] != null);
+          @   ensures
+          @     index == traversalTable.length &&
+          @     \result == false;
+          @*/
         public boolean hasNext() {
             Object[] tab =  traversalTable;
             for (int i =  index; i < tab.length; i += 2) {
@@ -1114,6 +1146,35 @@ public class VerifiedIdentityHashMap
             return lastReturnedIndex;
         }
 
+        /*@ also
+          @ public exceptional_behavior
+          @   requires 
+          @     lastReturnedIndex == -1;
+          @   assignable
+          @     \nothing;
+          @   signals_only 
+          @     IllegalStateException;
+          @   signals
+          @     (IllegalStateException e) true;
+          @ public exceptional_behavior
+          @   requires 
+          @     modCount != expectedModCount;
+          @   assignable
+          @     \nothing;
+          @   signals_only 
+          @     IllegalStateException;
+          @   signals
+          @     (IllegalStateException e) true;
+          @ public normal_behavior
+          @   requires
+          @     modCount == expectedModCount &&
+          @     lastReturnedIndex > -1;
+          @   ensures
+          @     size == \old(size) - 1 &&
+          @     \old(table.length) == table.length &&
+          @     (\num_of \bigint i; 0 <= i && i < \old(table.length); \old(table[i]) == null) + (\bigint)2 ==
+          @       (\num_of \bigint i; 0 <= i && i < table.length; table[i] == null);
+          @*/
         public void remove() {
             if (lastReturnedIndex == -1)
                 throw new IllegalStateException();
@@ -1158,6 +1219,13 @@ public class VerifiedIdentityHashMap
             size--;
 
             Object item;
+            /*@ maintaining
+              @   \old(table.length) == table.length &&
+              @   (\num_of \bigint i; 0 <= i && i < \old(table.length); \old(table[i]) == null) ==
+              @     (\num_of \bigint i; 0 <= i && i < table.length; table[i] == null);
+              @ assignable
+              @   table, traversalTable, index;
+              @*/
             for (int i =  nextKeyIndex(d, len); (item = tab[i]) != null;
                  i = nextKeyIndex(i, len)) {
                 int r =  hash(item, len);
@@ -1228,7 +1296,7 @@ public class VerifiedIdentityHashMap
 
         private class Entry implements Map.Entry {
             /*@ invariant
-              @   0 <= index < traversalTable.length - 1
+              @   -1 <= index < traversalTable.length - 1
               @   ; 
               @*/
             private int index;
@@ -1237,11 +1305,37 @@ public class VerifiedIdentityHashMap
                 this.index = index;
             }
 
+            /*@ public exceptional_behavior
+              @   requires
+              @     index < 0;
+              @   signals_only 
+              @     IllegalStateException;
+              @   signals
+              @     (IllegalStateException e) true;
+              @ public normal_behavior  
+              @   requires
+              @     index >= 0;
+              @   ensures
+              @     \result == unmaskNull(traversalTable[index]);
+              @*/
             public java.lang.Object getKey() {
                 checkIndexForEntryUse();
                 return (java.lang.Object) unmaskNull(traversalTable[index]);
             }
 
+            /*@ public exceptional_behavior
+              @   requires
+              @     index < 0;
+              @   signals_only 
+              @     IllegalStateException;
+              @   signals
+              @     (IllegalStateException e) true;
+              @ public normal_behavior  
+              @   requires
+              @     index >= 0;
+              @   ensures
+              @     \result == unmaskNull(traversalTable[index + 1]);
+              @*/
             public java.lang.Object getValue() {
                 checkIndexForEntryUse();
                 return (java.lang.Object) traversalTable[index + 1];
@@ -1284,6 +1378,19 @@ public class VerifiedIdentityHashMap
                         + traversalTable[index + 1]);
             }
 
+            /*@ private exceptional_behavior
+              @   requires
+              @     index < 0;
+              @   signals_only 
+              @     IllegalStateException;
+              @   signals
+              @     (IllegalStateException e) true;
+              @ private normal_behavior  
+              @   requires
+              @     index >= 0;
+              @   ensures
+              @     true;
+              @*/
             private /*@ pure @*/ void checkIndexForEntryUse() {
                 if (index < 0)
                     throw new IllegalStateException("Entry was removed");
@@ -1338,6 +1445,13 @@ public class VerifiedIdentityHashMap
      * @see Object#equals(Object)
      * @see System#identityHashCode(Object)
      */
+    /*@ also
+      @ public normal_behavior
+      @   assignable
+      @     keySet;
+      @   ensures
+      @     keySet != null && \result == keySet;
+      @*/
     public Set keySet() {
         Set ks =  keySet;
         if (ks != null)
@@ -1359,11 +1473,34 @@ public class VerifiedIdentityHashMap
         }
         /*@ also
           @ public normal_behavior
-          @   ensures \result == containsKey(o);
+          @   requires
+          @     o != null;
+          @   ensures 
+          @     \result == containsKey(o);
           @*/
         public boolean contains(Object o) {
             return containsKey(o);
         }
+        /*@ also
+          @ public normal_behavior
+          @   requires
+          @     o != null && 
+          @     contains(o);
+          @   ensures 
+          @     !contains(o) &&
+          @     \old(size()) - (\bigint)1 == size() &&
+          @     \result == true;
+          @     
+          @ also
+          @ public normal_behavior
+          @   requires
+          @     o != null && 
+          @     !contains(o);
+          @   ensures 
+          @     !contains(o) &&
+          @     \old(size()) == size() &&
+          @     \result == false;
+          @*/
         public boolean remove(Object o) {
             int oldSize =  size;
             VerifiedIdentityHashMap.this.remove(o);
@@ -1384,6 +1521,18 @@ public class VerifiedIdentityHashMap
             }
             return modified;
         }
+        /*@ also
+          @ public normal_behavior
+          @   assignable
+          @     modCount, size, table;
+          @   ensures
+          @     \old(modCount) != modCount &&
+          @     \old(table.length) == table.length &&
+          @     size == 0 &&
+          @     (\forall \bigint i; 
+          @        0 <= i < table.length;
+          @        table[i] == null);
+          @*/
         public void clear() {
             VerifiedIdentityHashMap.this.clear();
         }
@@ -1417,6 +1566,8 @@ public class VerifiedIdentityHashMap
      */
     /*@ also
       @ public normal_behavior
+      @   assignable
+      @     values;
       @   ensures
       @     values != null && \result == values;
       @*/
@@ -1441,11 +1592,34 @@ public class VerifiedIdentityHashMap
         }
         /*@ also
           @ public normal_behavior
-          @   ensures \result == containsValue(o);
+          @   requires
+          @     o != null;
+          @   ensures 
+          @     \result == containsValue(o);
           @*/
         public /*@ pure @*/ boolean contains(Object o) {
             return containsValue(o);
         }
+        /*@ also
+          @ public normal_behavior
+          @   requires
+          @     o != null && 
+          @     contains(o);
+          @   ensures 
+          @     !contains(o) &&
+          @     \old(size()) - (\bigint)1 == size() &&
+          @     \result == true;
+          @     
+          @ also
+          @ public normal_behavior
+          @   requires
+          @     o != null && 
+          @     !contains(o);
+          @   ensures 
+          @     !contains(o) &&
+          @     \old(size()) == size() &&
+          @     \result == false;
+          @*/
         public boolean remove(Object o) {
             for (Iterator i =  iterator(); i.hasNext();) {
                 if (i.next() == o) {
@@ -1455,6 +1629,18 @@ public class VerifiedIdentityHashMap
             }
             return false;
         }
+        /*@ also
+          @ public normal_behavior
+          @   assignable
+          @     modCount, size, table;
+          @   ensures
+          @     \old(modCount) != modCount &&
+          @     \old(table.length) == table.length &&
+          @     size == 0 &&
+          @     (\forall \bigint i; 
+          @        0 <= i < table.length;
+          @        table[i] == null);
+          @*/
         public void clear() {
             VerifiedIdentityHashMap.this.clear();
         }
@@ -1500,6 +1686,8 @@ public class VerifiedIdentityHashMap
      */
     /*@ also
       @ public normal_behavior
+      @   assignable
+      @     entrySet;
       @   ensures
       @     entrySet != null && \result == entrySet;
       @*/
@@ -1515,12 +1703,42 @@ public class VerifiedIdentityHashMap
         public /*@ pure @*/ Iterator iterator() {
             return new EntryIterator();
         }
+        /*@ also
+          @ public normal_behavior
+          @   requires
+          @     o != null;
+          @   ensures 
+          @     \result == ((o instanceof java.util.Map.Entry) &&
+          @       containsMapping(((java.util.Map.Entry)o).getKey(), ((java.util.Map.Entry)o).getValue()));
+          @*/
         public /*@ pure @*/ boolean contains(Object o) {
             if (!(o instanceof Map.Entry))
                 return false;
             Map.Entry entry =  (Map.Entry)o;
             return containsMapping(entry.getKey(), entry.getValue());
         }
+        /*@ also
+          @ public normal_behavior
+          @   assignable
+          @     size, table, modCount;
+          @   requires
+          @     o != null && 
+          @     contains(o);
+          @   ensures 
+          @     !contains(o) &&
+          @     \old(size()) - (\bigint)1 == size() &&
+          @     \result == true;
+          @     
+          @ also
+          @ public normal_behavior
+          @   requires
+          @     o != null && 
+          @     !contains(o);
+          @   ensures 
+          @     !contains(o) &&
+          @     \old(size()) == size() &&
+          @     \result == false;
+          @*/
         public boolean remove(Object o) {
             if (!(o instanceof Map.Entry))
                 return false;
@@ -1534,6 +1752,18 @@ public class VerifiedIdentityHashMap
         public /*@ pure @*/ int size() {
             return size;
         }
+        /*@ also
+          @ public normal_behavior
+          @   assignable
+          @     modCount, size, table;
+          @   ensures
+          @     \old(modCount) != modCount &&
+          @     \old(table.length) == table.length &&
+          @     size == 0 &&
+          @     (\forall \bigint i; 
+          @        0 <= i < table.length;
+          @        table[i] == null);
+          @*/
         public void clear() {
             VerifiedIdentityHashMap.this.clear();
         }
