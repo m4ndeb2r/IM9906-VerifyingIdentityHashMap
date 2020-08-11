@@ -814,7 +814,8 @@ public class VerifiedIdentityHashMap
      *         (A <tt>null</tt> return can also indicate that the map
      *         previously associated <tt>null</tt> with <tt>key</tt>.)
      */
-    /*@ public normal_behavior
+    /*@ also
+      @ public normal_behavior
       @   requires
       @     (\exists \bigint i; 
       @        0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
@@ -826,7 +827,9 @@ public class VerifiedIdentityHashMap
       @     modCount != \old(modCount) &&
       @     (\forall \bigint j;
       @       0 <= j < \old(table.length) - (\bigint)1 && j % 2 == 0;
-      @       table[j] == key ==> \result == table[j + 1]); 
+      @       table[j] == key ==> \result == table[j + 1]);
+      @       
+      @ also
       @ public normal_behavior
       @   requires
       @     !(\exists \bigint i; 
