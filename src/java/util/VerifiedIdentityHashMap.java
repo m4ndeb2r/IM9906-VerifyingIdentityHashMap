@@ -1440,6 +1440,18 @@ public class VerifiedIdentityHashMap
             }
             return modified;
         }
+        /*@ also
+          @ public normal_behavior
+          @   assignable
+          @     modCount, size, table;
+          @   ensures
+          @     \old(modCount) != modCount &&
+          @     \old(table.length) == table.length &&
+          @     size == 0 &&
+          @     (\forall \bigint i; 
+          @        0 <= i < table.length;
+          @        table[i] == null);
+          @*/
         public void clear() {
             VerifiedIdentityHashMap.this.clear();
         }
@@ -1536,6 +1548,18 @@ public class VerifiedIdentityHashMap
             }
             return false;
         }
+        /*@ also
+          @ public normal_behavior
+          @   assignable
+          @     modCount, size, table;
+          @   ensures
+          @     \old(modCount) != modCount &&
+          @     \old(table.length) == table.length &&
+          @     size == 0 &&
+          @     (\forall \bigint i; 
+          @        0 <= i < table.length;
+          @        table[i] == null);
+          @*/
         public void clear() {
             VerifiedIdentityHashMap.this.clear();
         }
@@ -1647,6 +1671,18 @@ public class VerifiedIdentityHashMap
         public /*@ pure @*/ int size() {
             return size;
         }
+        /*@ also
+          @ public normal_behavior
+          @   assignable
+          @     modCount, size, table;
+          @   ensures
+          @     \old(modCount) != modCount &&
+          @     \old(table.length) == table.length &&
+          @     size == 0 &&
+          @     (\forall \bigint i; 
+          @        0 <= i < table.length;
+          @        table[i] == null);
+          @*/
         public void clear() {
             VerifiedIdentityHashMap.this.clear();
         }
