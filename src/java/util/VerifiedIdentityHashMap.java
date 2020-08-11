@@ -1290,7 +1290,7 @@ public class VerifiedIdentityHashMap
 
         private class Entry implements Map.Entry {
             /*@ invariant
-              @   0 <= index < traversalTable.length - 1
+              @   -1 <= index < traversalTable.length - 1
               @   ; 
               @*/
             private int index;
@@ -1299,11 +1299,37 @@ public class VerifiedIdentityHashMap
                 this.index = index;
             }
 
+            /*@ public exceptional_behavior
+              @   requires
+              @     index < 0;
+              @   signals_only 
+              @     IllegalStateException;
+              @   signals
+              @     (IllegalStateException e) true;
+              @ public normal_behavior  
+              @   requires
+              @     index >= 0;
+              @   ensures
+              @     \result == unmaskNull(traversalTable[index]);
+              @*/
             public java.lang.Object getKey() {
                 checkIndexForEntryUse();
                 return (java.lang.Object) unmaskNull(traversalTable[index]);
             }
 
+            /*@ public exceptional_behavior
+              @   requires
+              @     index < 0;
+              @   signals_only 
+              @     IllegalStateException;
+              @   signals
+              @     (IllegalStateException e) true;
+              @ public normal_behavior  
+              @   requires
+              @     index >= 0;
+              @   ensures
+              @     \result == unmaskNull(traversalTable[index + 1]);
+              @*/
             public java.lang.Object getValue() {
                 checkIndexForEntryUse();
                 return (java.lang.Object) traversalTable[index + 1];
