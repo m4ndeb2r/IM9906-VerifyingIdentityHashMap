@@ -1346,6 +1346,19 @@ public class VerifiedIdentityHashMap
                         + traversalTable[index + 1]);
             }
 
+            /*@ private exceptional_behavior
+              @   requires
+              @     index < 0;
+              @   signals_only 
+              @     IllegalStateException;
+              @   signals
+              @     (IllegalStateException e) true;
+              @ private normal_behavior  
+              @   requires
+              @     index >= 0;
+              @   ensures
+              @     true;
+              @*/
             private /*@ pure @*/ void checkIndexForEntryUse() {
                 if (index < 0)
                     throw new IllegalStateException("Entry was removed");
