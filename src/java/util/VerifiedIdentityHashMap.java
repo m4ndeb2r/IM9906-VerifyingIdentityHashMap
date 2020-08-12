@@ -139,8 +139,10 @@ public class VerifiedIdentityHashMap
     
     /*@ invariant
       @   table != null &&
-      @   MINIMUM_CAPACITY == 4 && MAXIMUM_CAPACITY == 536870912 &&
-      @   MINIMUM_CAPACITY <= table.length && table.length <= MAXIMUM_CAPACITY && 
+      @   MINIMUM_CAPACITY == 4 && 
+      @   MAXIMUM_CAPACITY == 536870912 &&
+      @   MINIMUM_CAPACITY * (\bigint)2 <= table.length  && 
+      @   MAXIMUM_CAPACITY * (\bigint)2 >= table.length && 
       @   (\exists \bigint i; 
       @       0 <= i < table.length;
       @       \dl_pow(2,i) == table.length) &&
