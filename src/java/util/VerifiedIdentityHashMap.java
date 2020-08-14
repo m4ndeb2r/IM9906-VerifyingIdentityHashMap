@@ -635,9 +635,9 @@ public class VerifiedIdentityHashMap
       @ public exceptional_behavior
       @   requires 
       @     MAXIMUM_CAPACITY == 536870912 &&
-      @     \old(size) + (\bigint)1 >= \old(threshold) &&
-      @     \old(table.length) == (\bigint)2 * MAXIMUM_CAPACITY && 
-      @     \old(threshold) == MAXIMUM_CAPACITY - (\bigint)1;
+      @     size + (\bigint)1 >= threshold &&
+      @     table.length == (\bigint)2 * MAXIMUM_CAPACITY && 
+      @     threshold == MAXIMUM_CAPACITY - (\bigint)1;
       @   assignable
       @     \nothing;
       @   signals_only 
@@ -695,8 +695,8 @@ public class VerifiedIdentityHashMap
     /*@ private exceptional_behavior
       @   requires 
       @     MAXIMUM_CAPACITY == 536870912 &&
-      @     \old(table.length) == (\bigint)2 * MAXIMUM_CAPACITY && 
-      @     \old(threshold) == MAXIMUM_CAPACITY - (\bigint)1;
+      @     table.length == (\bigint)2 * MAXIMUM_CAPACITY && 
+      @     threshold == MAXIMUM_CAPACITY - (\bigint)1;
       @   assignable
       @     \nothing;
       @   signals_only 
@@ -709,8 +709,8 @@ public class VerifiedIdentityHashMap
       @     (\exists \bigint i;
       @       0 <= i < newCapacity;
       @       \dl_pow(2,i) == newCapacity) &&
-      @     \old(table.length) < (\bigint)2 * MAXIMUM_CAPACITY && 
-      @     \old(threshold) < MAXIMUM_CAPACITY - (\bigint)1;
+      @     table.length < (\bigint)2 * MAXIMUM_CAPACITY && 
+      @     threshold < MAXIMUM_CAPACITY - (\bigint)1;
       @   assignable
       @     threshold, table;
       @   ensures
@@ -820,7 +820,7 @@ public class VerifiedIdentityHashMap
       @ public normal_behavior
       @   requires
       @     (\exists \bigint i; 
-      @        0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
+      @        0 <= i < table.length - (\bigint)1 && i % 2 == 0;
       @        table[i] == key); 
       @   assignable
       @     size, table, modCount;
@@ -835,7 +835,7 @@ public class VerifiedIdentityHashMap
       @ public normal_behavior
       @   requires
       @     !(\exists \bigint i; 
-      @        0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
+      @        0 <= i < table.length - (\bigint)1 && i % 2 == 0;
       @        table[i] == key); 
       @   assignable
       @     size, table, modCount;
@@ -1110,7 +1110,7 @@ public class VerifiedIdentityHashMap
           @ public normal_behavior
           @   requires
           @     (\exists \bigint i; 
-          @       \old(index) <= i < traversalTable.length && i % 2 == 0;
+          @       index <= i < traversalTable.length && i % 2 == 0;
           @       traversalTable[i] != null);
           @   ensures
           @     index == (\min int i; \old(index) <= i < traversalTable.length && traversalTable[i] != null; i) &&
@@ -1120,7 +1120,7 @@ public class VerifiedIdentityHashMap
           @ public normal_behavior
           @   requires
           @     !(\exists \bigint i; 
-          @       \old(index) <= i < traversalTable.length && i % 2 == 0;
+          @       index <= i < traversalTable.length && i % 2 == 0;
           @       traversalTable[i] != null);
           @   ensures
           @     index == traversalTable.length &&
