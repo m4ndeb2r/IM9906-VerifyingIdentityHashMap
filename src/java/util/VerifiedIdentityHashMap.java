@@ -149,12 +149,9 @@ public class VerifiedIdentityHashMap
       @   (\forall \bigint i; 
       @       0 <= i < table.length - 1 && i % 2 == 0;
       @       table[i] == null ==> table[i+1] == null) &&
-      @   (\forall \bigint i; 
-      @       0 <= i < table.length - 1 && i % 2 == 0;
-      @       table[i] != null ==>
-      @       !(\exists \bigint j; 
-      @           i + 2 <= j < table.length - 1 && j % 2 == 0;
-      @           table[i] == table[j])) &&
+      @   (\forall int i, j; 
+      @       0 <= i && i <= j && j < table.length / 2;
+      @       table[2*i] == table[2*j] ==> i == j) &&
       @   size == (\num_of \bigint i; 
       @       0 <= i < table.length - 1 && i % 2 == 0;
       @       table[i] != null) &&
