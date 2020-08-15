@@ -137,31 +137,38 @@ public class VerifiedIdentityHashMap
     
     //@ private ghost boolean initialised;
     
-    /*@ public invariant
-      @   table != null &&
+    /*+KeY@ public invariant // JML specifically for KeY
       @   MINIMUM_CAPACITY == 4 && 
       @   MAXIMUM_CAPACITY == 536870912 &&
-      @   MINIMUM_CAPACITY * 2 <= table.length  && 
-      @   MAXIMUM_CAPACITY * 2 >= table.length && 
-      @   (\exists int i; 
-      @       0 <= i < table.length;
-      @       \dl_pow(2,i) == table.length) &&
-      @   (\forall int i; 
-      @       0 <= i < table.length - 1 && i % 2 == 0;
-      @       table[i] == null ==> table[i+1] == null) &&
-      @   (\forall int i, j; 
-      @       0 <= i && i <= j && j < table.length / 2;
-      @       table[2*i] == table[2*j] ==> i == j) &&
-      @   threshold == table.length / 3 &&
       @   size == (\num_of int i; 
       @       0 <= i < table.length - 1 && i % 2 == 0;
       @       table[i] != null) &&
+      @   (\exists int i; 
+      @       0 <= i < table.length;
+      @       \dl_pow(2,i) == table.length) && // Table length is a power of two
       @   entrySet != null ==> 
       @       (\forall Map.Entry e; 
       @           entrySet.contains(e); 
       @           (\exists int i; 
       @               0 <= i < table.length - 1 && i % 2 == 0;
       @               table[i] == e.getKey() && table[i+1] == e.getValue()));
+      @*/
+    /*-KeY@ public invariant // JML for non-KeY tools, i.e. JJBMC
+      @   MINIMUM_CAPACITY == 4 && 
+      @   MAXIMUM_CAPACITY == 4 &&
+      @   (table.length & (table.length - 1)) == 0; // Table length is a power of two
+      @*/
+    /*@ public invariant
+      @   table != null &&
+      @   MINIMUM_CAPACITY * 2 <= table.length  && 
+      @   MAXIMUM_CAPACITY * 2 >= table.length && 
+      @   (\forall int i;
+      @         0 <= i && i < table.length - 1;
+      @         i % 2 == 0 ==> (table[i] == null ==> table[i + 1] == null)) &&
+      @   (\forall int i, j; 
+      @       0 <= i && i <= j && j < table.length / 2;
+      @       table[2*i] == table[2*j] ==> i == j) &&
+      @   threshold == table.length / 3;
       @*/
     
     /**
@@ -170,7 +177,8 @@ public class VerifiedIdentityHashMap
      * (specified) expected maximum size of 21, given a load factor
      * of 2/3.
      */
-    private /*@ spec_public @*/ static final int DEFAULT_CAPACITY =  32;
+    private /*@ spec_public @*/ static final int DEFAULT_CAPACITY =  32; // Original code. Disable for JJBMC
+    // private /*@ spec_public @*/ static final int DEFAULT_CAPACITY =  4; // Enable for JJBMC
 
     /**
      * The minimum capacity, used if a lower value is implicitly specified
@@ -185,7 +193,8 @@ public class VerifiedIdentityHashMap
      * by either of the constructors with arguments.
      * MUST be a power of two <= 1<<29.
      */
-    private /*@ spec_public @*/ static final int MAXIMUM_CAPACITY =  1 << 29;
+    private /*@ spec_public @*/ static final int MAXIMUM_CAPACITY =  1 << 29; // Original code. Disable for JJBMC
+    // private /*@ spec_public @*/ static final int MAXIMUM_CAPACITY =  4; // Enable for JJBMC
 
     /**
      * The table, resized as necessary. Length MUST always be a power of two.
@@ -292,7 +301,7 @@ public class VerifiedIdentityHashMap
      * returns MAXIMUM_CAPACITY.  If (3 * expectedMaxSize)/2 is negative, it
      * is assumed that overflow has occurred, and MAXIMUM_CAPACITY is returned.
      */
-    /*@ private normal_behavior
+    /*+KeY@ private normal_behavior // JML specifically for KeY
       @   requires 
       @     MAXIMUM_CAPACITY == 536870912 &&
       @     ((3 * expectedMaxSize) / 2) < 0;
@@ -319,7 +328,7 @@ public class VerifiedIdentityHashMap
       @     \result < (3 * expectedMaxSize) &&
       @     (\exists int i; 
       @       0 <= i < \result;
-      @       \dl_pow(2,i) == \result);
+      @       \dl_pow(2,i) == \result); // result is a power of two
       @     
       @ also
       @ private normal_behavior
@@ -332,7 +341,45 @@ public class VerifiedIdentityHashMap
       @     \result >= MINIMUM_CAPACITY &&
       @     (\exists int i; 
       @       0 <= i < \result;
-      @       \dl_pow(2,i) == \result);
+      @       \dl_pow(2,i) == \result); // result is a power of two
+      @*/
+    /*-KeY@ private normal_behavior // JML specifically for JJBMC
+      @   requires 
+      @     MAXIMUM_CAPACITY == 4 &&
+      @     ((3 * expectedMaxSize) / 2) < 0;
+      @   ensures 
+      @     \result == MAXIMUM_CAPACITY;
+      @     
+      @ also
+      @ private normal_behavior
+      @   requires
+      @     MAXIMUM_CAPACITY == 4 &&
+      @     ((3 * expectedMaxSize) / 2) > MAXIMUM_CAPACITY;
+      @   ensures 
+      @     \result == MAXIMUM_CAPACITY;
+      @     
+      @ also
+      @ private normal_behavior
+      @   requires 
+      @     MINIMUM_CAPACITY == 4 &&
+      @     MAXIMUM_CAPACITY == 4 &&
+      @     ((3 * expectedMaxSize) / 2) >= MINIMUM_CAPACITY &&
+      @     ((3 * expectedMaxSize) / 2) <= MAXIMUM_CAPACITY;
+      @   ensures 
+      @     \result >= ((3 * expectedMaxSize) / 2) &&
+      @     \result < (3 * expectedMaxSize) &&
+      @     (\result & (\result - 1)) == 0; // result is a power of two
+      @     
+      @ also
+      @ private normal_behavior
+      @   requires
+      @     MINIMUM_CAPACITY == 4 &&
+      @     ((3 * expectedMaxSize) / 2) >= 0 &&
+      @     ((3 * expectedMaxSize) / 2) < MINIMUM_CAPACITY;
+      @   ensures 
+      @     \result < MINIMUM_CAPACITY * 2 &&
+      @     \result >= MINIMUM_CAPACITY &&
+      @     (\result & (\result - 1)) == 0; // result is a power of two
       @*/
     private /*@ pure @*/ int capacity(int expectedMaxSize)
         // Compute min capacity for expectedMaxSize given a load factor of 2/3
@@ -356,7 +403,7 @@ public class VerifiedIdentityHashMap
      * capacity, which is assumed to be a power of two between
      * MINIMUM_CAPACITY and MAXIMUM_CAPACITY inclusive.
      */
-    /*@ private normal_behavior
+    /*+KeY@ private normal_behavior // JML specifically for KeY
       @   requires 
       @     !initialised &&
       @     MINIMUM_CAPACITY == 4 && 
@@ -372,6 +419,22 @@ public class VerifiedIdentityHashMap
       @   ensures
       @     initialised &&
       @     threshold == (2 * initCapacity) / 3 && 
+      @     table.length == 2 * initCapacity;
+      @*/
+    /*-KeY@ private normal_behavior // JML specifically for JJBMC
+      @   requires
+      @     !initialised &&
+      @     MINIMUM_CAPACITY == 4 &&
+      @     MAXIMUM_CAPACITY == 4 &&
+      @     (initCapacity & (initCapacity - 1)) == 0 &&
+      @     initCapacity >= MINIMUM_CAPACITY &&
+      @     initCapacity <= MAXIMUM_CAPACITY &&
+      @     size == 0;
+      @   assignable
+      @     table, threshold;
+      @   ensures
+      @     initialised &&
+      @     threshold == (2 * initCapacity) / 3 &&
       @     table.length == 2 * initCapacity;
       @*/
     private void init(int initCapacity) {
@@ -458,7 +521,7 @@ public class VerifiedIdentityHashMap
     /**
      * Circularly traverses table of size len.
      */
-    /*@ private normal_behavior
+    /*+KeY@ private normal_behavior // JML specifically for KeY
       @   requires 
       @     MAXIMUM_CAPACITY == 536870912 &&
       @     i >= 0 &&
@@ -475,6 +538,21 @@ public class VerifiedIdentityHashMap
       @     \result % 2 == 0 &&
       @     i + 2 < len ==> \result == i + 2 &&
       @     i + 2 >= len ==> \result == 0;  
+      @*/
+    /*-KeY@ private normal_behavior // JML specifically for JJBMC
+      @   requires
+      @     i >= 0 &&
+      @     i + 2 <= MAXIMUM_CAPACITY &&
+      @     i % 2 == 0 &&
+      @     len > 2 &&
+      @     len <= MAXIMUM_CAPACITY &&
+      @     (len & (len - 1)) == 0;
+      @   ensures
+      @     \result < len &&
+      @     \result >= 0 &&
+      @     \result % 2 == 0 &&
+      @     i + 2 < len ==> \result == i + 2 &&
+      @     i + 2 >= len ==> \result == 0;
       @*/
     private static /*@ pure @*/ int nextKeyIndex(int i, int len) {
         return (i + 2 < len ? i + 2 : 0);
@@ -519,6 +597,8 @@ public class VerifiedIdentityHashMap
         Object[] tab =  table;
         int len =  tab.length;
         int i =  hash(k, len);
+        //TODO: +key@ ghost int initialI = i;
+        //TODO: +key@ decreases (table.length + i - initialI) % table.length; ????
         while (true) {
             Object item =  tab[i];
             if (item == k)
@@ -529,7 +609,22 @@ public class VerifiedIdentityHashMap
         }
     }
 
-    /**
+    // TODO: spec this and use where appropriate
+    /*+KeY@ // ensures table[\result] == null;
+      @ //ensures 0 <= result < table.length; //
+      @ //ensures \result % 2 == 0;
+      @ //(\forall int i; i%2==0 && .....; table[(2*hash(k, len) + i) % table.length] != null)
+      @ //assignable \strictly_nothing;
+      @*/
+    private int theKeyIndex(Object k) {
+        int len = table.length;
+        int i = hash(maskNull(k), len);
+        while(table[i] != null && table[i] != k)
+            i = nextKeyIndex(i, len);
+        return i;
+    }
+
+  /**
      * Tests whether the specified object reference is a key in this identity
      * hash map.
      *
@@ -629,7 +724,7 @@ public class VerifiedIdentityHashMap
      * @see     #get(Object)
      * @see     #containsKey(Object)
      */
-    /*@ also
+    /*+KeY@ also
       @ public exceptional_behavior
       @   requires 
       @     MAXIMUM_CAPACITY == 536870912 &&
@@ -641,7 +736,9 @@ public class VerifiedIdentityHashMap
       @   signals_only 
       @     IllegalStateException;
       @   signals
-      @     (IllegalStateException e) true; 
+      @     (IllegalStateException e) true;
+      @*/
+    /*@ also
       @ public normal_behavior
       @   assignable
       @     size, table, threshold, modCount;
@@ -677,7 +774,13 @@ public class VerifiedIdentityHashMap
             i = nextKeyIndex(i, len);
         }
 
-        modCount++;
+        /*+KeY@ ensures modCount != \old(modCount);
+          @ ensures \dl_inInt(modCount);  // perhaps needed
+          @ assignable modCount;
+          @*/
+        {
+            modCount++;
+        }
         tab[i] = k;
         tab[i + 1] = value;
         if (++size >= threshold)
@@ -690,7 +793,7 @@ public class VerifiedIdentityHashMap
      *
      * @param newCapacity the new capacity, must be a power of two.
      */
-    /*KeY@ private exceptional_behavior
+    /*KeY@ private exceptional_behavior // JML specifically for KeY
       @   requires 
       @     MAXIMUM_CAPACITY == 536870912 &&
       @     table.length == 2 * MAXIMUM_CAPACITY && 
@@ -701,8 +804,6 @@ public class VerifiedIdentityHashMap
       @     IllegalStateException;
       @   signals
       @     (IllegalStateException e) true; 
-      @*/
-    /*@
       @ private normal_behavior 
       @   requires 
       @     MAXIMUM_CAPACITY == 536870912 &&
@@ -720,11 +821,22 @@ public class VerifiedIdentityHashMap
       @       table.length == \old(table.length) &&
       @     (\old(table.length) != 2 * MAXIMUM_CAPACITY && \old(table.length) < (newCapacity * 2)) ==> 
       @       table.length == (newCapacity * 2) &&
-      @     (\forall int i; 
-      @         0 <= i < \old(table.length) - 1 && i % 2 == 0;
-      @         (\exists int j; 
-      @             0 <= j < table.length - 1 && j % 2 == 0;
-      @             table[i] == \old(table[j]) && table[i + 1] == \old(table[j + 1])));
+      @*/
+    /*-KeY@ private normal_behavior // JML specifically for JJBMC
+      @   requires
+      @     MAXIMUM_CAPACITY == 4 &&
+      @     (newCapacity & (newCapacity - 1)) == 0 &&
+      @     table.length < 2 * MAXIMUM_CAPACITY &&
+      @     threshold < MAXIMUM_CAPACITY - 1;
+      @   assignable
+      @     threshold, table;
+      @   ensures
+      @     \old(table.length) == 2 * MAXIMUM_CAPACITY ==>
+      @       (threshold == MAXIMUM_CAPACITY - 1 && table.length == \old(table.length)) &&
+      @     (\old(table.length) != 2 * MAXIMUM_CAPACITY && \old(table.length) >= (newCapacity * 2)) ==>
+      @       table.length == \old(table.length) &&
+      @     (\old(table.length) != 2 * MAXIMUM_CAPACITY && \old(table.length) < (newCapacity * 2)) ==>
+      @       table.length == (newCapacity * 2) &&
       @*/
     private void resize(int newCapacity)
         // assert (newCapacity & -newCapacity) == newCapacity; // power of 2
@@ -769,7 +881,8 @@ public class VerifiedIdentityHashMap
      * @param m mappings to be stored in this map
      * @throws NullPointerException if the specified map is null
      */
-    /*KeY@ public exceptional_behavior
+    /*KeY@ also
+      @ public exceptional_behavior
       @   requires 
       @     m == null;
       @   assignable
@@ -779,7 +892,7 @@ public class VerifiedIdentityHashMap
       @   signals
       @     (NullPointerException e) true;
       @*/
-    /*@
+    /*@ also
       @ public normal_behavior
       @   requires
       @     m != null;
@@ -1079,6 +1192,8 @@ public class VerifiedIdentityHashMap
       @     (\forall int i;
       @       0 <= i && i < table.length;
       @       table[i] == ((VerifiedIdentityHashMap)\result).table[i]) &&
+      @*/
+    /*+Key@ also
       @     \invariant_for((VerifiedIdentityHashMap)\result);
       @*/
     public /*@ pure @*/ Object clone() {
@@ -1093,7 +1208,7 @@ public class VerifiedIdentityHashMap
     } // skipped
 
     private abstract class IdentityHashMapIterator implements Iterator {
-        /*@ invariant
+        /*+KeY@ invariant
           @   0 <= index && index <= table.length &&
           @   -1 <= lastReturnedIndex && lastReturnedIndex <= table.length &&
           @   traversalTable.length == table.length &&
@@ -1153,7 +1268,7 @@ public class VerifiedIdentityHashMap
             return lastReturnedIndex;
         }
 
-        /*@ also
+        /*+KeY@ also
           @ exceptional_behavior
           @   requires 
           @     lastReturnedIndex == -1;
@@ -1172,6 +1287,8 @@ public class VerifiedIdentityHashMap
           @     IllegalStateException;
           @   signals
           @     (IllegalStateException e) true;
+          @*/
+        /*@ also
           @ normal_behavior
           @   requires
           @     modCount == expectedModCount &&
@@ -1226,7 +1343,7 @@ public class VerifiedIdentityHashMap
             size--;
 
             Object item;
-            /*@ maintaining
+            /*+KeY@ maintaining
               @   \old(table.length) == table.length &&
               @   (\num_of int i; 0 <= i && i < \old(table.length); \old(table[i]) == null) ==
               @     (\num_of int i; 0 <= i && i < table.length; table[i] == null);
@@ -1281,7 +1398,7 @@ public class VerifiedIdentityHashMap
 
     private class EntryIterator
         extends IdentityHashMapIterator {
-        /*@ invariant
+        /*+KeY@ invariant
           @   lastReturnedEntry != null ==> lastReturnedIndex == lastReturnedEntry.index &&
           @   lastReturnedEntry == null ==> lastReturnedIndex == -1
           @   ;
@@ -1302,7 +1419,7 @@ public class VerifiedIdentityHashMap
         }
 
         private class Entry implements Map.Entry {
-            /*@ invariant
+            /*+KeY@ invariant
               @   -1 <= index < traversalTable.length - 1
               @   ; 
               @*/
@@ -1339,8 +1456,6 @@ public class VerifiedIdentityHashMap
               @     IllegalStateException;
               @   signals
               @     (IllegalStateException e) true;
-              @*/
-            /*@
               @ public normal_behavior  
               @   requires
               @     index >= 0;
@@ -1396,8 +1511,6 @@ public class VerifiedIdentityHashMap
               @     IllegalStateException;
               @   signals
               @     (IllegalStateException e) true;
-              @*/
-            /*@
               @ private normal_behavior  
               @   requires
               @     index >= 0;
@@ -1716,7 +1829,7 @@ public class VerifiedIdentityHashMap
         public /*@ pure @*/ Iterator iterator() {
             return new EntryIterator();
         }
-        /*@ also
+        /*+KeY@ also
           @ public normal_behavior
           @   requires
           @     o != null;
@@ -1730,7 +1843,7 @@ public class VerifiedIdentityHashMap
             Map.Entry entry =  (Map.Entry)o;
             return containsMapping(entry.getKey(), entry.getValue());
         }
-        /*@ also
+        /*+KeY@ also
           @ public normal_behavior
           @   assignable
           @     size, table, modCount;
@@ -1758,14 +1871,14 @@ public class VerifiedIdentityHashMap
             Map.Entry entry =  (Map.Entry)o;
             return removeMapping(entry.getKey(), entry.getValue());
         }
-        /*@ also
+        /*+KeY@ also
           @ public normal_behavior
           @   ensures \result == size;
           @*/
         public /*@ pure @*/ int size() {
             return size;
         }
-        /*@ also
+        /*+KeY@ also
           @ public normal_behavior
           @   assignable
           @     modCount, size, table;
