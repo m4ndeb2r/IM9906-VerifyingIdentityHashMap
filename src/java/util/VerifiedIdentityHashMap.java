@@ -261,13 +261,15 @@ public class VerifiedIdentityHashMap
      * @param expectedMaxSize the expected maximum size of the map
      * @throws IllegalArgumentException if <tt>expectedMaxSize</tt> is negative
      */
-    /*@ private exceptional_behavior
+    /*KeY@ private exceptional_behavior
       @   requires 
       @     expectedMaxSize < 0;
       @   signals_only 
       @     IllegalArgumentException;
       @   signals 
       @     (IllegalArgumentException e) true;
+      @*/
+    /*@
       @ private normal_behavior
       @   requires 
       @     expectedMaxSize >= 0;
@@ -390,13 +392,15 @@ public class VerifiedIdentityHashMap
      * @param m the map whose mappings are to be placed into this map
      * @throws NullPointerException if the specified map is null
      */
-    /*@ public exceptional_behavior
+    /*KeY@ public exceptional_behavior
       @   requires 
       @     m == null;
       @   signals_only 
       @     NullPointerException;
       @   signals
       @     (NullPointerException e) true;
+      @*/
+    /*@
       @ public normal_behavior
       @   requires
       @     m != null;
@@ -686,7 +690,7 @@ public class VerifiedIdentityHashMap
      *
      * @param newCapacity the new capacity, must be a power of two.
      */
-    /*@ private exceptional_behavior
+    /*KeY@ private exceptional_behavior
       @   requires 
       @     MAXIMUM_CAPACITY == 536870912 &&
       @     table.length == 2 * MAXIMUM_CAPACITY && 
@@ -697,6 +701,8 @@ public class VerifiedIdentityHashMap
       @     IllegalStateException;
       @   signals
       @     (IllegalStateException e) true; 
+      @*/
+    /*@
       @ private normal_behavior 
       @   requires 
       @     MAXIMUM_CAPACITY == 536870912 &&
@@ -763,7 +769,7 @@ public class VerifiedIdentityHashMap
      * @param m mappings to be stored in this map
      * @throws NullPointerException if the specified map is null
      */
-    /*@ public exceptional_behavior
+    /*KeY@ public exceptional_behavior
       @   requires 
       @     m == null;
       @   assignable
@@ -772,6 +778,8 @@ public class VerifiedIdentityHashMap
       @     NullPointerException;
       @   signals
       @     (NullPointerException e) true;
+      @*/
+    /*@
       @ public normal_behavior
       @   requires
       @     m != null;
@@ -1304,13 +1312,15 @@ public class VerifiedIdentityHashMap
                 this.index = index;
             }
 
-            /*@ private exceptional_behavior
+            /*KeY@ private exceptional_behavior
               @   requires
               @     index < 0;
               @   signals_only 
               @     IllegalStateException;
               @   signals
               @     (IllegalStateException e) true;
+              @*/
+            /*@
               @ private normal_behavior  
               @   requires
               @     index >= 0;
@@ -1322,13 +1332,15 @@ public class VerifiedIdentityHashMap
                 return (java.lang.Object) unmaskNull(traversalTable[index]);
             }
 
-            /*@ public exceptional_behavior
+            /*KeY@ public exceptional_behavior
               @   requires
               @     index < 0;
               @   signals_only 
               @     IllegalStateException;
               @   signals
               @     (IllegalStateException e) true;
+              @*/
+            /*@
               @ public normal_behavior  
               @   requires
               @     index >= 0;
@@ -1377,13 +1389,15 @@ public class VerifiedIdentityHashMap
                         + traversalTable[index + 1]);
             }
 
-            /*@ private exceptional_behavior
+            /*KeY@ private exceptional_behavior
               @   requires
               @     index < 0;
               @   signals_only 
               @     IllegalStateException;
               @   signals
               @     (IllegalStateException e) true;
+              @*/
+            /*@
               @ private normal_behavior  
               @   requires
               @     index >= 0;
