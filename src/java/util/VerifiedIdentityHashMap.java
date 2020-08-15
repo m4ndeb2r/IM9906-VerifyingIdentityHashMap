@@ -141,25 +141,25 @@ public class VerifiedIdentityHashMap
       @   table != null &&
       @   MINIMUM_CAPACITY == 4 && 
       @   MAXIMUM_CAPACITY == 536870912 &&
-      @   MINIMUM_CAPACITY * (\bigint)2 <= table.length  && 
-      @   MAXIMUM_CAPACITY * (\bigint)2 >= table.length && 
-      @   (\exists \bigint i; 
+      @   MINIMUM_CAPACITY * 2 <= table.length  && 
+      @   MAXIMUM_CAPACITY * 2 >= table.length && 
+      @   (\exists int i; 
       @       0 <= i < table.length;
       @       \dl_pow(2,i) == table.length) &&
-      @   (\forall \bigint i; 
+      @   (\forall int i; 
       @       0 <= i < table.length - 1 && i % 2 == 0;
       @       table[i] == null ==> table[i+1] == null) &&
       @   (\forall int i, j; 
       @       0 <= i && i <= j && j < table.length / 2;
       @       table[2*i] == table[2*j] ==> i == j) &&
-      @   size == (\num_of \bigint i; 
+      @   size == (\num_of int i; 
       @       0 <= i < table.length - 1 && i % 2 == 0;
       @       table[i] != null) &&
-      @   threshold == table.length / (\bigint)3 &&
+      @   threshold == table.length / 3 &&
       @   entrySet != null ==> 
       @       (\forall Map.Entry e; 
       @           entrySet.contains(e); 
-      @           (\exists \bigint i; 
+      @           (\exists int i; 
       @               0 <= i < table.length - 1 && i % 2 == 0;
       @               table[i] == e.getKey() && table[i+1] == e.getValue()))  
       @   ;
@@ -246,7 +246,7 @@ public class VerifiedIdentityHashMap
     /*@ public normal_behavior
       @   ensures 
       @     DEFAULT_CAPACITY == 32 &&
-      @     table.length == (\bigint)2 * DEFAULT_CAPACITY &&
+      @     table.length == 2 * DEFAULT_CAPACITY &&
       @     size == 0;
       @*/
     public /*@ pure @*/ VerifiedIdentityHashMap() {
@@ -273,7 +273,7 @@ public class VerifiedIdentityHashMap
       @   requires 
       @     expectedMaxSize >= 0;
       @   ensures 
-      @     table.length == (\bigint)2 * capacity(expectedMaxSize) &&
+      @     table.length == 2 * capacity(expectedMaxSize) &&
       @     size == 0;
       @*/
     public /*@ pure @*/ VerifiedIdentityHashMap(int expectedMaxSize) {
@@ -294,7 +294,7 @@ public class VerifiedIdentityHashMap
     /*@ private normal_behavior
       @   requires 
       @     MAXIMUM_CAPACITY == 536870912 &&
-      @     (((\bigint)3 * expectedMaxSize) / (\bigint)2) < 0;
+      @     ((3 * expectedMaxSize) / 2) < 0;
       @   ensures 
       @     \result == MAXIMUM_CAPACITY;
       @     
@@ -302,7 +302,7 @@ public class VerifiedIdentityHashMap
       @ private normal_behavior
       @   requires
       @     MAXIMUM_CAPACITY == 536870912 &&
-      @     (((\bigint)3 * expectedMaxSize) / (\bigint)2) > MAXIMUM_CAPACITY;
+      @     ((3 * expectedMaxSize) / 2) > MAXIMUM_CAPACITY;
       @   ensures 
       @     \result == MAXIMUM_CAPACITY;
       @     
@@ -311,12 +311,12 @@ public class VerifiedIdentityHashMap
       @   requires 
       @     MINIMUM_CAPACITY == 4 &&
       @     MAXIMUM_CAPACITY == 536870912 &&
-      @     (((\bigint)3 * expectedMaxSize) / (\bigint)2) >= MINIMUM_CAPACITY &&
-      @     (((\bigint)3 * expectedMaxSize) / (\bigint)2) <= MAXIMUM_CAPACITY;
+      @     ((3 * expectedMaxSize) / 2) >= MINIMUM_CAPACITY &&
+      @     ((3 * expectedMaxSize) / 2) <= MAXIMUM_CAPACITY;
       @   ensures 
-      @     \result >= (((\bigint)3 * expectedMaxSize) / (\bigint)2) &&
-      @     \result < ((\bigint)3 * expectedMaxSize) &&
-      @     (\exists \bigint i; 
+      @     \result >= ((3 * expectedMaxSize) / 2) &&
+      @     \result < (3 * expectedMaxSize) &&
+      @     (\exists int i; 
       @       0 <= i < \result;
       @       \dl_pow(2,i) == \result);
       @     
@@ -324,12 +324,12 @@ public class VerifiedIdentityHashMap
       @ private normal_behavior
       @   requires
       @     MINIMUM_CAPACITY == 4 &&
-      @     (((\bigint)3 * expectedMaxSize) / (\bigint)2) >= 0 &&
-      @     (((\bigint)3 * expectedMaxSize) / (\bigint)2) < MINIMUM_CAPACITY;
+      @     ((3 * expectedMaxSize) / 2) >= 0 &&
+      @     ((3 * expectedMaxSize) / 2) < MINIMUM_CAPACITY;
       @   ensures 
-      @     \result < MINIMUM_CAPACITY * (\bigint)2 &&
+      @     \result < MINIMUM_CAPACITY * 2 &&
       @     \result >= MINIMUM_CAPACITY &&
-      @     (\exists \bigint i; 
+      @     (\exists int i; 
       @       0 <= i < \result;
       @       \dl_pow(2,i) == \result);
       @*/
@@ -360,7 +360,7 @@ public class VerifiedIdentityHashMap
       @     !initialised &&
       @     MINIMUM_CAPACITY == 4 && 
       @     MAXIMUM_CAPACITY == 536870912 &&
-      @     (\exists \bigint i; 
+      @     (\exists int i; 
       @       0 <= i < initCapacity;
       @       \dl_pow(2,i) == initCapacity) &&
       @     initCapacity >= MINIMUM_CAPACITY &&
@@ -370,8 +370,8 @@ public class VerifiedIdentityHashMap
       @     table, threshold;
       @   ensures
       @     initialised &&
-      @     threshold == ((\bigint)2 * initCapacity) / (\bigint)3 && 
-      @     table.length == (\bigint)2 * initCapacity;
+      @     threshold == (2 * initCapacity) / 3 && 
+      @     table.length == 2 * initCapacity;
       @*/
     private void init(int initCapacity) {
         // assert (initCapacity & -initCapacity) == initCapacity; // power of 2
@@ -403,7 +403,7 @@ public class VerifiedIdentityHashMap
       @     m != null;
       @   ensures
       @     size == m.size() &&  
-      @     (\forall \bigint i; 
+      @     (\forall int i; 
       @         0 <= i < table.length - 1 && i % 2 == 0;
       @         m.get(table[i]) == table[i+1]);
       @*/
@@ -459,19 +459,19 @@ public class VerifiedIdentityHashMap
       @   requires 
       @     MAXIMUM_CAPACITY == 536870912 &&
       @     i >= 0 &&
-      @     i + (\bigint)2 <= MAXIMUM_CAPACITY &&
+      @     i + 2 <= MAXIMUM_CAPACITY &&
       @     i % 2 == 0 &&
       @     len > 2 &&
       @     len <= MAXIMUM_CAPACITY &&
-      @     (\exists \bigint i;
+      @     (\exists int i;
       @       0 <= i < len;
       @       \dl_pow(2,i) == len);
       @   ensures
       @     \result < len &&
       @     \result >= 0 &&
-      @     \result % (\bigint)2 == 0 &&
-      @     i + (\bigint)2 < len ==> \result == i + (\bigint)2 &&
-      @     i + (\bigint)2 >= len ==> \result == 0;  
+      @     \result % 2 == 0 &&
+      @     i + 2 < len ==> \result == i + 2 &&
+      @     i + 2 >= len ==> \result == 0;  
       @*/
     private static /*@ pure @*/ int nextKeyIndex(int i, int len) {
         return (i + 2 < len ? i + 2 : 0);
@@ -498,14 +498,14 @@ public class VerifiedIdentityHashMap
       @ public normal_behavior
       @   ensures 
       @     \result != null <==> 
-      @         (\exists \bigint i; 
+      @         (\exists int i; 
       @             0 <= i < table.length - 1 && i % 2 == 0;
       @             table[i] == key && \result == table[i + 1]) && 
       @     \result == null <==> 
-      @         (!(\exists \bigint i; 
+      @         (!(\exists int i; 
       @             0 <= i < table.length - 1 && i % 2 == 0;
       @             table[i] == key) ||
-      @         (\exists \bigint i; 
+      @         (\exists int i; 
       @             0 <= i < table.length - 1 && i % 2 == 0;
       @             table[i] == key && table[i + 1] == null)
       @         ); 
@@ -537,7 +537,7 @@ public class VerifiedIdentityHashMap
     /*@ also
       @ public normal_behavior
       @   ensures 
-      @     \result <==> (\exists \bigint i; 
+      @     \result <==> (\exists int i; 
       @         0 <= i < table.length - 1 && i % 2 == 0;
       @         table[i] == key); 
       @*/
@@ -568,7 +568,7 @@ public class VerifiedIdentityHashMap
     /*@ also
       @ public normal_behavior
       @   ensures 
-      @     \result <==> (\exists \bigint i; 
+      @     \result <==> (\exists int i; 
       @         1 <= i < table.length && i % 2 == 0;
       @         table[i] == value); 
       @*/
@@ -591,7 +591,7 @@ public class VerifiedIdentityHashMap
      */
     /*@ private normal_behavior
       @   ensures 
-      @     \result <==> (\exists \bigint i; 
+      @     \result <==> (\exists int i; 
       @         0 <= i < table.length - 1 && i % 2 == 0;
       @         table[i] == key && table[i + 1] == value); 
       @*/
@@ -629,9 +629,9 @@ public class VerifiedIdentityHashMap
       @ public exceptional_behavior
       @   requires 
       @     MAXIMUM_CAPACITY == 536870912 &&
-      @     size + (\bigint)1 >= threshold &&
-      @     table.length == (\bigint)2 * MAXIMUM_CAPACITY && 
-      @     threshold == MAXIMUM_CAPACITY - (\bigint)1;
+      @     size + 1 >= threshold &&
+      @     table.length == 2 * MAXIMUM_CAPACITY && 
+      @     threshold == MAXIMUM_CAPACITY - 1;
       @   assignable
       @     \nothing;
       @   signals_only 
@@ -642,18 +642,18 @@ public class VerifiedIdentityHashMap
       @   assignable
       @     size, table, threshold, modCount;
       @   ensures 
-      @     ((\exists \bigint i; 
-      @         0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
+      @     ((\exists int i; 
+      @         0 <= i < \old(table.length) - 1 && i % 2 == 0;
       @         \old(table[i]) == key) 
       @         ==> size == \old(size) && modCount == \old(modCount) && 
-      @         (\forall \bigint j;
-      @             0 <= j < \old(table.length) - (\bigint)1 && j % 2 == 0;
+      @         (\forall int j;
+      @             0 <= j < \old(table.length) - 1 && j % 2 == 0;
       @             \old(table[j]) == key ==> \result == \old(table[j + 1]))) &&
-      @     (!(\exists \bigint i; 
-      @         0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
+      @     (!(\exists int i; 
+      @         0 <= i < \old(table.length) - 1 && i % 2 == 0;
       @         \old(table[i]) == key) 
-      @         ==> (size == \old(size) + (\bigint)1) && modCount != \old(modCount) && \result == null) &&
-      @     (\exists \bigint i; 
+      @         ==> (size == \old(size) + 1) && modCount != \old(modCount) && \result == null) &&
+      @     (\exists int i; 
       @         0 <= i < table.length - 1 && i % 2 == 0;
       @         table[i] == key && table[i + 1] == value);
       @*/
@@ -689,8 +689,8 @@ public class VerifiedIdentityHashMap
     /*@ private exceptional_behavior
       @   requires 
       @     MAXIMUM_CAPACITY == 536870912 &&
-      @     table.length == (\bigint)2 * MAXIMUM_CAPACITY && 
-      @     threshold == MAXIMUM_CAPACITY - (\bigint)1;
+      @     table.length == 2 * MAXIMUM_CAPACITY && 
+      @     threshold == MAXIMUM_CAPACITY - 1;
       @   assignable
       @     \nothing;
       @   signals_only 
@@ -700,23 +700,23 @@ public class VerifiedIdentityHashMap
       @ private normal_behavior 
       @   requires 
       @     MAXIMUM_CAPACITY == 536870912 &&
-      @     (\exists \bigint i;
+      @     (\exists int i;
       @       0 <= i < newCapacity;
       @       \dl_pow(2,i) == newCapacity) &&
-      @     table.length < (\bigint)2 * MAXIMUM_CAPACITY && 
-      @     threshold < MAXIMUM_CAPACITY - (\bigint)1;
+      @     table.length < 2 * MAXIMUM_CAPACITY && 
+      @     threshold < MAXIMUM_CAPACITY - 1;
       @   assignable
       @     threshold, table;
       @   ensures
-      @     \old(table.length) == (\bigint)2 * MAXIMUM_CAPACITY ==> 
-      @       (threshold == MAXIMUM_CAPACITY - (\bigint)1 && table.length == \old(table.length)) &&
-      @     (\old(table.length) != (\bigint)2 * MAXIMUM_CAPACITY && \old(table.length) >= (newCapacity * (\bigint)2)) ==> 
+      @     \old(table.length) == 2 * MAXIMUM_CAPACITY ==> 
+      @       (threshold == MAXIMUM_CAPACITY - 1 && table.length == \old(table.length)) &&
+      @     (\old(table.length) != 2 * MAXIMUM_CAPACITY && \old(table.length) >= (newCapacity * 2)) ==> 
       @       table.length == \old(table.length) &&
-      @     (\old(table.length) != (\bigint)2 * MAXIMUM_CAPACITY && \old(table.length) < (newCapacity * (\bigint)2)) ==> 
-      @       table.length == (newCapacity * (\bigint)2) &&
-      @     (\forall \bigint i; 
+      @     (\old(table.length) != 2 * MAXIMUM_CAPACITY && \old(table.length) < (newCapacity * 2)) ==> 
+      @       table.length == (newCapacity * 2) &&
+      @     (\forall int i; 
       @         0 <= i < \old(table.length) - 1 && i % 2 == 0;
-      @         (\exists \bigint j; 
+      @         (\exists int j; 
       @             0 <= j < table.length - 1 && j % 2 == 0;
       @             table[i] == \old(table[j]) && table[i + 1] == \old(table[j + 1])));
       @*/
@@ -779,12 +779,12 @@ public class VerifiedIdentityHashMap
       @     threshold, table, size, modCount;
       @   ensures
       @     size <= \old(size) + m.entrySet().size() &&
-      @     (\forall \bigint i; 
+      @     (\forall int i; 
       @         0 <= i < \old(table.length) - 1 && i % 2 == 0;
       @         \old(table[i] != null ==> \old(table[i]) == table[i] && \old(table[i + 1]) == table[i + 1])) &&
       @     (\forall Map.Entry e; 
       @         m.entrySet().contains(e); 
-      @         (\exists \bigint i; 
+      @         (\exists int i; 
       @             0 <= i < table.length - 1 && i % 2 == 0;
       @             table[i] == e.getKey() && table[i+1] == e.getValue()));  
       @*/
@@ -813,23 +813,23 @@ public class VerifiedIdentityHashMap
     /*@ also
       @ public normal_behavior
       @   requires
-      @     (\exists \bigint i; 
-      @        0 <= i < table.length - (\bigint)1 && i % 2 == 0;
+      @     (\exists int i; 
+      @        0 <= i < table.length - 1 && i % 2 == 0;
       @        table[i] == key); 
       @   assignable
       @     size, table, modCount;
       @   ensures
-      @     size == \old(size) - (\bigint)1 && 
+      @     size == \old(size) - 1 && 
       @     modCount != \old(modCount) &&
-      @     (\forall \bigint j;
-      @       0 <= j < \old(table.length) - (\bigint)1 && j % 2 == 0;
+      @     (\forall int j;
+      @       0 <= j < \old(table.length) - 1 && j % 2 == 0;
       @       table[j] == key ==> \result == table[j + 1]);
       @       
       @ also
       @ public normal_behavior
       @   requires
-      @     !(\exists \bigint i; 
-      @        0 <= i < table.length - (\bigint)1 && i % 2 == 0;
+      @     !(\exists int i; 
+      @        0 <= i < table.length - 1 && i % 2 == 0;
       @        table[i] == key); 
       @   assignable
       @     size, table, modCount;
@@ -873,15 +873,15 @@ public class VerifiedIdentityHashMap
       @   assignable
       @     size, table, modCount;
       @   ensures
-      @     ((\exists \bigint i; 
-      @         0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
+      @     ((\exists int i; 
+      @         0 <= i < \old(table.length) - 1 && i % 2 == 0;
       @         table[i] == key && table[i + 1] == value) 
-      @         <==> size == \old(size) - (\bigint)1 && modCount != \old(modCount) && \result == true) &&
-      @     (!(\exists \bigint i; 
-      @         0 <= i < \old(table.length) - (\bigint)1 && i % 2 == 0;
+      @         <==> size == \old(size) - 1 && modCount != \old(modCount) && \result == true) &&
+      @     (!(\exists int i; 
+      @         0 <= i < \old(table.length) - 1 && i % 2 == 0;
       @         table[i] == key && table[i + 1] == value) 
       @         <==> (size == \old(size)) && modCount == \old(modCount) && \result == false) &&
-      @     (!(\exists \bigint i; 
+      @     (!(\exists int i; 
       @         0 <= i < table.length - 1 && i % 2 == 0;
       @         table[i] == key && table[i + 1] == value));
       @*/
@@ -959,7 +959,7 @@ public class VerifiedIdentityHashMap
       @     \old(modCount) != modCount &&
       @     \old(table.length) == table.length &&
       @     size == 0 &&
-      @     (\forall \bigint i; 
+      @     (\forall int i; 
       @        0 <= i < table.length;
       @        table[i] == null);
       @*/
@@ -1068,7 +1068,7 @@ public class VerifiedIdentityHashMap
       @     ((VerifiedIdentityHashMap)\result).entrySet == null &&
       @     ((VerifiedIdentityHashMap)\result).values == null &&
       @     ((VerifiedIdentityHashMap)\result).keySet == null &&
-      @     (\forall \bigint i;
+      @     (\forall int i;
       @       0 <= i && i < table.length;
       @       table[i] == ((VerifiedIdentityHashMap)\result).table[i]) &&
       @     \invariant_for((VerifiedIdentityHashMap)\result);
@@ -1089,7 +1089,7 @@ public class VerifiedIdentityHashMap
           @   0 <= index && index <= table.length &&
           @   -1 <= lastReturnedIndex && lastReturnedIndex <= table.length &&
           @   traversalTable.length == table.length &&
-          @   (\forall \bigint i; 
+          @   (\forall int i; 
           @       0 <= i && i < table.length; 
           @       table[i] == traversalTable[i])
           @   ; 
@@ -1103,7 +1103,7 @@ public class VerifiedIdentityHashMap
         /*@ also
           @ public normal_behavior
           @   requires
-          @     (\exists \bigint i; 
+          @     (\exists int i; 
           @       index <= i < traversalTable.length && i % 2 == 0;
           @       traversalTable[i] != null);
           @   ensures
@@ -1113,7 +1113,7 @@ public class VerifiedIdentityHashMap
           @ also
           @ public normal_behavior
           @   requires
-          @     !(\exists \bigint i; 
+          @     !(\exists int i; 
           @       index <= i < traversalTable.length && i % 2 == 0;
           @       traversalTable[i] != null);
           @   ensures
@@ -1171,8 +1171,8 @@ public class VerifiedIdentityHashMap
           @   ensures
           @     size == \old(size) - 1 &&
           @     \old(table.length) == table.length &&
-          @     (\num_of \bigint i; 0 <= i && i < \old(table.length); \old(table[i]) == null) + (\bigint)2 ==
-          @       (\num_of \bigint i; 0 <= i && i < table.length; table[i] == null);
+          @     (\num_of int i; 0 <= i && i < \old(table.length); \old(table[i]) == null) + 2 ==
+          @       (\num_of int i; 0 <= i && i < table.length; table[i] == null);
           @*/
         public void remove() {
             if (lastReturnedIndex == -1)
@@ -1220,8 +1220,8 @@ public class VerifiedIdentityHashMap
             Object item;
             /*@ maintaining
               @   \old(table.length) == table.length &&
-              @   (\num_of \bigint i; 0 <= i && i < \old(table.length); \old(table[i]) == null) ==
-              @     (\num_of \bigint i; 0 <= i && i < table.length; table[i] == null);
+              @   (\num_of int i; 0 <= i && i < \old(table.length); \old(table[i]) == null) ==
+              @     (\num_of int i; 0 <= i && i < table.length; table[i] == null);
               @ assignable
               @   table, traversalTable, index;
               @*/
@@ -1487,7 +1487,7 @@ public class VerifiedIdentityHashMap
           @     contains(o);
           @   ensures 
           @     !contains(o) &&
-          @     \old(size()) - (\bigint)1 == size() &&
+          @     \old(size()) - 1 == size() &&
           @     \result == true;
           @     
           @ also
@@ -1528,7 +1528,7 @@ public class VerifiedIdentityHashMap
           @     \old(modCount) != modCount &&
           @     \old(table.length) == table.length &&
           @     size == 0 &&
-          @     (\forall \bigint i; 
+          @     (\forall int i; 
           @        0 <= i < table.length;
           @        table[i] == null);
           @*/
@@ -1606,7 +1606,7 @@ public class VerifiedIdentityHashMap
           @     contains(o);
           @   ensures 
           @     !contains(o) &&
-          @     \old(size()) - (\bigint)1 == size() &&
+          @     \old(size()) - 1 == size() &&
           @     \result == true;
           @     
           @ also
@@ -1636,7 +1636,7 @@ public class VerifiedIdentityHashMap
           @     \old(modCount) != modCount &&
           @     \old(table.length) == table.length &&
           @     size == 0 &&
-          @     (\forall \bigint i; 
+          @     (\forall int i; 
           @        0 <= i < table.length;
           @        table[i] == null);
           @*/
@@ -1725,7 +1725,7 @@ public class VerifiedIdentityHashMap
           @     contains(o);
           @   ensures 
           @     !contains(o) &&
-          @     \old(size()) - (\bigint)1 == size() &&
+          @     \old(size()) - 1 == size() &&
           @     \result == true;
           @     
           @ also
@@ -1759,7 +1759,7 @@ public class VerifiedIdentityHashMap
           @     \old(modCount) != modCount &&
           @     \old(table.length) == table.length &&
           @     size == 0 &&
-          @     (\forall \bigint i; 
+          @     (\forall int i; 
           @        0 <= i < table.length;
           @        table[i] == null);
           @*/
