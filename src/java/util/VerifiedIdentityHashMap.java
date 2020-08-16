@@ -1181,7 +1181,7 @@ public class VerifiedIdentityHashMap
      *
      * @return a shallow copy of this map
      */
-    /*@ also
+    /*-key@
       @ private normal_behavior
       @   ensures
       @     ((VerifiedIdentityHashMap)\result).size == size &&
@@ -1193,7 +1193,17 @@ public class VerifiedIdentityHashMap
       @       0 <= i && i < table.length;
       @       table[i] == ((VerifiedIdentityHashMap)\result).table[i]) &&
       @*/
-    /*+Key@ also
+    /*+key@
+      @ private normal_behavior
+      @   ensures
+      @     ((VerifiedIdentityHashMap)\result).size == size &&
+      @     ((VerifiedIdentityHashMap)\result).threshold == threshold &&
+      @     ((VerifiedIdentityHashMap)\result).entrySet == null &&
+      @     ((VerifiedIdentityHashMap)\result).values == null &&
+      @     ((VerifiedIdentityHashMap)\result).keySet == null &&
+      @     (\forall int i;
+      @       0 <= i && i < table.length;
+      @       table[i] == ((VerifiedIdentityHashMap)\result).table[i]) &&
       @     \invariant_for((VerifiedIdentityHashMap)\result);
       @*/
     public /*@ pure @*/ Object clone() {
