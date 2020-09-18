@@ -886,7 +886,7 @@ public class VerifiedIdentityHashMap
       @     (\old(table.length) != 2 * MAXIMUM_CAPACITY && \old(table.length) >= (newCapacity * 2)) ==> 
       @       table.length == \old(table.length) &&
       @     (\old(table.length) != 2 * MAXIMUM_CAPACITY && \old(table.length) < (newCapacity * 2)) ==> 
-      @       table.length == (newCapacity * 2) &&
+      @       table.length == (newCapacity * 2);
       @*/
     /*-key@ // JML specifically for JJBMC
       @ private normal_behavior
