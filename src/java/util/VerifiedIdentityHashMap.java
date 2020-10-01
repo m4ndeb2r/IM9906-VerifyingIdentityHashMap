@@ -151,9 +151,10 @@ public class VerifiedIdentityHashMap
       @         i % 2 == 0 ==> (table[i] == null ==> table[i + 1] == null)) &&
       @         
       @   // Non-empty keys are unique
-      @   (\forall int i, j; 
-      @       0 <= i && i <= j && j < table.length / 2;
-      @       (table[2*i] != null && table[2*i] == table[2*j]) ==> i == j) &&
+      @   (\forall int i; 0 <= i && i < table.length / 2;
+      @       (\forall int j;
+      @       i <= j && j < table.length / 2;
+      @       (table[2*i] != null && table[2*i] == table[2*j]) ==> i == j)) &&
       @       
       @   threshold == table.length / 3 &&
       @   
@@ -165,7 +166,13 @@ public class VerifiedIdentityHashMap
       @   // Table length is a power of two
       @   (\exists int i; 
       @       0 <= i < table.length;
-      @       \dl_pow(2,i) == table.length);
+      @       \dl_pow(2,i) == table.length) &&
+      @
+      @   // Table must have at least one empty key-element to prevent
+      @   // get-method from endlessly looping when a key is not present.
+      @   (\exists int i;
+      @       0 <= i < table.length - 1 && i % 2 == 0;
+      @       table[i] == null);
       @*/
     /*+OPENJML@ // JML for non-KeY tools, i.e. JJBMC
       @ public invariant
@@ -189,7 +196,13 @@ public class VerifiedIdentityHashMap
       @   threshold == table.length / 3 &&
       @       
       @   // Table length is a power of two
-      @   (table.length & (table.length - 1)) == 0;
+      @   (table.length & (table.length - 1)) == 0 &&
+      @
+      @   // Table must have at least one empty key-element to prevent
+      @   // get-method from endlessly looping when a key is not present.
+      @   (\exists int i;
+      @       0 <= i < table.length - 1 && i % 2 == 0;
+      @       table[i] == null);
       @*/
     
     /**
