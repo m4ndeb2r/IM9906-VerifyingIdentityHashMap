@@ -781,7 +781,7 @@ public class VerifiedIdentityHashMap
      * @see     #get(Object)
      * @see     #containsKey(Object)
      */
-    /*@ // JML specifically for KeY
+    /*+KEY@ // JML specifically for KeY
       @ also
       @ public exceptional_behavior
       @   requires 
