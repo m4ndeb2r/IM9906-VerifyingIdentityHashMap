@@ -781,7 +781,7 @@ public class VerifiedIdentityHashMap
      * @see     #get(Object)
      * @see     #containsKey(Object)
      */
-    /*+KEY@ // JML specifically for KeY
+    /*@ // JML specifically for KeY
       @ also
       @ public exceptional_behavior
       @   requires 
@@ -801,6 +801,8 @@ public class VerifiedIdentityHashMap
       @   assignable
       @     size, table, threshold, modCount;
       @   ensures 
+      @     // If the key already exists, size must not change, modCount must not change,
+      @     // and the old value associated with the key is returned 
       @     ((\exists int i; 
       @         0 <= i < \old(table.length) - 1 && i % 2 == 0;
       @         \old(table[i]) == key) 
@@ -808,10 +810,31 @@ public class VerifiedIdentityHashMap
       @         (\forall int j;
       @             0 <= j < \old(table.length) - 1 && j % 2 == 0;
       @             \old(table[j]) == key ==> \result == \old(table[j + 1]))) &&
+      @             
+      @     // If the key does not exist, size must me increased by 1, modCount must change,
+      @     // and null must be returned        
       @     (!(\exists int i; 
       @         0 <= i < \old(table.length) - 1 && i % 2 == 0;
       @         \old(table[i]) == key) 
       @         ==> (size == \old(size) + 1) && modCount != \old(modCount) && \result == null) &&
+      @         
+      @     // After execution, all old keys are still present
+      @     (\forall int i;
+      @         0 <= i < \old(table.length) && i % 2 == 0; 
+      @         (\exists int j; 
+      @             0 <= j < table.length && j % 2 == 0; 
+      @             \old(table[i]) == table[j])) &&
+      @     
+      @     // After execution, all old values are still present, unless the old value was 
+      @     // associated with key
+      @     (\forall int i;
+      @         0 < i < \old(table.length) && i % 2 == 1; 
+      @         \old(table[i-1]) != key ==> 
+      @             (\exists int j; 
+      @                 0 < j < table.length && j % 2 == 1; 
+      @                 \old(table[i]) == table[j])) &&
+      @         
+      @     // After execution, the table contains the new key associated with the new value
       @     (\exists int i;
       @         0 <= i < table.length - 1 ;
       @         i % 2 == 0 && table[i] == key && table[i + 1] == value);
@@ -822,17 +845,40 @@ public class VerifiedIdentityHashMap
       @   assignable
       @     size, table, threshold, modCount;
       @   ensures
-//      @     ((\exists int i;
+//      @     // If the key already exists, size must not change, modCount must not change,
+//      @     // and the old value associated with the key is returned 
+//      @     ((\exists int i; 
 //      @         0 <= i < \old(table.length) - 1 && i % 2 == 0;
-//      @         \old(table[i]) == key)
-//      @         ==> size == \old(size) && modCount == \old(modCount) &&
+//      @         \old(table[i]) == key) 
+//      @         ==> size == \old(size) && modCount == \old(modCount) && 
 //      @         (\forall int j;
 //      @             0 <= j < \old(table.length) - 1 && j % 2 == 0;
 //      @             \old(table[j]) == key ==> \result == \old(table[j + 1]))) &&
-//      @     (!(\exists int i;
+//      @             
+//      @     // If the key does not exist, size must me increased by 1, modCount must change,
+//      @     // and null must be returned        
+//      @     (!(\exists int i; 
 //      @         0 <= i < \old(table.length) - 1 && i % 2 == 0;
-//      @         \old(table[i]) == key)
+//      @         \old(table[i]) == key) 
 //      @         ==> (size == \old(size) + 1) && modCount != \old(modCount) && \result == null) &&
+//      @         
+//      @     // After execution, all old keys are still present
+//      @     (\forall int i;
+//      @         0 <= i < \old(table.length) && i % 2 == 0; 
+//      @         (\exists int j; 
+//      @             0 <= j < table.length && j % 2 == 0; 
+//      @             \old(table[i]) == table[j])) &&
+//      @     
+//      @     // After execution, all old values are still present, unless the old value was 
+//      @     // associated with key
+//      @     (\forall int i;
+//      @         0 < i < \old(table.length) && i % 2 == 1; 
+//      @         \old(table[i-1]) != key ==> 
+//      @             (\exists int j; 
+//      @                 0 < j < table.length && j % 2 == 1; 
+//      @                 \old(table[i]) == table[j])) &&
+//      @         
+      @     // After execution, the table contains the new key associated with the new value
       @     (\exists int i;
       @         0 <= i < table.length - 1 ;
       @         i % 2 == 0 && table[i] == key && table[i + 1] == value);
