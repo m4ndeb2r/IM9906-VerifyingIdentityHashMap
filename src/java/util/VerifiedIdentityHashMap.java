@@ -654,8 +654,10 @@ public class VerifiedIdentityHashMap
         Object[] tab =  table;
         int len =  tab.length;
         int i =  hash(k, len);
-        //TODO: +key@ ghost int initialI = i;
-        //TODO: +key@ decreases (table.length + i - initialI) % table.length; ????
+        /*+KEY@ // Prove termination of the loop statement 
+          @ ghost int initialI = i;
+          @ decreasing table.length - (table.length + i - initialI) % table.length;
+          @*/
         while (true) {
             Object item =  tab[i];
             if (item == k)
@@ -1644,6 +1646,7 @@ public class VerifiedIdentityHashMap
               @   signals
               @     (IllegalStateException e) true;
               @
+              @ also
               @ public normal_behavior  
               @   requires
               @     index >= 0;
