@@ -901,7 +901,8 @@ public class VerifiedIdentityHashMap
             i = nextKeyIndex(i, len);
         }
 
-        /*+KEY@ ensures modCount != \old(modCount);
+        /*+KEY@ 
+          @ ensures modCount != \old(modCount);
           @ ensures \dl_inInt(modCount);  // perhaps needed
           @ assignable modCount;
           @*/
@@ -949,6 +950,14 @@ public class VerifiedIdentityHashMap
       @       table.length == \old(table.length) &&
       @     (\old(table.length) != 2 * MAXIMUM_CAPACITY && \old(table.length) < (newCapacity * 2)) ==> 
       @       table.length == (newCapacity * 2);
+      @ private normal_behavior
+      @   ensures
+      @     // After execution, all old entries are still present
+      @     (\forall int i;
+      @         0 <= i < \old(table.length) && i % 2 == 0; 
+      @         (\exists int j; 
+      @             0 <= j < table.length && j % 2 == 0; 
+      @             \old(table[i]) == table[j] && \old(table[i+1]) == table[j+1]));
       @*/
     /*+OPENJML@ // JML specifically for JJBMC
       @ private normal_behavior
@@ -966,6 +975,14 @@ public class VerifiedIdentityHashMap
       @       table.length == \old(table.length) &&
       @     (\old(table.length) != 2 * MAXIMUM_CAPACITY && \old(table.length) < (newCapacity * 2)) ==>
       @       table.length == (newCapacity * 2);
+      @ private normal_behavior
+      @   ensures
+      @     // After execution, all old entries are still present
+      @     (\forall int i;
+      @         0 <= i < \old(table.length) && i % 2 == 0; 
+      @         (\exists int j; 
+      @             0 <= j < table.length && j % 2 == 0; 
+      @             \old(table[i]) == table[j] && \old(table[i+1]) == table[j+1]));
       @*/
     private void resize(int newCapacity)
         // assert (newCapacity & -newCapacity) == newCapacity; // power of 2
