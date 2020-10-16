@@ -174,6 +174,16 @@ public class VerifiedIdentityHashMap
       @       0 <= i < table.length - 1 && i % 2 == 0;
       @       table[i] == null);
       @*/
+    
+      // If the key is at a higher index than the hash code
+      /* invariant (\forall int i,j;i,j in range; table[2i] != null ==> 
+                     2i>= indexFor(table[2j]) && i<=2j; table[2i] != null);   */
+                     // indexFor is probably "hash(...)"
+    
+      // If the key is at at a lower index than the hash code
+      /* invariant (\forall int i; 0<=i<table.length; 2*i < indexFor(table[2*i].hashcode) ==>
+                 (\forall int j; indexFor(...) >= 2*j  || 0 <= 2*j < 2*i; table[2*j] != null));  */
+    
     /*+OPENJML@ // JML for non-KeY tools, i.e. JJBMC
       @ public invariant
       @   table != null &&
