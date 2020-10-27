@@ -143,76 +143,117 @@ public class VerifiedIdentityHashMap
       @   MINIMUM_CAPACITY == 4 && 
       @   MAXIMUM_CAPACITY == 536870912 &&
       @   MINIMUM_CAPACITY * 2 <= table.length  && 
-      @   MAXIMUM_CAPACITY * 2 >= table.length &&
+      @   MAXIMUM_CAPACITY * 2 >= table.length;
       @   
-      @   // For all key-value pairs: if key == null, then value == null
+      @ // For all key-value pairs: if key == null, then value == null
+      @ public invariant
       @   (\forall int i;
       @         0 <= i && i < table.length - 1;
-      @         i % 2 == 0 ==> (table[i] == null ==> table[i + 1] == null)) &&
+      @         i % 2 == 0 ==> (table[i] == null ==> table[i + 1] == null));
       @         
-      @   // Non-empty keys are unique
+      @ // Non-empty keys are unique
+      @ public invariant
       @   (\forall int i; 0 <= i && i < table.length / 2;
       @       (\forall int j;
       @       i <= j && j < table.length / 2;
-      @       (table[2*i] != null && table[2*i] == table[2*j]) ==> i == j)) &&
+      @       (table[2*i] != null && table[2*i] == table[2*j]) ==> i == j));
       @       
-      @   threshold == table.length / 3 &&
+      @ public invariant
+      @   threshold == table.length / 3;
       @   
-      @   // Size equals the number of non-empty keys in the table
+      @ // Size equals the number of non-empty keys in the table
+      @ public invariant
       @   size == (\num_of int i; 
-      @       0 <= i < table.length - 1 && i % 2 == 0;
-      @       table[i] != null) &&
+      @       0 <= i < table.length / 2;
+      @       table[2*i] != null);
       @       
-      @   // Table length is a power of two
+      @ // Table length is a power of two
+      @ public invariant
       @   (\exists int i; 
       @       0 <= i < table.length;
-      @       \dl_pow(2,i) == table.length) &&
+      @       \dl_pow(2,i) == table.length);
       @
-      @   // Table must have at least one empty key-element to prevent
-      @   // get-method from endlessly looping when a key is not present.
+      @ // Table must have at least one empty key-element to prevent
+      @ // get-method from endlessly looping when a key is not present.
+      @ public invariant
       @   (\exists int i;
-      @       0 <= i < table.length - 1 && i % 2 == 0;
-      @       table[i] == null);
+      @       0 <= i < table.length / 2;
+      @       table[2*i] == null);
+      @
+      @ // There are no gaps between a key's hashed index and its actual 
+      @ // index (if the key is at a higher index than the hash code)
+      @ public invariant
+      @   (\forall int i;
+      @       0 <= i < table.length / 2;
+      @       table[2*i] != null && 2*i > hash(table[2*i], table.length) ==>
+      @       (\forall int j;
+      @           hash(table[2*i], table.length) <= 2*j < 2*i;
+      @           table[2*j] != null));
+      @
+      @ // There are no gaps between a key's hashed index and its actual 
+      @ // index (if the key is at a lower index than the hash code)
+      @ public invariant
+      @   (\forall int i;
+      @       0 <= i < table.length / 2;
+      @       table[2*i] != null && 2*i < hash(table[2*i], table.length) ==>
+      @       (\forall int j;
+      @           hash(table[2*i], table.length) <= 2*j < table.length || 0 <= 2*j < hash(table[2*i], table.length);
+      @           table[2*j] != null));
       @*/
-    
-      // If the key is at a higher index than the hash code
-      /* invariant (\forall int i,j;i,j in range; table[2i] != null ==> 
-                     2i>= indexFor(table[2j]) && i<=2j; table[2i] != null);   */
-                     // indexFor is probably "hash(...)"
-    
-      // If the key is at at a lower index than the hash code
-      /* invariant (\forall int i; 0<=i<table.length; 2*i < indexFor(table[2*i].hashcode) ==>
-                 (\forall int j; indexFor(...) >= 2*j  || 0 <= 2*j < 2*i; table[2*j] != null));  */
-    
     /*+OPENJML@ // JML for non-KeY tools, i.e. JJBMC
       @ public invariant
       @   table != null &&
       @   MINIMUM_CAPACITY == 4 && 
-      @   MAXIMUM_CAPACITY == 4 &&
+      @   MAXIMUM_CAPACITY == 4; // &&
       @   //MINIMUM_CAPACITY * 2 <= table.length  && // is no longer valid as we set min and max to 4
-      @   //MAXIMUM_CAPACITY * 2 >= table.length &&
+      @   //MAXIMUM_CAPACITY * 2 >= table.length;
       @
-      @   // For all key-value pairs: if key == null, then value == null
+      @ // For all key-value pairs: if key == null, then value == null
+      @ public invariant
       @   (\forall int i;
       @         0 <= i && i < table.length - 1;
-      @         i % 2 == 0 ==> (table[i] == null ==> table[i + 1] == null)) &&
+      @         i % 2 == 0 ==> (table[i] == null ==> table[i + 1] == null));
       @         
-      @   // Non-empty keys are unique
+      @ // Non-empty keys are unique
+      @ public invariant
       @   (\forall int i; 0 <= i && i < table.length / 2;
       @       (\forall int j;
       @       i <= j && j < table.length / 2;
-      @       (table[2*i] != null && table[2*i] == table[2*j]) ==> i == j)) &&
+      @       (table[2*i] != null && table[2*i] == table[2*j]) ==> i == j));
       @
-      @   threshold == table.length / 3 &&
+      @ public invariant
+      @   threshold == table.length / 3;
       @       
-      @   // Table length is a power of two
-      @   (table.length & (table.length - 1)) == 0 &&
+      @ // Table length is a power of two
+      @ public invariant
+      @   (table.length & (table.length - 1)) == 0;
       @
-      @   // Table must have at least one empty key-element to prevent
-      @   // get-method from endlessly looping when a key is not present.
+      @ // Table must have at least one empty key-element to prevent
+      @ // get-method from endlessly looping when a key is not present.
+      @ public invariant
       @   (\exists int i;
-      @       0 <= i < table.length - 1 && i % 2 == 0;
-      @       table[i] == null);
+      @       0 <= i < table.length / 2;
+      @       table[2*i] == null);
+      @
+      @ // There are no gaps between a key's hashed index and its actual 
+      @ // index (if the key is at a higher index than the hash code)
+      @ public invariant
+      @   (\forall int i;
+      @       0 <= i < table.length / 2;
+      @       table[2*i] != null && 2*i > hash(table[2*i], table.length) ==>
+      @       (\forall int j;
+      @           hash(table[2*i], table.length) <= 2*j < 2*i;
+      @           table[2*j] != null));
+      @
+      @ // There are no gaps between a key's hashed index and its actual 
+      @ // index (if the key is at a lower index than the hash code)
+      @ public invariant
+      @   (\forall int i;
+      @       0 <= i < table.length / 2;
+      @       table[2*i] != null && 2*i < hash(table[2*i], table.length) ==>
+      @       (\forall int j;
+      @           hash(table[2*i], table.length) <= 2*j < table.length || 0 <= 2*j < hash(table[2*i], table.length);
+      @           table[2*j] != null));
       @*/
     
     /**
