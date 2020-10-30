@@ -197,7 +197,7 @@ public class VerifiedIdentityHashMap
       @       0 <= i < table.length / 2;
       @       table[2*i] != null && 2*i < hash(table[2*i], table.length) ==>
       @       (\forall int j;
-      @           hash(table[2*i], table.length) <= 2*j < table.length || 0 <= 2*j < hash(table[2*i], table.length);
+      @           hash(table[2*i], table.length) <= 2*j < table.length || 0 <= 2*j < 2*i;
       @           table[2*j] != null));
       @*/
     /*+OPENJML@ // JML for non-KeY tools, i.e. JJBMC
