@@ -635,13 +635,10 @@ public class VerifiedIdentityHashMap
       @     i % 2 == 0 &&
       @     len > 2 &&
       @     len <= MAXIMUM_CAPACITY &&
-      @     (\exists int i;
-      @       0 <= i < len;
-      @       \dl_pow(2,i) == len);
+      @     (\exists int j;
+      @       0 <= j < len;
+      @       \dl_pow(2,j) == len);
       @   ensures
-      @     \result < len &&
-      @     \result >= 0 &&
-      @     \result % 2 == 0 &&
       @     i + 2 < len ==> \result == i + 2 &&
       @     i + 2 >= len ==> \result == 0;  
       @*/
@@ -656,9 +653,6 @@ public class VerifiedIdentityHashMap
       @     len <= MAXIMUM_CAPACITY &&
       @     (len & (len - 1)) == 0;
       @   ensures
-      @     \result < len &&
-      @     \result >= 0 &&
-      @     \result % 2 == 0 &&
       @     i + 2 < len ==> \result == i + 2 &&
       @     i + 2 >= len ==> \result == 0;
       @*/
