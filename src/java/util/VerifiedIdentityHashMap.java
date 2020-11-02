@@ -851,8 +851,8 @@ public class VerifiedIdentityHashMap
       @     // If the key already exists, size must not change, modCount must not change,
       @     // and the old value associated with the key is returned 
       @     ((\exists int i; 
-      @         0 <= i < \old(table.length) - 1 && i % 2 == 0;
-      @         \old(table[i]) == key) 
+      @         0 <= i < \old(table.length) - 1;
+      @         i % 2 == 0 && \old(table[i]) == key) 
       @         ==> size == \old(size) && modCount == \old(modCount) && 
       @         (\forall int j;
       @             0 <= j < \old(table.length) - 1 && j % 2 == 0;
@@ -861,16 +861,16 @@ public class VerifiedIdentityHashMap
       @     // If the key does not exist, size must me increased by 1, modCount must change,
       @     // and null must be returned        
       @     (!(\exists int i; 
-      @         0 <= i < \old(table.length) - 1 && i % 2 == 0;
-      @         \old(table[i]) == key) 
+      @         0 <= i < \old(table.length) - 1;
+      @         i % 2 == 0 && \old(table[i]) == key) 
       @         ==> (size == \old(size) + 1) && modCount != \old(modCount) && \result == null) &&
       @         
       @     // After execution, all old keys are still present
       @     (\forall int i;
       @         0 <= i < \old(table.length) && i % 2 == 0; 
       @         (\exists int j; 
-      @             0 <= j < table.length && j % 2 == 0; 
-      @             \old(table[i]) == table[j])) &&
+      @             0 <= j < table.length; 
+      @             j % 2 == 0 && \old(table[i]) == table[j])) &&
       @     
       @     // After execution, all old values are still present, unless the old value was 
       @     // associated with key
@@ -878,8 +878,8 @@ public class VerifiedIdentityHashMap
       @         0 < i < \old(table.length) && i % 2 == 1; 
       @         \old(table[i-1]) != key ==> 
       @             (\exists int j; 
-      @                 0 < j < table.length && j % 2 == 1; 
-      @                 \old(table[i]) == table[j])) &&
+      @                 0 < j < table.length; 
+      @                 j % 2 == 1 && \old(table[i]) == table[j])) &&
       @         
       @     // After execution, the table contains the new key associated with the new value
       @     (\exists int i;
@@ -895,8 +895,8 @@ public class VerifiedIdentityHashMap
 //      @     // If the key already exists, size must not change, modCount must not change,
 //      @     // and the old value associated with the key is returned 
 //      @     ((\exists int i; 
-//      @         0 <= i < \old(table.length) - 1 && i % 2 == 0;
-//      @         \old(table[i]) == key) 
+//      @         0 <= i < \old(table.length) - 1;
+//      @         i % 2 == 0 && \old(table[i]) == key) 
 //      @         ==> size == \old(size) && modCount == \old(modCount) && 
 //      @         (\forall int j;
 //      @             0 <= j < \old(table.length) - 1 && j % 2 == 0;
@@ -905,16 +905,16 @@ public class VerifiedIdentityHashMap
 //      @     // If the key does not exist, size must me increased by 1, modCount must change,
 //      @     // and null must be returned        
 //      @     (!(\exists int i; 
-//      @         0 <= i < \old(table.length) - 1 && i % 2 == 0;
-//      @         \old(table[i]) == key) 
+//      @         0 <= i < \old(table.length) - 1;
+//      @         i % 2 == 0 && \old(table[i]) == key) 
 //      @         ==> (size == \old(size) + 1) && modCount != \old(modCount) && \result == null) &&
 //      @         
 //      @     // After execution, all old keys are still present
 //      @     (\forall int i;
 //      @         0 <= i < \old(table.length) && i % 2 == 0; 
 //      @         (\exists int j; 
-//      @             0 <= j < table.length && j % 2 == 0; 
-//      @             \old(table[i]) == table[j])) &&
+//      @             0 <= j < table.length; 
+//      @             j % 2 == 0 && \old(table[i]) == table[j])) &&
 //      @     
 //      @     // After execution, all old values are still present, unless the old value was 
 //      @     // associated with key
@@ -922,8 +922,8 @@ public class VerifiedIdentityHashMap
 //      @         0 < i < \old(table.length) && i % 2 == 1; 
 //      @         \old(table[i-1]) != key ==> 
 //      @             (\exists int j; 
-//      @                 0 < j < table.length && j % 2 == 1; 
-//      @                 \old(table[i]) == table[j])) &&
+//      @                 0 < j < table.length; 
+//      @                 j % 2 == 1 && \old(table[i]) == table[j])) &&
 //      @         
       @     // After execution, the table contains the new key associated with the new value
       @     (\exists int i;
