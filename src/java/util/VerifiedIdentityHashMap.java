@@ -1220,20 +1220,47 @@ public class VerifiedIdentityHashMap
      *          mapping was in the map
      */
     /*@ private normal_behavior
+      @   requires
+      @     // The element does not exist in the table
+      @     !((\exists int i;
+      @         0 <= i < \old(table.length) - 1 ;
+      @         i % 2 == 0 ==> table[i] == key && table[i + 1] == value));
+      @   assignable
+      @     \nothing;
+      @   ensures
+      @     size == \old(size) && modCount == \old(modCount) && \result == false &&
+      @     
+      @     // All not-to-be-removed elements are still present
+      @     (\forall int i;
+      @       0 <= i < \old(table.length) - 1 && i % 2 == 0;
+      @       \old(table[i]) != key || \old(table[i+1]) != value ==> 
+      @         (\exists int j;
+      @            0 <= j < table.length - 1;
+      @            j % 2 == 0 && table[j] == \old(table[i]) && table[j+1] == \old(table[i+1])));
+      @     
+      @ private normal_behavior
+      @   requires
+      @     // The element exists in the table
+      @     ((\exists int i;
+      @         0 <= i < \old(table.length) - 1 ;
+      @         i % 2 == 0 ==> \old(table[i]) == key && \old(table[i + 1]) == value));
       @   assignable
       @     size, table, modCount;
       @   ensures
-      @     ((\exists int i;
+      @     size == \old(size) - 1 && modCount != \old(modCount) && \result == true &&
+      @     
+      @     // The to-be-removed element is no longer present
+      @     !((\exists int i;
       @         0 <= i < \old(table.length) - 1 ;
-      @         i % 2 == 0 ==> table[i] == key && table[i + 1] == value)
-      @         <==> size == \old(size) - 1 && modCount != \old(modCount) && \result == true) &&
-      @     ((\forall int i;
-      @         0 <= i < \old(table.length) - 1 ;
-      @         i % 2 == 0 ==> table[i] != key || table[i + 1] != value)
-      @         <==> (size == \old(size)) && modCount == \old(modCount) && \result == false) &&
-      @     ((\forall int i;
-      @         0 <= i < table.length - 1 ;
-      @         i % 2 == 0 ==> table[i] != key || table[i + 1] != value));
+      @         i % 2 == 0 ==> table[i] == key && table[i + 1] == value)) &&
+      @     
+      @     // All not-to-be-removed elements are still present
+      @     (\forall int i;
+      @       0 <= i < \old(table.length) - 1 && i % 2 == 0;
+      @       \old(table[i]) != key || \old(table[i+1]) != value ==> 
+      @         (\exists int j;
+      @            0 <= j < table.length - 1;
+      @            j % 2 == 0 && table[j] == \old(table[i]) && table[j+1] == \old(table[i+1])));
       @*/
     private boolean removeMapping(Object key, Object value) {
         Object k =  maskNull(key);
