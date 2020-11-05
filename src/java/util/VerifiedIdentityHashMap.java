@@ -1144,30 +1144,41 @@ public class VerifiedIdentityHashMap
     /*@ also
       @ public normal_behavior
       @   requires
+      @     // key exists in old table?
       @     (\exists int i;
-      @        0 <= i < (table.length - 1);
-      @        i % 2 == 0 && table[i] == key);
+      @        0 <= i < \old(table.length - 1);
+      @        i % 2 == 0 && \old(table[i]) == key);
       @   assignable
       @     size, table, modCount;
       @   ensures
+      @     // Size is subtracted by 1
       @     size == \old(size) - 1 &&
+      @     
+      @     // modCount is changed
       @     modCount != \old(modCount) &&
+      @     
+      @     // Result is the removed value
       @     (\forall int j;
       @       0 <= j < \old(table.length) - 1 && j % 2 == 0;
-      @       table[j] == key ==> \result == table[j + 1]);
+      @       \old(table[j]) == key ==> \result == \old(table[j + 1])) &&
+      @       
+      @     // The deleted key no longer exists in the table  
+      @     !(\exists int i;
+      @        0 <= i < table.length - 1;
+      @        i % 2 == 0 && table[i] == key);
       @
       @ also
       @ public normal_behavior
       @   requires
+      @     // key does not exist in old table?
       @     (\forall int i;
-      @        0 <= i < (table.length - 1);
-      @        i % 2 == 0 && table[i] != key);
+      @        0 <= i < (\old(table.length) - 1);
+      @        i % 2 == 0 && \old(table[i]) != key);
       @   assignable
-      @     size, table, modCount;
+      @     \nothing;
       @   ensures
-      @     size == \old(size) &&
-      @     modCount == \old(modCount) &&
-      @     \result == null;
+      @     \result == null &&
+      @     \old(table.*) == table.*;
       @*/
     public java.lang.Object remove(Object key) {
         Object k =  maskNull(key);
