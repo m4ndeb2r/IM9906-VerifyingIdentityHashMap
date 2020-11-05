@@ -1162,6 +1162,14 @@ public class VerifiedIdentityHashMap
       @       0 <= j < \old(table.length) - 1 && j % 2 == 0;
       @       \old(table[j]) == key ==> \result == \old(table[j + 1])) &&
       @       
+      @     // All not-to-be-removed elements are still present
+      @     (\forall int i;
+      @       0 <= i < \old(table.length) - 1 && i % 2 == 0;
+      @       \old(table[i]) != key ==> 
+      @         (\exists int j;
+      @            0 <= j < table.length - 1;
+      @            j % 2 == 0 && table[j] == \old(table[i]) && table[j+1] == \old(table[i+1]))) &&
+      @       
       @     // The deleted key no longer exists in the table  
       @     !(\exists int i;
       @        0 <= i < table.length - 1;
