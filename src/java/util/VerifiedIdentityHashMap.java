@@ -617,6 +617,10 @@ public class VerifiedIdentityHashMap
     /**
      * Returns index for Object x.
      */
+    /*@ private normal_behavior
+      @   ensures 
+      @     \result == \dl_genHash(x, length);
+      @*/
     private static /*@ pure @*/ int hash(Object x, int length) {
         int h =  System.identityHashCode(x);
         // Multiply by -127, and left-shift to use least bit as part of hash
