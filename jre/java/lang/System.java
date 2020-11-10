@@ -4,13 +4,12 @@ package java.lang;
  * @generated
  */
 public final class System extends java.lang.Object {
-   /**
-    * @generated
-    */
+
    /*@ public behavior
      @ requires true;
-     @ ensures true;
-     @ assignable \everything;
+     @   ensures 
+     @     \result == \dl_genIdentityHash(param0);
+     @ assignable \nothing;
      @*/
    public static int identityHashCode(java.lang.Object param0);
 
