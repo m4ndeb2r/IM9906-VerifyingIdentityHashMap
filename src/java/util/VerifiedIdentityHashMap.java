@@ -687,15 +687,15 @@ public class VerifiedIdentityHashMap
       @     \result != null <==>
       @         (\exists int i;
       @             0 <= i < table.length / 2;
-      @             table[i*2] == key && \result == table[i*2 + 1]);
+      @             table[i*2] == maskNull(key) && \result == table[i*2 + 1]);
       @   ensures
       @     \result == null <==>
       @         (!(\exists int i;
       @             0 <= i < table.length / 2;
-      @             table[i*2] == key) ||
+      @             table[i*2] == maskNull(key)) ||
       @         (\exists int i;
       @             0 <= i < table.length / 2;
-      @             table[i*2] == key && table[i*2 + 1] == null)
+      @             table[i*2] == maskNull(key) && table[i*2 + 1] == null)
       @         );
       @*/
     public /*@ pure @*/ /*@ nullable @*/ java.lang.Object get(Object key) {
@@ -746,7 +746,7 @@ public class VerifiedIdentityHashMap
       @   ensures
       @     \result <==> (\exists int i;
       @         0 <= i < table.length / 2;
-      @         table[i*2] == key);
+      @         table[i*2] == maskNull(key));
       @*/
     public /*@ pure @*/ boolean containsKey(Object key) {
         Object k =  maskNull(key);
@@ -800,7 +800,7 @@ public class VerifiedIdentityHashMap
       @   ensures
       @     \result <==> (\exists int i;
       @         0 <= i < table.length / 2;
-      @         table[i*2] == key && table[i*2 + 1] == value);
+      @         table[i*2] == maskNull(key) && table[i*2 + 1] == value);
       @*/
     private /*@ spec_public @*/ /*@ pure @*/ boolean containsMapping(Object key, Object value) {
         Object k =  maskNull(key);
@@ -856,17 +856,17 @@ public class VerifiedIdentityHashMap
       @     // and the old value associated with the key is returned
       @     ((\exists int i;
       @         0 <= i < \old(table.length) / 2;
-      @         \old(table[i*2]) == key)
+      @         \old(table[i*2]) == maskNull(key))
       @         ==> size == \old(size) && modCount == \old(modCount) &&
       @         (\forall int j;
       @             0 <= j < \old(table.length) - 1 && j % 2 == 0;
-      @             \old(table[j]) == key ==> \result == \old(table[j + 1]))) &&
+      @             \old(table[j]) == maskNull(key) ==> \result == \old(table[j + 1]))) &&
       @
       @     // If the key does not exist, size must me increased by 1, modCount must change,
       @     // and null must be returned
       @     (!(\exists int i;
       @         0 <= i < \old(table.length) - 1;
-      @         i % 2 == 0 && \old(table[i]) == key)
+      @         i % 2 == 0 && \old(table[i]) == maskNull(key))
       @         ==> (size == \old(size) + 1) && modCount != \old(modCount) && \result == null) &&
       @
       @     // After execution, all old keys are still present
@@ -880,7 +880,7 @@ public class VerifiedIdentityHashMap
       @     // associated with key
       @     (\forall int i;
       @         0 < i < \old(table.length) && i % 2 == 1;
-      @         \old(table[i-1]) != key ==>
+      @         \old(table[i-1]) != maskNull(key) ==>
       @             (\exists int j;
       @                 0 < j < table.length;
       @                 j % 2 == 1 && \old(table[i]) == table[j])) &&
@@ -888,7 +888,7 @@ public class VerifiedIdentityHashMap
       @     // After execution, the table contains the new key associated with the new value
       @     (\exists int i;
       @         0 <= i < table.length - 1 ;
-      @         i % 2 == 0 && table[i] == key && table[i + 1] == value);
+      @         i % 2 == 0 && table[i] == maskNull(key) && table[i + 1] == value);
       @*/
     /*+OPENJML@ // JML specifically for JJBMC
       @ also
@@ -900,17 +900,17 @@ public class VerifiedIdentityHashMap
 //      @     // and the old value associated with the key is returned
 //      @     ((\exists int i;
 //      @         0 <= i < \old(table.length) - 1;
-//      @         \old(table[i*2]) == key)
+//      @         \old(table[i*2]) == maskNull(key))
 //      @         ==> size == \old(size) && modCount == \old(modCount) &&
 //      @         (\forall int j;
 //      @             0 <= j < \old(table.length) - 1 && j % 2 == 0;
-//      @             \old(table[j]) == key ==> \result == \old(table[j + 1]))) &&
+//      @             \old(table[j]) == maskNull(key) ==> \result == \old(table[j + 1]))) &&
 //      @
 //      @     // If the key does not exist, size must me increased by 1, modCount must change,
 //      @     // and null must be returned
 //      @     (!(\exists int i;
 //      @         0 <= i < \old(table.length) - 1;
-//      @         i % 2 == 0 && \old(table[i]) == key)
+//      @         i % 2 == 0 && \old(table[i]) == maskNull(key))
 //      @         ==> (size == \old(size) + 1) && modCount != \old(modCount) && \result == null) &&
 //      @
 //      @     // After execution, all old keys are still present
@@ -924,7 +924,7 @@ public class VerifiedIdentityHashMap
 //      @     // associated with key
 //      @     (\forall int i;
 //      @         0 < i < \old(table.length) && i % 2 == 1;
-//      @         \old(table[i-1]) != key ==>
+//      @         \old(table[i-1]) != maskNull(key) ==>
 //      @             (\exists int j;
 //      @                 0 < j < table.length;
 //      @                 j % 2 == 1 && \old(table[i]) == table[j])) &&
@@ -932,7 +932,7 @@ public class VerifiedIdentityHashMap
       @     // After execution, the table contains the new key associated with the new value
       @     (\exists int i;
       @         0 <= i < table.length / 2;
-      @         table[i*2] == key && table[i*2 + 1] == value);
+      @         table[i*2] == maskNull(key) && table[i*2 + 1] == value);
       @*/
     public /*@ nullable @*/ java.lang.Object put(java.lang.Object key, java.lang.Object value) {
         Object k =  maskNull(key);
@@ -1151,7 +1151,7 @@ public class VerifiedIdentityHashMap
       @     // key exists in old table?
       @     (\exists int i;
       @        0 <= i < table.length / 2;
-      @        table[i*2] == key);
+      @        table[i*2] == maskNull(key));
       @   assignable
       @     size, table, modCount;
       @   ensures
@@ -1164,12 +1164,12 @@ public class VerifiedIdentityHashMap
       @     // Result is the removed value
       @     (\forall int j;
       @       0 <= j < \old(table.length) / 2;
-      @       \old(table[j*2]) == key ==> \result == \old(table[j*2 + 1])) &&
+      @       \old(table[j*2]) == maskNull(key) ==> \result == \old(table[j*2 + 1])) &&
       @
       @     // All not-to-be-removed elements are still present
       @     (\forall int i;
       @       0 <= i < \old(table.length) / 2;
-      @       \old(table[i * 2]) != key ==>
+      @       \old(table[i * 2]) != maskNull(key) ==>
       @         (\exists int j;
       @            0 <= j < table.length / 2;
       @            table[j*2] == \old(table[i * 2]) && table[j*2+1] == \old(table[i * 2+1]))) &&
@@ -1177,7 +1177,7 @@ public class VerifiedIdentityHashMap
       @     // The deleted key no longer exists in the table
       @     !(\exists int i;
       @        0 <= i < table.length / 2;
-      @        table[i*2] == key);
+      @        table[i*2] == maskNull(key));
       @
       @ also
       @ public normal_behavior
@@ -1185,7 +1185,7 @@ public class VerifiedIdentityHashMap
       @     // key does not exist in old table?
       @     (\forall int i;
       @        0 <= i < table.length / 2;
-      @        table[i*2] != key);
+      @        table[i*2] != maskNull(key));
       @   assignable
       @     \nothing;
       @   ensures
@@ -1198,7 +1198,7 @@ public class VerifiedIdentityHashMap
       @     // key exists in old table?
       @     (\exists int i;
       @        0 <= i < table.length / 2;
-      @        table[i*2] == key);
+      @        table[i*2] == maskNull(key));
       @   assignable
       @     size, table, modCount;
       @   ensures
@@ -1211,12 +1211,12 @@ public class VerifiedIdentityHashMap
       @     // Result is the removed value
       @     (\forall int j;
       @       0 <= j < \old(table.length) / 2;
-      @       \old(table[j*2]) == key ==> \result == \old(table[j*2 + 1])) &&
+      @       \old(table[j*2]) == maskNull(key) ==> \result == \old(table[j*2 + 1])) &&
       @
       @     // All not-to-be-removed elements are still present
       @     (\forall int i;
       @       0 <= i < \old(table.length) / 2;
-      @       \old(table[i * 2]) != key ==>
+      @       \old(table[i * 2]) != maskNull(key) ==>
       @         (\exists int j;
       @            0 <= j < table.length / 2;
       @            table[j*2] == \old(table[i * 2]) && table[j*2+1] == \old(table[i * 2+1]))) &&
@@ -1224,7 +1224,7 @@ public class VerifiedIdentityHashMap
       @     // The deleted key no longer exists in the table
       @     !(\exists int i;
       @        0 <= i < table.length / 2;
-      @        table[i*2] == key);
+      @        table[i*2] == maskNull(key));
       @*/
     public java.lang.Object remove(Object key) {
         Object k =  maskNull(key);
@@ -1262,7 +1262,7 @@ public class VerifiedIdentityHashMap
       @     // The element does not exist in the table
       @     !((\exists int i;
       @         0 <= i < table.length / 2;
-      @         table[i * 2] == key && table[i * 2 + 1] == value));
+      @         table[i * 2] == maskNull(key) && table[i * 2 + 1] == value));
       @   assignable
       @     \nothing;
       @   ensures
@@ -1271,7 +1271,7 @@ public class VerifiedIdentityHashMap
       @     // All not-to-be-removed elements are still present
       @     (\forall int i;
       @       0 <= i < \old(table.length) / 2;
-      @       \old(table[i * 2]) != key || \old(table[i * 2+1]) != value ==>
+      @       \old(table[i * 2]) != maskNull(key) || \old(table[i * 2+1]) != value ==>
       @         (\exists int j;
       @            0 <= j < table.length / 2;
       @            table[j * 2] == \old(table[i * 2]) && table[j * 2+1] == \old(table[i * 2+1])));
@@ -1281,7 +1281,7 @@ public class VerifiedIdentityHashMap
       @     // The element exists in the table
       @     ((\exists int i;
       @         0 <= i < table.length / 2;
-      @         table[i * 2] == key && table[i * 2 + 1] == value));
+      @         table[i * 2] == maskNull(key) && table[i * 2 + 1] == value));
       @   assignable
       @     size, table, modCount;
       @   ensures
@@ -1290,12 +1290,12 @@ public class VerifiedIdentityHashMap
       @     // The to-be-removed element is no longer present
       @     !((\exists int i;
       @         0 <= i < \old(table.length) / 2;
-      @         table[i * 2] == key && table[i * 2 + 1] == value)) &&
+      @         table[i * 2] == maskNull(key) && table[i * 2 + 1] == value)) &&
       @
       @     // All not-to-be-removed elements are still present
       @     (\forall int i;
       @       0 <= i < \old(table.length) / 2;
-      @       \old(table[i*2]) != key || \old(table[i*2+1]) != value ==>
+      @       \old(table[i*2]) != maskNull(key) || \old(table[i*2+1]) != value ==>
       @         (\exists int j;
       @            0 <= j < table.length / 2;
       @            table[j*2] == \old(table[i*2]) && table[j*2+1] == \old(table[i*2+1])));
@@ -1305,7 +1305,7 @@ public class VerifiedIdentityHashMap
       @     // The element does not exist in the table
       @     !((\exists int i;
       @         0 <= i < table.length / 2;
-      @         table[i * 2] == key && table[i * 2 + 1] == value));
+      @         table[i * 2] == maskNull(key) && table[i * 2 + 1] == value));
       @   assignable
       @     \nothing;
       @   ensures
@@ -1314,7 +1314,7 @@ public class VerifiedIdentityHashMap
       @     // All not-to-be-removed elements are still present
       @     (\forall int i;
       @       0 <= i < \old(table.length) / 2;
-      @       \old(table[i * 2]) != key || \old(table[i * 2+1]) != value ==>
+      @       \old(table[i * 2]) != maskNull(key) || \old(table[i * 2+1]) != value ==>
       @         (\exists int j;
       @            0 <= j < table.length / 2;
       @            table[j * 2] == \old(table[i * 2]) && table[j * 2+1] == \old(table[i * 2+1])));
