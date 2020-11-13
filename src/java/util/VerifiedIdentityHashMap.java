@@ -1190,7 +1190,6 @@ public class VerifiedIdentityHashMap
       @     \nothing;
       @   ensures
       @     \result == null &&
-      @     //\old(table.*) == table.*;
       @     table.length == \old(table.length);
       @*/
     /*+OPENJML@ also
