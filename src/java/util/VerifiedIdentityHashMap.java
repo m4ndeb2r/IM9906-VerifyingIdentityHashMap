@@ -479,6 +479,15 @@ public class VerifiedIdentityHashMap
             result = MAXIMUM_CAPACITY;
         } else {
             result = MINIMUM_CAPACITY;
+            /*+KEY@
+              @ maintaining 
+              @   result / 2 < minCapacity;
+              @ maintaining
+              @   (\exists int i;
+              @       0 <= i < result;
+              @       \dl_pow(2,i) == result); // result is a power of two
+              @ decreasing (minCapacity - result);
+              @*/
             while (result < minCapacity)
                 result <<= 1;
         }
