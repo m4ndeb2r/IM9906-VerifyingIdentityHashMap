@@ -1342,6 +1342,14 @@ public class VerifiedIdentityHashMap
     public void clear() {
         modCount++;
         Object[] tab =  table;
+        /*@
+          @ maintaining
+          @   0 <= i && i <= tab.length;
+          @ maintaining
+          @   (\forall int j; 0 <= j < i; tab[j] == null);
+          @ decreasing
+          @   tab.length - i;
+          @*/
         for (int i =  0; i < tab.length; i++)
             tab[i] = null;
         size = 0;
