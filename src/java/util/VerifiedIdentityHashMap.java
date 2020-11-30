@@ -1199,6 +1199,10 @@ public class VerifiedIdentityHashMap
         int len =  tab.length;
         int i =  hash(k, len);
 
+        /*+KEY@ // Prove termination of the loop statement
+          @ ghost int initialI = i;
+          @ decreasing len - (len + i - initialI) % len;
+          @*/
         while (true) {
             Object item =  tab[i];
             if (item == k) {
@@ -1275,6 +1279,10 @@ public class VerifiedIdentityHashMap
         int len =  tab.length;
         int i =  hash(k, len);
 
+        /*+KEY@ // Prove termination of the loop statement
+          @ ghost int initialI = i;
+          @ decreasing len - (len + i - initialI) % len;
+          @*/
         while (true) {
             Object item =  tab[i];
             if (item == k) {
