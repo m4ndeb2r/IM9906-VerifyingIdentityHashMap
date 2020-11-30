@@ -699,7 +699,7 @@ public class VerifiedIdentityHashMap
         int i =  hash(k, len);
         /*+KEY@ // Prove termination of the loop statement
           @ ghost int initialI = i;
-          @ decreasing table.length - (table.length + i - initialI) % table.length;
+          @ decreasing len - (len + i - initialI) % len;
           @*/
         while (true) {
             Object item =  tab[i];
@@ -747,6 +747,10 @@ public class VerifiedIdentityHashMap
         Object[] tab =  table;
         int len =  tab.length;
         int i =  hash(k, len);
+        /*+KEY@ // Prove termination of the loop statement
+          @ ghost int initialI = i;
+          @ decreasing len - (len + i - initialI) % len;
+          @*/
         while (true) {
             Object item =  tab[i];
             if (item == k)
@@ -801,6 +805,10 @@ public class VerifiedIdentityHashMap
         Object[] tab =  table;
         int len =  tab.length;
         int i =  hash(k, len);
+        /*+KEY@ // Prove termination of the loop statement
+          @ ghost int initialI = i;
+          @ decreasing len - (len + i - initialI) % len;
+          @*/
         while (true) {
             Object item =  tab[i];
             if (item == k)
@@ -1342,7 +1350,7 @@ public class VerifiedIdentityHashMap
     public void clear() {
         modCount++;
         Object[] tab =  table;
-        /*@
+        /*+KEY@
           @ maintaining
           @   0 <= i && i <= tab.length;
           @ maintaining
