@@ -312,9 +312,8 @@ public class VerifiedIdentityHashMap
      * Use NULL_KEY for key if it is null.
      */
     /*@ private normal_behavior
-      @   ensures
-      @     key == null ==> \result == NULL_KEY &&
-      @     key != null ==> \result == key;
+      @   ensures key == null ==> \result == NULL_KEY;
+      @   ensures key != null ==> \result == key;
       @*/
     public static /*@ pure @*/ Object maskNull(Object key) {
         return (key == null ? NULL_KEY : key);
@@ -324,11 +323,10 @@ public class VerifiedIdentityHashMap
      * Returns internal representation of null key back to caller as null.
      */
     /*@ private normal_behavior
-      @   ensures
-      @     key == NULL_KEY ==> \result == null &&
-      @     key != NULL_KEY ==> \result == key;
+      @   ensures key == NULL_KEY ==> \result == null;
+      @   ensures key != NULL_KEY ==> \result == key;
       @*/
-    private /*@ spec_public @*/ static /*@ pure @*/ Object unmaskNull(Object key) {
+    private /*@ spec_public @*/ static /*@ pure nullable @*/ Object unmaskNull(Object key) {
         return (key == NULL_KEY ? null : key);
     }
 
@@ -692,7 +690,7 @@ public class VerifiedIdentityHashMap
       @             table[i*2] == maskNull(key) && table[i*2 + 1] == null)
       @         );
       @*/
-    public /*@ pure @*/ /*@ nullable @*/ java.lang.Object get(Object key) {
+    public /*@ pure nullable @*/ java.lang.Object get(Object key) {
         Object k =  maskNull(key);
         Object[] tab =  table;
         int len =  tab.length;
@@ -943,6 +941,10 @@ public class VerifiedIdentityHashMap
         int i =  hash(k, len);
 
         Object item;
+        /*+KEY@ // Prove termination of the loop statement
+          @ ghost int initialI = i;
+          @ decreasing len - (len + i - initialI) % len;
+          @*/
         while ( (item = tab[i]) != null) {
             if (item == k) {
                 java.lang.Object oldValue =  (java.lang.Object) tab[i + 1];
@@ -1193,7 +1195,7 @@ public class VerifiedIdentityHashMap
       @        0 <= i < table.length / 2;
       @        table[i*2] == maskNull(key));
       @*/
-    public java.lang.Object remove(Object key) {
+    public /*@ nullable @*/ java.lang.Object remove(Object key) {
         Object k =  maskNull(key);
         Object[] tab =  table;
         int len =  tab.length;
@@ -1748,7 +1750,7 @@ public class VerifiedIdentityHashMap
               @   ensures
               @     \result == unmaskNull(traversalTable[index]);
               @*/
-            public java.lang.Object getKey() {
+            public /*@ nullable @*/ java.lang.Object getKey() {
                 checkIndexForEntryUse();
                 return (java.lang.Object) unmaskNull(traversalTable[index]);
             }
@@ -1770,12 +1772,12 @@ public class VerifiedIdentityHashMap
               @   ensures
               @     \result == unmaskNull(traversalTable[index + 1]);
               @*/
-            public java.lang.Object getValue() {
+            public /*@ nullable @*/ java.lang.Object getValue() {
                 checkIndexForEntryUse();
                 return (java.lang.Object) traversalTable[index + 1];
             }
 
-            public java.lang.Object setValue(java.lang.Object value) {
+            public /*@ nullable @*/ java.lang.Object setValue(java.lang.Object value) {
                 checkIndexForEntryUse();
                 java.lang.Object oldValue =  (java.lang.Object) traversalTable[index + 1];
                 traversalTable[index + 1] = value;
