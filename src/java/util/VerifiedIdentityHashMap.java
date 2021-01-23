@@ -484,7 +484,10 @@ public class VerifiedIdentityHashMap
               @   (\exists int i;
               @       0 <= i < result;
               @       \dl_pow(2,i) == result); // result is a power of two
-              @ decreasing (minCapacity - result);
+              @ decreasing 
+              @   (minCapacity - result);
+              @ assignable 
+              @   result;
               @*/
             while (result < minCapacity)
                 result <<= 1;
@@ -697,7 +700,10 @@ public class VerifiedIdentityHashMap
         int i =  hash(k, len);
         /*+KEY@ // Prove termination of the loop statement
           @ ghost int initialI = i;
-          @ decreasing len - (len + i - initialI) % len;
+          @ decreasing 
+          @   len - (len + i - initialI) % len;
+          @ assignable 
+          @   item, i;
           @*/
         while (true) {
             Object item =  tab[i];
@@ -747,7 +753,10 @@ public class VerifiedIdentityHashMap
         int i =  hash(k, len);
         /*+KEY@ // Prove termination of the loop statement
           @ ghost int initialI = i;
-          @ decreasing len - (len + i - initialI) % len;
+          @ decreasing 
+          @   len - (len + i - initialI) % len;
+          @ assignable 
+          @   item, i;
           @*/
         while (true) {
             Object item =  tab[i];
@@ -805,7 +814,10 @@ public class VerifiedIdentityHashMap
         int i =  hash(k, len);
         /*+KEY@ // Prove termination of the loop statement
           @ ghost int initialI = i;
-          @ decreasing len - (len + i - initialI) % len;
+          @ decreasing 
+          @   len - (len + i - initialI) % len;
+          @ assignable 
+          @   item, i;
           @*/
         while (true) {
             Object item =  tab[i];
@@ -943,7 +955,10 @@ public class VerifiedIdentityHashMap
         Object item;
         /*+KEY@ // Prove termination of the loop statement
           @ ghost int initialI = i;
-          @ decreasing len - (len + i - initialI) % len;
+          @ decreasing 
+          @   len - (len + i - initialI) % len;
+          @ assignable 
+          @   item, i, tab;
           @*/
         while ( (item = tab[i]) != null) {
             if (item == k) {
@@ -1203,7 +1218,10 @@ public class VerifiedIdentityHashMap
 
         /*+KEY@ // Prove termination of the loop statement
           @ ghost int initialI = i;
-          @ decreasing len - (len + i - initialI) % len;
+          @ decreasing 
+          @   len - (len + i - initialI) % len;
+          @ assignable 
+          @   item, i, modCount, size, tab;
           @*/
         while (true) {
             Object item =  tab[i];
@@ -1283,7 +1301,10 @@ public class VerifiedIdentityHashMap
 
         /*+KEY@ // Prove termination of the loop statement
           @ ghost int initialI = i;
-          @ decreasing len - (len + i - initialI) % len;
+          @ decreasing 
+          @   len - (len + i - initialI) % len;
+          @ assignable 
+          @   item, i, modCount, size, tab;
           @*/
         while (true) {
             Object item =  tab[i];
@@ -1367,6 +1388,8 @@ public class VerifiedIdentityHashMap
           @   (\forall int j; 0 <= j < i; tab[j] == null);
           @ decreasing
           @   tab.length - i;
+          @ assignable
+          @   \nothing;
           @*/
         for (int i =  0; i < tab.length; i++)
             tab[i] = null;
