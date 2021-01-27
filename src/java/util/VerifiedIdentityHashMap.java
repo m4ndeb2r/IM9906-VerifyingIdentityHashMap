@@ -1304,7 +1304,7 @@ public class VerifiedIdentityHashMap
           @ decreasing 
           @   len - (len + i - initialI) % len;
           @ assignable 
-          @   item, i, modCount, size, tab;
+          @   item, i, modCount, size, tab, table;
           @*/
         while (true) {
             Object item =  tab[i];
@@ -1672,7 +1672,7 @@ public class VerifiedIdentityHashMap
               @   (\num_of int i; 0 <= i && i < \old(table.length); \old(table[i]) == null) ==
               @     (\num_of int i; 0 <= i && i < table.length; table[i] == null);
               @ assignable
-              @   table, traversalTable, index;
+              @   table[*], traversalTable, index;
               @*/
             for (int i =  nextKeyIndex(d, len); (item = tab[i]) != null;
                  i = nextKeyIndex(i, len)) {
