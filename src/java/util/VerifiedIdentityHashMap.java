@@ -613,8 +613,19 @@ public class VerifiedIdentityHashMap
      */
     /*+KEY@ 
       @ private normal_behavior
+      @   requires
+      @     x != null;
       @   ensures
-      @     \result == \dl_genHash(x, length);
+      @     \result == \dl_genHash(x, length) && 
+      @     \result < length && 
+      @     \result >=0;
+      @
+      @ also
+      @ private normal_behavior
+      @   requires
+      @     x == null;
+      @   ensures
+      @     \result == 0;
       @*/
     public static /*@ pure @*/ int hash(Object x, int length) {
         int h =  System.identityHashCode(x);
@@ -698,12 +709,10 @@ public class VerifiedIdentityHashMap
         Object[] tab =  table;
         int len =  tab.length;
         int i =  hash(k, len);
-        /*+KEY@ // Prove termination of the loop statement
+        /*+KEY@ 
           @ ghost int initialI = i;
-          @ decreasing 
-          @   len - (len + i - initialI) % len;
-          @ assignable 
-          @   item, i;
+          @ decreasing len - (len + i - initialI) % len;
+          @ assignable i;
           @*/
         while (true) {
             Object item =  tab[i];
@@ -751,12 +760,10 @@ public class VerifiedIdentityHashMap
         Object[] tab =  table;
         int len =  tab.length;
         int i =  hash(k, len);
-        /*+KEY@ // Prove termination of the loop statement
+        /*+KEY@ 
           @ ghost int initialI = i;
-          @ decreasing 
-          @   len - (len + i - initialI) % len;
-          @ assignable 
-          @   item, i;
+          @ decreasing len - (len + i - initialI) % len;
+          @ assignable i;
           @*/
         while (true) {
             Object item =  tab[i];
@@ -782,10 +789,14 @@ public class VerifiedIdentityHashMap
       @   ensures
       @     \result <==> (\exists int i;
       @         0 <= i < table.length / 2;
-      @         table[i*2] == value);
+      @         table[i*2] != null && table[i*2 + 1] == value);
       @*/
     public /*@ pure @*/ boolean containsValue(Object value) {
         Object[] tab =  table;
+        /*+KEY@
+          @ decreasing tab.length/2 - (i-1)/2;
+          @ assignable i; 
+          @*/
         for (int i =  1; i < tab.length; i += 2)
             if (tab[i] == value && tab[i - 1] != null)
                 return true;
@@ -812,12 +823,10 @@ public class VerifiedIdentityHashMap
         Object[] tab =  table;
         int len =  tab.length;
         int i =  hash(k, len);
-        /*+KEY@ // Prove termination of the loop statement
+        /*+KEY@ 
           @ ghost int initialI = i;
-          @ decreasing 
-          @   len - (len + i - initialI) % len;
-          @ assignable 
-          @   item, i;
+          @ decreasing len - (len + i - initialI) % len;
+          @ assignable i;
           @*/
         while (true) {
             Object item =  tab[i];
@@ -953,12 +962,10 @@ public class VerifiedIdentityHashMap
         int i =  hash(k, len);
 
         Object item;
-        /*+KEY@ // Prove termination of the loop statement
+        /*+KEY@ 
           @ ghost int initialI = i;
-          @ decreasing 
-          @   len - (len + i - initialI) % len;
-          @ assignable 
-          @   item, i, tab;
+          @ decreasing len - (len + i - initialI) % len;
+          @ assignable item, i, tab[*];
           @*/
         while ( (item = tab[i]) != null) {
             if (item == k) {
@@ -1216,12 +1223,10 @@ public class VerifiedIdentityHashMap
         int len =  tab.length;
         int i =  hash(k, len);
 
-        /*+KEY@ // Prove termination of the loop statement
+        /*+KEY@ 
           @ ghost int initialI = i;
-          @ decreasing 
-          @   len - (len + i - initialI) % len;
-          @ assignable 
-          @   item, i, modCount, size, tab;
+          @ decreasing len - (len + i - initialI) % len;
+          @ assignable i, modCount, size, tab[*];
           @*/
         while (true) {
             Object item =  tab[i];
@@ -1299,12 +1304,10 @@ public class VerifiedIdentityHashMap
         int len =  tab.length;
         int i =  hash(k, len);
 
-        /*+KEY@ // Prove termination of the loop statement
+        /*+KEY@ 
           @ ghost int initialI = i;
-          @ decreasing 
-          @   len - (len + i - initialI) % len;
-          @ assignable 
-          @   item, i, modCount, size, tab, table;
+          @ decreasing len - (len + i - initialI) % len;
+          @ assignable i, modCount, size, tab, table;
           @*/
         while (true) {
             Object item =  tab[i];
