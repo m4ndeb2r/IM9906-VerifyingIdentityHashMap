@@ -159,7 +159,7 @@ public class VerifiedIdentityHashMap
       @       (table[2*i] != null && table[2*i] == table[2*j]) ==> i == j));
       @
       @ public invariant
-      @   threshold == table.length / 3;
+      @   threshold < MAXIMUM_CAPACITY;
       @
       @ // Size equals the number of non-empty keys in the table
       @ public invariant
@@ -222,7 +222,7 @@ public class VerifiedIdentityHashMap
       @       (table[2*i] != null && table[2*i] == table[2*j]) ==> i == j));
       @
       @ public invariant
-      @   threshold == table.length / 3;
+      @   threshold < MAXIMUM_CAPACITY;
       @
       @ // Table length is a power of two
       @ public invariant
@@ -570,7 +570,7 @@ public class VerifiedIdentityHashMap
       @     size == m.size() &&
       @     (\forall int i;
       @         0 <= i < table.length / 2;
-      @         m.get(table[i * 2]) == table[i * 2+1]);
+      @         m.get(table[i*2]) == table[i*2 + 1]);
       @*/
     public /*@ pure @*/ VerifiedIdentityHashMap(Map m) {
         // Allow for a bit of growth
@@ -795,7 +795,6 @@ public class VerifiedIdentityHashMap
         Object[] tab =  table;
         /*+KEY@
           @ decreasing tab.length/2 - (i-1)/2;
-          @ assignable i; 
           @*/
         for (int i =  1; i < tab.length; i += 2)
             if (tab[i] == value && tab[i - 1] != null)
