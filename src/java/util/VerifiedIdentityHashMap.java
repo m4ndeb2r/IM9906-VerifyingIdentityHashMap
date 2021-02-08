@@ -562,10 +562,34 @@ public class VerifiedIdentityHashMap
       @     NullPointerException;
       @   signals
       @     (NullPointerException e) true;
-      @*/
-    /*@ public normal_behavior
+      @
+      @ public exceptional_behavior
       @   requires
-      @     m != null;
+      @     m != null &&
+      @     MAXIMUM_CAPACITY == 536870912 &&
+      @     m.size() >= MAXIMUM_CAPACITY;
+      @   signals_only
+      @     IllegalStateException;
+      @   signals
+      @     (IllegalStateException e) true;
+      @
+      @ public normal_behavior
+      @   requires
+      @     m != null &&
+      @     MAXIMUM_CAPACITY == 536870912 &&
+      @     m.size() < MAXIMUM_CAPACITY;
+      @   ensures
+      @     size == m.size() &&
+      @     (\forall int i;
+      @         0 <= i < table.length / 2;
+      @         m.get(table[i*2]) == table[i*2 + 1]);
+      @*/
+    /*+OPEN_JML@ 
+      @ public normal_behavior
+      @   requires
+      @     m != null &&
+      @     MAXIMUM_CAPACITY == 4 &&
+      @     m.size() < MAXIMUM_CAPACITY;
       @   ensures
       @     size == m.size() &&
       @     (\forall int i;
@@ -1112,9 +1136,21 @@ public class VerifiedIdentityHashMap
       @     (NullPointerException e) true;
       @
       @ also
+      @ public exceptional_behavior
+      @   requires
+      @     MAXIMUM_CAPACITY == 536870912 &&
+      @     m.size() >= MAXIMUM_CAPACITY;
+      @   signals_only
+      @     IllegalStateException;
+      @   signals
+      @     (IllegalStateException e) true;
+      @
+      @ also
       @ public normal_behavior
       @   requires
-      @     m != null;
+      @     m != null &&
+      @     MAXIMUM_CAPACITY == 536870912 &&
+      @     m.size() < (MAXIMUM_CAPACITY);
       @   assignable
       @     threshold, table, size, modCount;
       @   ensures
@@ -1132,7 +1168,9 @@ public class VerifiedIdentityHashMap
       @ also
       @ public normal_behavior
       @   requires
-      @     m != null;
+      @     m != null &&
+      @     MAXIMUM_CAPACITY == 4 &&
+      @     m.size() < MAXIMUM_CAPACITY;
       @   assignable
       @     threshold, table, size, modCount;
       @   ensures
