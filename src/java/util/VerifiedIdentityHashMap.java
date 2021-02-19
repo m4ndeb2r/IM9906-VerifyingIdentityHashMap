@@ -480,6 +480,8 @@ public class VerifiedIdentityHashMap
         } else {
             result = MINIMUM_CAPACITY;
             /*+KEY@
+              @ loop_invariant 
+              @   true; 
               @ maintaining 
               @   result / 2 < minCapacity;
               @ maintaining
@@ -643,8 +645,9 @@ public class VerifiedIdentityHashMap
       @     x != null;
       @   ensures
       @     \result == \dl_genHash(x, length) && 
+      @     \result % 2 == 0 &&
       @     \result < length && 
-      @     \result >=0;
+      @     \result >= 0;
       @
       @ also
       @ private normal_behavior
@@ -735,9 +738,12 @@ public class VerifiedIdentityHashMap
         Object[] tab =  table;
         int len =  tab.length;
         int i =  hash(k, len);
+
+        //+KEY@ ghost int hash = i;
+        
         /*+KEY@ 
-          @ ghost int initialI = i;
-          @ decreasing len - (len + i - initialI) % len;
+          @ loop_invariant true; // TODO: see containsKey()
+          @ decreasing len - (len + i - hash) % len;
           @ assignable i;
           @*/
         while (true) {
@@ -786,10 +792,50 @@ public class VerifiedIdentityHashMap
         Object[] tab =  table;
         int len =  tab.length;
         int i =  hash(k, len);
-        /*+KEY@ 
-          @ ghost int initialI = i;
-          @ decreasing len - (len + i - initialI) % len;
-          @ assignable i;
+        
+        //+KEY@ ghost int hash = i;
+        
+        /*+KEY@
+          @ // Index i is always an even value (key-index) within the array bounds
+          @ maintaining 
+          @   i % 2 == 0 && i >= 0 && i < len;
+          @
+          @ // If the key exists in element x in the interval hash..(len - 1)
+          @ // then i will never exceed the interval hash..x 
+          @ maintaining
+          @   (\exists int n; (hash / 2) <= n < (len / 2); tab[n * 2] == k) ==>
+          @       (i >= hash && 
+          @       i <= (2 * (\min int x; (hash / 2) <= x < (len / 2) && tab[x * 2] == k; x)));
+          @
+          @ // If the does not key exist in the interval hash..(len - 1), but an empty 
+          @ // key exists in element x of that interval, then i will never exceed the 
+          @ // interval hash..x (x being the first element to contain an empty key)
+          @ maintaining
+          @   (!(\exists int n; (hash / 2) <= n < (len / 2); table[n * 2] == k) &&
+          @       (\exists int m; (hash / 2) <= m < (len / 2); table[m * 2] == null)) ==>
+          @           (i >= hash && 
+          @           i <= (2 * (\min int x; (hash / 2) <= x < (len / 2) && tab[x * 2] == null; x)));
+          @
+          @ // If the key exists in element x in the interval 0..(hash - 2), then i must lie in the 
+          @ // interval between hash..(len - 1), or in the interval 0..x, with x being the element 
+          @ // containing the key in the interval 0..(hash - 2)
+          @ maintaining
+          @   (\exists int m; 0 <= m < ((hash - 2) / 2); tab[m * 2] == k) ==>
+          @       ((i >= hash && i < len) || 
+          @       (i >= 0 && i <= (2 * (\min int x; 0 <= x < ((hash - 2) / 2) && tab[x * 2] == k; x))));
+          @               
+          @ // If the key does not exists in the table at all, and there is no empty key present in the 
+          @ // interval hash..(len - 1), then i must lie in the interval between hash..(len - 1), or in the 
+          @ // interval 0..x, with x being the element containing the first occurrence of an empty key in 
+          @ // the interval 0..(hash - 2)
+          @ maintaining
+          @   ((!(\exists int n; 0 <= n < (len / 2); tab[n * 2] == k)) &&
+          @       (!(\exists int m; (hash / 2) <= m < (len / 2); tab[m * 2] == null))) ==>
+          @           ((i >= hash && i < len) || 
+          @           (i >= 0 && i <= (2 * (\min int x; 0 <= x < (hash / 2) && tab[x * 2] == null; x))));
+          @               
+          @ decreasing len - (len + i - hash) % len;
+          @ assignable \strictly_nothing;
           @*/
         while (true) {
             Object item =  tab[i];
@@ -820,7 +866,9 @@ public class VerifiedIdentityHashMap
     public /*@ pure @*/ boolean containsValue(Object value) {
         Object[] tab =  table;
         /*+KEY@
+          @ loop_invariant true; // TODO: see containsKey()
           @ decreasing tab.length/2 - (i-1)/2;
+          @ assignable \strictly_nothing;
           @*/
         for (int i =  1; i < tab.length; i += 2)
             if (tab[i] == value && tab[i - 1] != null)
@@ -848,10 +896,13 @@ public class VerifiedIdentityHashMap
         Object[] tab =  table;
         int len =  tab.length;
         int i =  hash(k, len);
+
+        //+KEY@ ghost int hash = i;
+        
         /*+KEY@ 
-          @ ghost int initialI = i;
-          @ decreasing len - (len + i - initialI) % len;
-          @ assignable i;
+          @ loop_invariant true; // TODO: see containsKey()
+          @ decreasing len - (len + i - hash) % len;
+          @ assignable \strictly_nothing;
           @*/
         while (true) {
             Object item =  tab[i];
@@ -987,9 +1038,12 @@ public class VerifiedIdentityHashMap
         int i =  hash(k, len);
 
         Object item;
+
+        //+KEY@ ghost int hash = i;
+        
         /*+KEY@ 
-          @ ghost int initialI = i;
-          @ decreasing len - (len + i - initialI) % len;
+          @ loop_invariant true; // TODO: see containsKey()
+          @ decreasing len - (len + i - hash) % len;
           @ assignable item, i, tab[*];
           @*/
         while ( (item = tab[i]) != null) {
@@ -1263,9 +1317,11 @@ public class VerifiedIdentityHashMap
         int len =  tab.length;
         int i =  hash(k, len);
 
+        //+KEY@ ghost int hash = i;
+        
         /*+KEY@ 
-          @ ghost int initialI = i;
-          @ decreasing len - (len + i - initialI) % len;
+          @ loop_invariant true; // TODO: see containsKey()
+          @ decreasing len - (len + i - hash) % len;
           @ assignable i, modCount, size, tab[*];
           @*/
         while (true) {
@@ -1365,9 +1421,11 @@ public class VerifiedIdentityHashMap
         int len =  tab.length;
         int i =  hash(k, len);
 
+        //+KEY@ ghost int hash = i;
+        
         /*+KEY@ 
-          @ ghost int initialI = i;
-          @ decreasing len - (len + i - initialI) % len;
+          @ loop_invariant true; // TODO: see containsKey()
+          @ decreasing len - (len + i - hash) % len;
           @ assignable i, modCount, size, tab, table;
           @*/
         while (true) {
@@ -1464,6 +1522,8 @@ public class VerifiedIdentityHashMap
         modCount++;
         Object[] tab =  table;
         /*+KEY@
+          @ loop_invariant 
+          @   true; 
           @ maintaining
           @   0 <= i && i <= tab.length;
           @ maintaining
