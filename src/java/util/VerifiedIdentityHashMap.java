@@ -793,7 +793,7 @@ public class VerifiedIdentityHashMap
         
         //+KEY@ ghost int hash = i;
         
-        /*@
+        /*+KEY@
           @ // Local variables (except i) do not change 
           @ maintaining
           @   k == maskNull(key) &&
@@ -826,73 +826,12 @@ public class VerifiedIdentityHashMap
           @      i >= hash;
           @      
           @ // Key k does not exist in interval [hash..len-2], nor does a null key
-          @ // 1. We allow i to be in the interval [hash..len-2] OR
-          @ // 2. We allow i to be <= the location of k or the first null key in the interval [0..hash-2]
+          @ // 1. We allow i to be <= the location of k or the first null key in the interval [0..hash-2] OR
+          @ // 2. We allow i to be in the interval [hash..len-2]
           @ maintaining
           @   (!(\exists int n; hash <= (2 * n) < len; tab[n * 2] == k || tab[n * 2] == null)) ==>
-          @      i >= hash || 
-          @      (\forall int m; 0 <= (2 * m) < hash; tab[m * 2] == k || tab[m * 2] == null ==> i <= m * 2);
-          @
-//          @      
-//          @ ==========  
-//          @      
-//          @      
-//          @ // Key k exists in interval [0..hash-4]
-//          @ // 1. We allow i to be in the interval [hash..len-2] OR
-//          @ // 2. We allow i to be <= the location of k in the interval [0..hash-2]
-//          @ maintaining
-//          @   (\exists int n; 0 <= n < (hash - 2); tab[n * 2] == k) ==>
-//          @      i >= hash || 
-//          @      (\forall int m; 0 <= (2 * m) < hash - 2; tab[m * 2] == k ==> i <= m * 2);
-//          @ 
-//          @ // Key k does not exists, and no null key exists in inteval [hash..len-2]
-//          @ // 1. We allow i to be in the interval [hash..len-2], OR 
-//          @ // 2. We allow i to be <= the location of a null key in the interval [0..hash-2]
-//          @ maintaining
-//          @   ((!(\exists int n; 0 <= (2 * n) < len; tab[n * 2] == k)) &&
-//          @   (!(\exists int m; hash <= 2 * m < len; tab[m * 2] == null))) ==>
-//          @      i >= hash || 
-//          @      (\forall int q; 0 <= (2 * q) < hash; tab[q * 2] == null ==> i <= q * 2);
-//          @
-//          @ 
-//          @ ==========
-//          @ 
-//          @ 
-//          @ // If the key exists in element x in the interval hash..(len - 1)
-//          @ // then i will never exceed the interval hash..x 
-//          @ maintaining
-//          @   (\exists int n; hash <= (2 * n) < len; tab[n * 2] == k) ==>
-//          @       (i >= hash && i <= (2 * n)); 
-//          @
-//          @ // If the does not key exist in the interval hash..(len - 1), but an empty 
-//          @ // key exists in element x of that interval, then i will never exceed the 
-//          @ // interval hash..x (x being the first element to contain an empty key)
-//          @ maintaining
-//          @   (!(\exists int n; hash <= (2 * n) < len; tab[n * 2] == k) &&
-//          @   (\exists int m; hash <= (2  * m) < len; 
-//          @       tab[m * 2] == null && (\forall int j; hash <= j * 2 < m * 2; tab[j * 2] != null))) ==>
-//          @           (i >= hash && i <= (2 * m));
-//          @
-//          @ // If the key exists in element x in the interval 0..(hash - 2), then i must lie in the 
-//          @ // interval between hash..(len - 1), or in the interval 0..x, with x being the element 
-//          @ // containing the key in the interval 0..(hash - 2)
-//          @ maintaining
-//          @   (!(\exists int n; hash <= (2 * n) < len; tab[n * 2] == k) &&
-//          @   !(\exists int m; hash <= (2 * m) < len; tab[m * 2] == null) &&
-//          @   (\exists int m; 0 <= m < ((hash - 2) / 2); tab[m * 2] == k)) ==>
-//          @       ((i >= hash && i < len) || (i >= 0 && i <= (2 * m)));
-//          @               
-//          @ // If the key does not exists in the table at all, and there is no empty key present in the 
-//          @ // interval hash..(len - 1), then i must lie in the interval between hash..(len - 1), or in the 
-//          @ // interval 0..x, with x being the element containing the first occurrence of an empty key in 
-//          @ // the interval 0..(hash - 2)
-//          @ maintaining
-//          @   ((!(\exists int n; 0 <= (2 * n) < len; tab[n * 2] == k)) &&
-//          @   (!(\exists int m; hash <= 2 * m < len; tab[m * 2] == null)) &&
-//          @   (\exists int m; 0 <= (2  * m) < hash; 
-//          @       tab[m * 2] == null && (\forall int j; 0 <= (2 * j) < (2 * m); tab[j * 2] != null))) ==>
-//          @       ((i >= hash && i < len) || (i >= 0 && i < (m * 2)));
-          @       
+          @      (\forall int m; 0 <= (2 * m) < hash; tab[m * 2] == k || tab[m * 2] == null ==> i <= m * 2) ||
+          @      i >= hash;
           @               
           @ decreasing len - (len + i - hash) % len;
           @ assignable \strictly_nothing;
