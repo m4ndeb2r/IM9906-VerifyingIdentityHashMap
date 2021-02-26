@@ -674,9 +674,7 @@ public class VerifiedIdentityHashMap
       @     i % 2 == 0 &&
       @     len > 2 &&
       @     len <= MAXIMUM_CAPACITY &&
-      @     (\exists int j;
-      @       0 <= j < len;
-      @       \dl_pow(2,j) == len);
+      @     (\exists int j; 0 <= j < len; \dl_pow(2,j) == len);
       @   ensures
       @     i + 2 < len ==> \result == i + 2 &&
       @     i + 2 >= len ==> \result == 0;
@@ -784,8 +782,8 @@ public class VerifiedIdentityHashMap
       @ public normal_behavior
       @   ensures
       @     \result <==> (\exists int i;
-      @         0 <= i < table.length / 2;
-      @         table[i*2] == maskNull(key));
+      @         0 <= i < (table.length / 2);
+      @         table[i * 2] == maskNull(key));
       @*/
     public /*@ pure @*/ boolean containsKey(Object key) {
         Object k =  maskNull(key);
@@ -796,33 +794,48 @@ public class VerifiedIdentityHashMap
         //+KEY@ ghost int hash = i;
         
         /*+KEY@
-          @ // Index i is always an even value (key-index) within the array bounds
+          @ // Local variables (except i) do not change 
+          @ maintaining
+          @   k == maskNull(key) &&
+          @   tab == table &&
+          @   len == table.length;
+          @
+          @ // Index i is always an even value (key-index)
           @ maintaining 
-          @   i % 2 == 0 && i >= 0 && i < len;
+          @   i % 2 == 0;
+          @
+          @ // Index i is always within the array bounds
+          @ maintaining 
+          @   i >= 0 && i < len;
           @
           @ // If the key exists in element x in the interval hash..(len - 1)
           @ // then i will never exceed the interval hash..x 
           @ maintaining
           @   (\exists int n; (hash / 2) <= n < (len / 2); tab[n * 2] == k) ==>
           @       (i >= hash && 
-          @       i <= (2 * (\min int x; (hash / 2) <= x < (len / 2) && tab[x * 2] == k; x)));
+          @       // i <= (\min int x; (hash / 2) <= x < (len / 2) && tab[x * 2] == k; x * 2));
+          @       i < len);
           @
           @ // If the does not key exist in the interval hash..(len - 1), but an empty 
           @ // key exists in element x of that interval, then i will never exceed the 
           @ // interval hash..x (x being the first element to contain an empty key)
           @ maintaining
-          @   (!(\exists int n; (hash / 2) <= n < (len / 2); table[n * 2] == k) &&
-          @       (\exists int m; (hash / 2) <= m < (len / 2); table[m * 2] == null)) ==>
-          @           (i >= hash && 
-          @           i <= (2 * (\min int x; (hash / 2) <= x < (len / 2) && tab[x * 2] == null; x)));
+          @   (!(\exists int n; (hash / 2) <= n < (len / 2); tab[n * 2] == k) &&
+          @   (\exists int m; (hash / 2) <= m < (len / 2); tab[m * 2] == null)) ==>
+          @       (i >= hash && 
+          @       // i <= (\min int x; (hash / 2) <= x < (len / 2) && tab[x * 2] == null; x * 2));
+          @       i < len);
           @
           @ // If the key exists in element x in the interval 0..(hash - 2), then i must lie in the 
           @ // interval between hash..(len - 1), or in the interval 0..x, with x being the element 
           @ // containing the key in the interval 0..(hash - 2)
           @ maintaining
-          @   (\exists int m; 0 <= m < ((hash - 2) / 2); tab[m * 2] == k) ==>
+          @   (!(\exists int n; (hash / 2) <= n < (len / 2); tab[n * 2] == k) &&
+          @   !(\exists int m; (hash / 2) <= m < (len / 2); tab[m * 2] == null) &&
+          @   (\exists int m; 0 <= m < ((hash - 2) / 2); tab[m * 2] == k)) ==>
           @       ((i >= hash && i < len) || 
-          @       (i >= 0 && i <= (2 * (\min int x; 0 <= x < ((hash - 2) / 2) && tab[x * 2] == k; x))));
+          @       // (i >= 0 && i <= (\min int x; 0 <= x < ((hash - 2) / 2) && tab[x * 2] == k; x * 2)));
+          @       (i >= 0 && i <= (hash - 2)));
           @               
           @ // If the key does not exists in the table at all, and there is no empty key present in the 
           @ // interval hash..(len - 1), then i must lie in the interval between hash..(len - 1), or in the 
@@ -830,9 +843,10 @@ public class VerifiedIdentityHashMap
           @ // the interval 0..(hash - 2)
           @ maintaining
           @   ((!(\exists int n; 0 <= n < (len / 2); tab[n * 2] == k)) &&
-          @       (!(\exists int m; (hash / 2) <= m < (len / 2); tab[m * 2] == null))) ==>
-          @           ((i >= hash && i < len) || 
-          @           (i >= 0 && i <= (2 * (\min int x; 0 <= x < (hash / 2) && tab[x * 2] == null; x))));
+          @   (!(\exists int m; (hash / 2) <= m < (len / 2); tab[m * 2] == null))) ==>
+          @       ((i >= hash && i < len) || 
+          @       // (i >= 0 && i <= (\min int x; 0 <= x < (hash / 2) && tab[x * 2] == null; x * 2)));
+          @       (i >= 0 && i <= (hash / 2)));
           @               
           @ decreasing len - (len + i - hash) % len;
           @ assignable \strictly_nothing;
