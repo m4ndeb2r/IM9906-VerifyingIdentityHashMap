@@ -830,7 +830,7 @@ public class VerifiedIdentityHashMap
           @ // 2. We allow i to be in the interval [hash..len-2]
           @ maintaining
           @   (!(\exists int n; hash <= (2 * n) < len; tab[n * 2] == k || tab[n * 2] == null)) ==>
-          @      (\forall int m; 0 <= (2 * m) < hash; tab[m * 2] == k || tab[m * 2] == null ==> i <= m * 2) ||
+          @      (\forall int m; 0 <= (2 * m) < hash; (tab[m * 2] == k || tab[m * 2] == null) ==> i <= m * 2) || 
           @      i >= hash;
           @               
           @ decreasing len - (len + i - hash) % len;
