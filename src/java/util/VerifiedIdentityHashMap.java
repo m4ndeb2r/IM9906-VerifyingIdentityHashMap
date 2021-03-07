@@ -793,7 +793,7 @@ public class VerifiedIdentityHashMap
         
         //+KEY@ ghost int hash = i;
         
-        /*@
+        /*+KEY@
           @ // Local variables (except i) do not change 
           @ maintaining
           @   k == maskNull(key) &&
@@ -808,66 +808,6 @@ public class VerifiedIdentityHashMap
           @ maintaining 
           @   i >= 0 && i < len;
           @
-          @ // Key k exists in interval [hash..len-2]
-          @ // 1. We do not allow i to be > the location of k AND
-          @ // 2. We do not allow i to be < hash
-          @ //maintaining
-          @ //  (\exists int n; hash <= (2 * n) < len; 
-          @ //      ((tab[n * 2] == k) ==> i <= 2 * n && i >= hash));
-          @ 
-          @ // Key k does not exist in interval [hash..len-2], but key null does
-          @ // 1. We do not allow i to be > the location of a null key AND
-          @ // 2. We do not allow i to be < hash
-          @ //maintaining
-          @ //  (!(\exists int n; hash <= (2 * n) < len; tab[2 * n] == k) &&
-          @ //  (\exists int m; hash <= (2 * m) < len; 
-          @ //      ((tab[2 * m] == null) ==> i <= 2 * m && i >= hash)));
-          @      
-          @ // Key k does not exist in interval [hash..len-2], nor does a null key
-          @ // 1. We allow i to be <= the location of k or the first null key in the interval [0..hash-2] OR
-          @ // 2. We allow i to be in the interval [hash..len-2]
-          @ //maintaining
-          @ //  (!(\exists int n; hash <= (2 * n) < len; 
-          @ //      (tab[n * 2] == k || tab[n * 2] == null) ==> i <= n * 2 && i >= hash));
-          @ 
-          @ // -----
-          @               
-          @ // Key k exists in interval [hash..len-2]
-          @ // 1. We do not allow i to be < hash
-          @ // 2. We do not allow i to be > the location of k AND
-          @ //maintaining
-          @ //  (\exists int n; hash <= (2 * n) && (2 * n) < len && tab[2 * n] == k; 
-          @ //      i >= hash && i <= (2 * n));
-          @ 
-          @ // Key k does not exist in interval [hash..len-2], but key null does
-          @ // 1. We do not allow i to be < hash
-          @ // 2. We do not allow i to be > the location of a null key AND
-          @ //maintaining
-          @ //  (!(\exists int n; hash <= (2 * n) < len; tab[n * 2] == k) &&
-          @ //  (\exists int m; hash <= (2 * m) && (2 * m) < len && tab[2 * m] == null; 
-          @ //      i >= hash && i <= (2 * m)));
-          @      
-          @ // Key k does not exist in interval [hash..len-2], nor does a null key. Key k does
-          @ // exist in interval [0..hash-4], on position m*2.
-          @ // 1. We allow i to be <= the location of k in the interval [0..m*2] OR
-          @ // 2. We allow i to be in the interval [hash..len-2]
-          @ //maintaining
-          @ //  (!(\exists int n; hash <= (2 * n) < len; (tab[2 * n] == k || tab[2 * n] == null)) &&
-          @ //  (\exists int m; 0 <= (2 * m) && (2 * m) < (hash - 2) && tab[2 * m] == k; 
-          @ //      (i >= 0 && i <= (2 * m)) || (i >= hash && i <= (len - 2)))); 
-          @               
-          @ // Key k does not exist anywhere in tab, there is no null key present in interval 
-          @ // [hash..len-2], but there is a null key present in interval [0..hash-2].
-          @ // 1. We allow i to be <= the location of the first null key in the interval [0..hash-2] OR
-          @ // 2. We allow i to be in the interval [hash..len-2]
-          @ //maintaining
-          @ //  (!(\exists int n; 0 <= (2 * n) < len; tab[2 * n] == k) &&
-          @ //  !(\exists int m; hash <= (2 * m) < len; (tab[2 * m] == null)) &&
-          @ //  (\exists int x; 0 <= (2 * x) && (2 * x) < hash && tab[2 * x] == null; 
-          @ //      (i >= 0 && i <= (2 * x)) || (i >= hash && i <= (len - 2))));
-          @       
-          @ // ---------
-          @ 
           @ // Suppose i > hash. This can only be the case when no key k and no null is present
           @ // at an even index of tab in the interval [hash..i-2]. 
           @ maintaining
