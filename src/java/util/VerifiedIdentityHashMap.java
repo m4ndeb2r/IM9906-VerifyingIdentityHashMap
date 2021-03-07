@@ -781,9 +781,9 @@ public class VerifiedIdentityHashMap
     /*@ also
       @ public normal_behavior
       @   ensures
-      @     \result <==> (\exists int i;
-      @         0 <= i < (table.length / 2);
-      @         table[i * 2] == maskNull(key));
+      @     \result <==> (\exists int j;
+      @         0 <= j < (table.length / 2);
+      @         table[j * 2] == maskNull(key));
       @*/
     public /*@ pure @*/ boolean containsKey(Object key) {
         Object k =  maskNull(key);
