@@ -793,7 +793,7 @@ public class VerifiedIdentityHashMap
         
         //+KEY@ ghost int hash = i;
         
-        /*@
+        /*+KEY@
           @ // Local variables (except i) do not change 
           @ maintaining
           @   k == maskNull(key) &&
