@@ -793,34 +793,35 @@ public class VerifiedIdentityHashMap
         
         //+KEY@ ghost int hash = i;
         
-        /*+KEY@
+        /*@
           @ // Local variables (except i) do not change 
           @ maintaining
           @   k == maskNull(key) &&
           @   tab == table &&
           @   len == table.length;
           @
-          @ // Index i is always an even value (key-index)
+          @ // Index i is always an even value within the array bounds
           @ maintaining 
-          @   i % 2 == 0;
+          @   i >= 0 && i < len && i % 2 == 0;
           @
-          @ // Index i is always within the array bounds
+          @ // If key k or a null key is found in the first iteration, i will never become
+          @ // greater than hash, its initial value.
           @ maintaining 
-          @   i >= 0 && i < len;
-          @
+          @   (tab[hash] == null || tab[hash] == k) ==> i == hash;
+          @    
           @ // Suppose i > hash. This can only be the case when no key k and no null is present
           @ // at an even index of tab in the interval [hash..i-2]. 
           @ maintaining
           @   (i > hash) ==>
-          @   (!(\exists int n; hash <= (2 * n) < i; (tab[2 * n] == k || tab[2 * n] == null)));
+          @   (\forall int n; hash <= (2 * n) < i; tab[2 * n] != k && tab[2 * n] != null);
           @ 
           @ // Suppose i < hash. This can only be the case when no key k and no null is present
           @ // at an even index of tab in the intervals [0..i-2] and [hash..len-2]. 
           @ maintaining
           @   (i < hash) ==>
-          @   (!(\exists int n; 0 <= (2 * n) < i; (tab[2 * n] == k || tab[2 * n] == null))) &&
-          @   (!(\exists int m; hash <= (2 * m) < len; (tab[2 * m] == k || tab[2 * m] == null)));
-          @    
+          @   (\forall int n; hash <= (2 * n) < len; tab[2 * n] != k && tab[2 * n] != null) &&
+          @   (\forall int m; 0 <= (2 * m) < i; tab[2 * m] != k && tab[2 * m] != null);
+          @   
           @ decreasing len - (len + i - hash) % len;
           @ 
           @ assignable \strictly_nothing;
