@@ -854,9 +854,23 @@ public class VerifiedIdentityHashMap
       @*/
     public /*@ pure @*/ boolean containsValue(Object value) {
         Object[] tab =  table;
+
         /*+KEY@
-          @ loop_invariant true; // TODO: see containsKey()
-          @ decreasing tab.length/2 - (i-1)/2;
+          @ // Local variables (except i) do not change 
+          @ maintaining
+          @   tab == table;
+          @
+          @ // Index i is always an odd value within the array bounds
+          @ maintaining 
+          @   i >= 1 && i < tab.length && i % 2 == 1;
+          @
+          @ // There cannot be an odd index n < i containing the value we are looking for (unless
+          @ // the associated key is null, in which case the value is ignored). 
+          @ maintaining
+          @   (\forall int n; 1 <= n < i && n % 2 == 1; tab[n - 1] != null ==> tab[n] != value);
+          @ 
+          @ decreasing tab.length - i;
+          @ 
           @ assignable \strictly_nothing;
           @*/
         for (int i =  1; i < tab.length; i += 2)
