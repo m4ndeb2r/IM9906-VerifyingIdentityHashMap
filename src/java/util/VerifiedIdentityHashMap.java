@@ -848,9 +848,9 @@ public class VerifiedIdentityHashMap
     /*@ also
       @ public normal_behavior
       @   ensures
-      @     \result <==> (\exists int i;
-      @         0 <= i < table.length / 2;
-      @         table[i*2] != null && table[i*2 + 1] == value);
+      @     \result <==> (\exists int j;
+      @         0 <= j < table.length / 2;
+      @         table[j * 2] != null && table[j * 2 + 1] == value);
       @*/
     public /*@ pure @*/ boolean containsValue(Object value) {
         Object[] tab =  table;
