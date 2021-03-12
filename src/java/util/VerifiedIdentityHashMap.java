@@ -315,7 +315,7 @@ public class VerifiedIdentityHashMap
       @   ensures key == null ==> \result == NULL_KEY;
       @   ensures key != null ==> \result == key;
       @*/
-    public static /*@ pure @*/ Object maskNull(Object key) {
+    public static /*@ strictly_pure @*/ Object maskNull(Object key) {
         return (key == null ? NULL_KEY : key);
     }
 
@@ -616,7 +616,7 @@ public class VerifiedIdentityHashMap
       @   ensures
       @     \result == size;
       @*/
-    public /*@ pure @*/ int size() {
+    public /*@ strictly_pure @*/ int size() {
         return size;
     }
 
@@ -632,7 +632,7 @@ public class VerifiedIdentityHashMap
       @   ensures
       @     \result <==> size == 0;
       @*/
-    public /*@ pure @*/ boolean isEmpty() {
+    public /*@ strictly_pure @*/ boolean isEmpty() {
         return size == 0;
     }
 
@@ -656,7 +656,7 @@ public class VerifiedIdentityHashMap
       @   ensures
       @     \result == 0;
       @*/
-    public static /*@ pure @*/ int hash(Object x, int length) {
+    public static /*@ strictly_pure @*/ int hash(Object x, int length) {
         int h =  System.identityHashCode(x);
         // Multiply by -127, and left-shift to use least bit as part of hash
         return ((h << 1) - (h << 8)) & (length - 1);
@@ -668,7 +668,6 @@ public class VerifiedIdentityHashMap
     /*+KEY@ 
       @ private normal_behavior
       @   requires
-      @     MAXIMUM_CAPACITY == 536870912 &&
       @     i >= 0 &&
       @     i + 2 <= MAXIMUM_CAPACITY &&
       @     i % 2 == 0 &&
@@ -682,7 +681,6 @@ public class VerifiedIdentityHashMap
     /*+OPENJML@ 
       @ private normal_behavior
       @   requires
-      @     MAXIMUM_CAPACITY == 4 &&
       @     i >= 0 &&
       @     i + 2 <= MAXIMUM_CAPACITY &&
       @     i % 2 == 0 &&
@@ -693,7 +691,7 @@ public class VerifiedIdentityHashMap
       @     i + 2 < len ==> \result == i + 2 &&
       @     i + 2 >= len ==> \result == 0;
       @*/
-    private static /*@ pure @*/ int nextKeyIndex(int i, int len) {
+    private static /*@ strictly_pure @*/ int nextKeyIndex(int i, int len) {
         return (i + 2 < len ? i + 2 : 0);
     }
 
@@ -785,7 +783,7 @@ public class VerifiedIdentityHashMap
       @         0 <= j < (table.length / 2);
       @         table[j * 2] == maskNull(key));
       @*/
-    public /*@ pure @*/ boolean containsKey(Object key) {
+    public /*@ strictly_pure @*/ boolean containsKey(Object key) {
         Object k =  maskNull(key);
         Object[] tab =  table;
         int len =  tab.length;
@@ -852,7 +850,7 @@ public class VerifiedIdentityHashMap
       @         0 <= j < table.length / 2;
       @         table[j * 2] != null && table[j * 2 + 1] == value);
       @*/
-    public /*@ pure @*/ boolean containsValue(Object value) {
+    public /*@ strictly_pure @*/ boolean containsValue(Object value) {
         Object[] tab =  table;
 
         /*+KEY@
@@ -894,7 +892,7 @@ public class VerifiedIdentityHashMap
       @         0 <= i < table.length / 2;
       @         table[i*2] == maskNull(key) && table[i*2 + 1] == value);
       @*/
-    private /*@ spec_public @*/ /*@ pure @*/ boolean containsMapping(Object key, Object value) {
+    private /*@ spec_public @*/ /*@ strictly_pure @*/ boolean containsMapping(Object key, Object value) {
         Object k =  maskNull(key);
         Object[] tab =  table;
         int len =  tab.length;
@@ -2112,7 +2110,7 @@ public class VerifiedIdentityHashMap
           @ public normal_behavior
           @   ensures \result == size;
           @*/
-        public /*@ pure @*/ int size() {
+        public /*@ strictly_pure @*/ int size() {
             return size;
         }
         /*@ also
@@ -2231,7 +2229,7 @@ public class VerifiedIdentityHashMap
           @ public normal_behavior
           @   ensures \result == size;
           @*/
-        public /*@ pure @*/ int size() {
+        public /*@ strictly_pure @*/ int size() {
             return size;
         }
         /*@ also
@@ -2241,7 +2239,7 @@ public class VerifiedIdentityHashMap
           @   ensures
           @     \result == containsValue(o);
           @*/
-        public /*@ pure @*/ boolean contains(Object o) {
+        public /*@ strictly_pure @*/ boolean contains(Object o) {
             return containsValue(o);
         }
         /*@ also
