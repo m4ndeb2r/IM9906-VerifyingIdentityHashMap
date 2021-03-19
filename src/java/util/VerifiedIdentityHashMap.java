@@ -661,28 +661,7 @@ public class VerifiedIdentityHashMap
     /**
      * Circularly traverses table of size len.
      */
-    /*+KEY@ 
-      @ private normal_behavior
-      @   requires
-      @     i >= 0 &&
-      @     i + 2 <= MAXIMUM_CAPACITY &&
-      @     i % 2 == 0 &&
-      @     len > 2 &&
-      @     len <= MAXIMUM_CAPACITY &&
-      @     (\exists int j; 0 <= j < len; \dl_pow(2,j) == len);
-      @   ensures
-      @     i + 2 < len ==> \result == i + 2 &&
-      @     i + 2 >= len ==> \result == 0;
-      @*/
-    /*+OPENJML@ 
-      @ private normal_behavior
-      @   requires
-      @     i >= 0 &&
-      @     i + 2 <= MAXIMUM_CAPACITY &&
-      @     i % 2 == 0 &&
-      @     len > 2 &&
-      @     len <= MAXIMUM_CAPACITY &&
-      @     (len & (len - 1)) == 0;
+    /*@ private normal_behavior
       @   ensures
       @     i + 2 < len ==> \result == i + 2 &&
       @     i + 2 >= len ==> \result == 0;
@@ -712,17 +691,17 @@ public class VerifiedIdentityHashMap
       @ public normal_behavior
       @   ensures
       @     \result != null <==>
-      @         (\exists int i;
-      @             0 <= i < table.length / 2;
-      @             table[i*2] == maskNull(key) && \result == table[i*2 + 1]);
+      @         (\exists \bigint i;
+      @             0 <= i < table.length / (\bigint)2;
+      @             table[i * 2] == maskNull(key) && \result == table[i * 2 + 1]);
       @   ensures
       @     \result == null <==>
-      @         (!(\exists int i;
-      @             0 <= i < table.length / 2;
-      @             table[i*2] == maskNull(key)) ||
-      @         (\exists int i;
-      @             0 <= i < table.length / 2;
-      @             table[i*2] == maskNull(key) && table[i*2 + 1] == null)
+      @         (!(\exists \bigint i;
+      @             0 <= i < table.length / (\bigint)2;
+      @             table[i * 2] == maskNull(key)) ||
+      @         (\exists \bigint i;
+      @             0 <= i < table.length / (\bigint)2;
+      @             table[i * 2] == maskNull(key) && table[i * 2 + 1] == null)
       @         );
       @*/
     public /*@ pure nullable @*/ java.lang.Object get(Object key) {
@@ -731,7 +710,7 @@ public class VerifiedIdentityHashMap
         int len =  tab.length;
         int i =  hash(k, len);
 
-        //+KEY@ ghost int hash = i;
+        //+KEY@ ghost \bigint hash = i;
         
         /*+KEY@ 
           @ loop_invariant true; // TODO: see containsKey()
@@ -799,18 +778,18 @@ public class VerifiedIdentityHashMap
         /*+KEY@
           @ // Index i is always an even value within the array bounds
           @ maintaining 
-          @   (\bigint)i >= 0 && (\bigint)i < len && (\bigint)i % 2 == 0;
+          @   i >= 0 && i < len && i % (\bigint)2 == 0;
           @
           @ // Suppose i > hash. This can only be the case when no key k and no null is present
           @ // at an even index of tab in the interval [hash..i-2]. 
           @ maintaining
-          @   ((\bigint)i > hash) ==>
+          @   (i > hash) ==>
           @   (\forall \bigint n; hash <= (2 * n) < i; tab[2 * n] != k && tab[2 * n] != null);
           @ 
           @ // Suppose i < hash. This can only be the case when no key k and no null is present
           @ // at an even index of tab in the intervals [0..i-2] and [hash..len-2]. 
           @ maintaining
-          @   ((\bigint)i < hash) ==>
+          @   (i < hash) ==>
           @   (\forall \bigint n; hash <= (2 * n) < len; tab[2 * n] != k && tab[2 * n] != null) &&
           @   (\forall \bigint m; 0 <= (2 * m) < i; tab[2 * m] != k && tab[2 * m] != null);
           @   
