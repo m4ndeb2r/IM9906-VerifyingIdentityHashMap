@@ -2,7 +2,7 @@
 
 \settings {
 "#Proof-Settings-Config-File
-#Thu Mar 18 17:29:52 CET 2021
+#Sun Mar 21 16:25:24 CET 2021
 [Labels]UseOriginLabels=true
 [StrategyProperty]QUERYAXIOM_OPTIONS_KEY=QUERYAXIOM_ON
 [SMTSettings]invariantForall=false
@@ -42,14 +42,14 @@
 "
 }
 
-\bootclasspath "../../../jre";
+\bootclasspath "../../../../jre";
 
-\javaSource "../../../src";
+\javaSource "../../../../src";
 
-\include "../../../functions.key";
+\include "../../../../functions.key";
 
 \proofObligation "#Proof Obligation Settings
-#Thu Mar 18 17:29:52 CET 2021
+#Sun Mar 21 16:25:24 CET 2021
 contract=java.util.VerifiedIdentityHashMap[java.util.VerifiedIdentityHashMap\\:\\:unmaskNull(java.lang.Object)].JML normal_behavior operation contract.0
 name=java.util.VerifiedIdentityHashMap[java.util.VerifiedIdentityHashMap\\:\\:unmaskNull(java.lang.Object)].JML normal_behavior operation contract.0
 class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
@@ -58,7 +58,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
 \proof {
 (keyLog "0" (keyUser "martindeboer" ) (keyVersion "a6034b00a3"))
 
-(autoModeTime "175")
+(autoModeTime "493")
 
 (branch "dummy ID"
 (rule "impRight" (formula "1") (newnames "key,result,exc,heapAtPre,o,f"))
@@ -118,13 +118,13 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
 (rule "simplifyUpdate3" (formula "6") (term "1,0"))
 (rule "applyOnElementary" (formula "6") (term "1,0"))
 (rule "applyOnRigidTerm" (formula "6") (term "0,1,0"))
-(rule "simplifyUpdate2" (formula "6") (term "0,0,1,0"))
 (rule "simplifyUpdate1" (formula "6") (term "2,0,1,0"))
 (rule "simplifyUpdate1" (formula "6") (term "1,0,1,0"))
+(rule "simplifyUpdate2" (formula "6") (term "0,0,1,0"))
 (rule "applyOnPV" (formula "6") (term "2,0,1,0"))
 (rule "applyOnRigidFormula" (formula "6") (term "0,0,1,0"))
-(rule "simplifyUpdate1" (formula "6") (term "1,0,0,1,0"))
 (rule "applyOnPV" (formula "6") (term "0,0,0,1,0"))
+(rule "simplifyUpdate1" (formula "6") (term "1,0,0,1,0"))
 (rule "ifthenelse_concrete3" (formula "6") (term "0,0,1,0"))
 (rule "boolean_not_equal_2" (formula "6") (term "1,0,0,1,0"))
 (rule "concrete_or_4" (formula "6") (term "0,0,1,0"))

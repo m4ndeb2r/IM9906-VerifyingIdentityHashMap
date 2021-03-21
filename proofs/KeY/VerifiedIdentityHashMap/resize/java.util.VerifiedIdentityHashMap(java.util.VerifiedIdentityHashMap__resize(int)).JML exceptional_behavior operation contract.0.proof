@@ -2,7 +2,7 @@
 
 \settings {
 "#Proof-Settings-Config-File
-#Thu Mar 18 18:50:22 CET 2021
+#Sun Mar 21 16:33:31 CET 2021
 [Labels]UseOriginLabels=true
 [StrategyProperty]QUERYAXIOM_OPTIONS_KEY=QUERYAXIOM_ON
 [SMTSettings]invariantForall=false
@@ -42,14 +42,14 @@
 "
 }
 
-\bootclasspath "../../../jre";
+\bootclasspath "../../../../jre";
 
-\javaSource "../../../src";
+\javaSource "../../../../src";
 
-\include "../../../functions.key";
+\include "../../../../functions.key";
 
 \proofObligation "#Proof Obligation Settings
-#Thu Mar 18 18:50:22 CET 2021
+#Sun Mar 21 16:33:31 CET 2021
 contract=java.util.VerifiedIdentityHashMap[java.util.VerifiedIdentityHashMap\\:\\:resize(int)].JML exceptional_behavior operation contract.0
 name=java.util.VerifiedIdentityHashMap[java.util.VerifiedIdentityHashMap\\:\\:resize(int)].JML exceptional_behavior operation contract.0
 class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
@@ -58,17 +58,14 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
 \proof {
 (keyLog "0" (keyUser "martindeboer" ) (keyVersion "a6034b00a3"))
 
-(autoModeTime "222")
+(autoModeTime "344")
 
 (branch "dummy ID"
 (rule "instanceof_static_type" (formula "1") (term "0,0,0,1,0,0,1,1") (newnames "newCapacity,self,exc,heapAtPre,o,f"))
 (rule "boolean_equal" (formula "1") (term "0,0,1,0,0,1,1"))
 (rule "insert_constant_value" (formula "1") (term "0,1,1,0,1,0"))
-(rule "insert_constant_value" (formula "1") (term "0,0,0,0,1,0"))
-(rule "eqClose" (formula "1") (term "0,0,0,1,0"))
-(rule "concrete_and_1" (formula "1") (term "0,0,1,0"))
-(rule "concrete_impl_1" (formula "1") (term "0,1,0,0,1,1"))
 (rule "insert_constant_value" (formula "1") (term "1,1,0,0,1,0"))
+(rule "concrete_impl_1" (formula "1") (term "0,1,0,0,1,1"))
 (rule "expand_inInt" (formula "1") (term "1,0,0,0"))
 (rule "replace_int_MAX" (formula "1") (term "1,0,1,0,0,0"))
 (rule "replace_int_MIN" (formula "1") (term "0,1,1,0,0,0"))
@@ -195,16 +192,17 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
    (rule "applyOnPV" (formula "11") (term "0,0,0,1,0"))
    (rule "eqClose" (formula "11") (term "0,0,1,0"))
    (rule "ifthenelse_true" (formula "11") (term "0,1,0"))
+   (rule "arrayLengthNotNegative" (formula "7") (term "0"))
+   (rule "applyEq" (formula "7") (term "0") (ifseqformula "8"))
+   (rule "qeq_literals" (formula "7"))
+   (rule "true_left" (formula "7"))
    (rule "arrayLengthIsAShort" (formula "7") (term "0"))
    (rule "expand_inShort" (formula "7"))
-   (rule "replace_short_MIN" (formula "7") (term "0,1"))
    (rule "replace_short_MAX" (formula "7") (term "1,0"))
+   (rule "replace_short_MIN" (formula "7") (term "0,1"))
    (rule "andLeft" (formula "7"))
    (rule "inEqSimp_commuteLeq" (formula "8"))
-   (rule "applyEq" (formula "8") (term "0") (ifseqformula "9"))
-   (rule "qeq_literals" (formula "8"))
-   (rule "true_left" (formula "8"))
-   (rule "applyEq" (formula "7") (term "0") (ifseqformula "8"))
+   (rule "applyEq" (formula "7") (term "0") (ifseqformula "9"))
    (rule "leq_literals" (formula "7"))
    (rule "closeFalse" (formula "7"))
 )
@@ -225,33 +223,11 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
    (rule "insert_constant_value" (formula "10") (term "0,1,0,0,1,0,0,0,0,0,0,0,0"))
    (rule "eqClose" (formula "10") (term "1,0,0,1,0,0,0,0,0,0,0,0"))
    (rule "concrete_and_3" (formula "10") (term "0,0,1,0,0,0,0,0,0,0,0"))
-   (rule "expand_inInt" (formula "10") (term "1,0,0,1,0,0,0"))
-   (rule "expand_inInt" (formula "10") (term "1,0,0,1,0"))
-   (rule "expand_inInt" (formula "10") (term "1,0,0,1,1,0,1"))
-   (rule "expand_inInt" (formula "10") (term "1,0,0,1,0,0,0,0,0,0"))
-   (rule "expand_inInt" (formula "10") (term "1,0,0,1"))
-   (rule "expand_inInt" (formula "10") (term "1,0,0,1,0,0,0,0,0,0,0"))
-   (rule "expand_inInt" (formula "10") (term "1,0,0,1,1,0,1,0"))
-   (rule "expand_inInt" (formula "10") (term "1,0,0,1,0,0"))
-   (rule "expand_inInt" (formula "10") (term "1,0,0,1,0,1,0,0,0,0,0,0"))
-   (rule "replace_int_MAX" (formula "10") (term "1,0,1,0,0,1,0,0,0"))
-   (rule "replace_int_MIN" (formula "10") (term "0,1,1,0,0,1,0,0,0"))
-   (rule "replace_int_MIN" (formula "10") (term "0,1,1,0,0,1,0"))
-   (rule "replace_int_MAX" (formula "10") (term "1,0,1,0,0,1,0"))
-   (rule "replace_int_MIN" (formula "10") (term "0,1,1,0,0,1,1,0,1"))
-   (rule "replace_int_MAX" (formula "10") (term "1,0,1,0,0,1,1,0,1"))
-   (rule "replace_int_MIN" (formula "10") (term "0,1,1,0,0,1,0,0,0,0,0,0"))
-   (rule "replace_int_MAX" (formula "10") (term "1,0,1,0,0,1,0,0,0,0,0,0"))
-   (rule "replace_int_MIN" (formula "10") (term "0,1,1,0,0,1"))
-   (rule "replace_int_MAX" (formula "10") (term "1,0,1,0,0,1"))
-   (rule "replace_int_MAX" (formula "10") (term "1,0,1,0,0,1,0,0,0,0,0,0,0"))
-   (rule "replace_int_MIN" (formula "10") (term "0,1,1,0,0,1,0,0,0,0,0,0,0"))
-   (rule "replace_int_MAX" (formula "10") (term "1,0,1,0,0,1,1,0,1,0"))
-   (rule "replace_int_MIN" (formula "10") (term "0,1,1,0,0,1,1,0,1,0"))
-   (rule "replace_int_MIN" (formula "10") (term "0,1,1,0,0,1,0,0"))
-   (rule "replace_int_MAX" (formula "10") (term "1,0,1,0,0,1,0,0"))
-   (rule "replace_int_MAX" (formula "10") (term "1,0,1,0,0,1,0,1,0,0,0,0,0,0"))
-   (rule "replace_int_MIN" (formula "10") (term "0,1,1,0,0,1,0,1,0,0,0,0,0,0"))
+   (rule "insert_constant_value" (formula "10") (term "0,1,0,0,1,0,0,0,0,0,0,0,0"))
+   (rule "eqClose" (formula "10") (term "1,0,0,1,0,0,0,0,0,0,0,0"))
+   (rule "concrete_and_3" (formula "10") (term "0,0,1,0,0,0,0,0,0,0,0"))
+   (rule "mul_literals" (formula "10") (term "0,1,1,0,0,0,0,0,0,0,0"))
+   (rule "mul_literals" (formula "10") (term "0,1,0,1,0,0,0,0,0,0,0,0"))
    (rule "andLeft" (formula "10"))
    (rule "andLeft" (formula "10"))
    (rule "andLeft" (formula "10"))

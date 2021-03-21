@@ -2,7 +2,7 @@
 
 \settings {
 "#Proof-Settings-Config-File
-#Thu Mar 18 18:18:25 CET 2021
+#Sun Mar 21 16:24:03 CET 2021
 [Labels]UseOriginLabels=true
 [StrategyProperty]QUERYAXIOM_OPTIONS_KEY=QUERYAXIOM_ON
 [SMTSettings]invariantForall=false
@@ -42,14 +42,14 @@
 "
 }
 
-\bootclasspath "../../../jre";
+\bootclasspath "../../../../jre";
 
-\javaSource "../../../src";
+\javaSource "../../../../src";
 
-\include "../../../functions.key";
+\include "../../../../functions.key";
 
 \proofObligation "#Proof Obligation Settings
-#Thu Mar 18 18:18:25 CET 2021
+#Sun Mar 21 16:24:03 CET 2021
 contract=java.util.VerifiedIdentityHashMap[java.util.VerifiedIdentityHashMap\\:\\:isEmpty()].JML normal_behavior operation contract.0
 name=java.util.VerifiedIdentityHashMap[java.util.VerifiedIdentityHashMap\\:\\:isEmpty()].JML normal_behavior operation contract.0
 class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
@@ -58,7 +58,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
 \proof {
 (keyLog "0" (keyUser "martindeboer" ) (keyVersion "a6034b00a3"))
 
-(autoModeTime "70")
+(autoModeTime "364")
 
 (branch "dummy ID"
 (rule "impRight" (formula "1") (newnames "self,result,exc,heapAtPre,o,f"))
