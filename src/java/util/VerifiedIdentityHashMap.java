@@ -1085,6 +1085,16 @@ public class VerifiedIdentityHashMap
         Object[] newTable =  new Object[newLength];
         threshold = newLength / 3;
 
+        /*+KEY@
+          @ maintaining 
+          @   true; 
+          @
+          @ assignable
+          @   table[*];
+          @
+          @ decreasing
+          @   oldLength - j;
+          @*/
         for (int j =  0; j < oldLength; j += 2) {
             Object key =  oldTable[j];
             if (key != null) {
@@ -1092,6 +1102,20 @@ public class VerifiedIdentityHashMap
                 oldTable[j] = null;
                 oldTable[j + 1] = null;
                 int i =  hash(key, newLength);
+                
+                //+KEY@ ghost \bigint hash = i;
+                
+                /*+KEY@
+                  @ // Index i is always an even value within the array bounds
+                  @ maintaining 
+                  @   i >= 0 && i < newLength && i % (\bigint)2 == 0;
+                  @
+                  @ assignable
+                  @   \strictly_nothing;
+                  @
+                  @ decreasing
+                  @   newLength - (newLength + i - hash) % newLength;
+                  @*/
                 while (newTable[i] != null)
                     i = nextKeyIndex(i, newLength);
                 newTable[i] = key;
