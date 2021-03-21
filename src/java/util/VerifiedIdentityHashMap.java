@@ -141,6 +141,7 @@ public class VerifiedIdentityHashMap
       @ public invariant
       @   table != null &&
       @   MINIMUM_CAPACITY == 4 &&
+      @   DEFAULT_CAPACITY == 32 &&
       @   MAXIMUM_CAPACITY == 536870912 &&
       @   MINIMUM_CAPACITY * (\bigint)2 <= table.length  &&
       @   MAXIMUM_CAPACITY * (\bigint)2 >= table.length;
@@ -204,6 +205,7 @@ public class VerifiedIdentityHashMap
       @ public invariant
       @   table != null &&
       @   MINIMUM_CAPACITY == 4 &&
+      @   DEFAULT_CAPACITY == 4 &&
       @   MAXIMUM_CAPACITY == 4; // &&
       @   //MINIMUM_CAPACITY * 2 <= table.length  && // is no longer valid as we set min and max to 4
       @   //MAXIMUM_CAPACITY * 2 >= table.length;
@@ -336,7 +338,6 @@ public class VerifiedIdentityHashMap
      */
     /*@ public normal_behavior
       @   ensures
-      @     DEFAULT_CAPACITY == 32 &&
       @     table.length == 2 * DEFAULT_CAPACITY &&
       @     size == 0;
       @*/
@@ -389,84 +390,45 @@ public class VerifiedIdentityHashMap
     /*+KEY@ 
       @ private normal_behavior
       @   requires
-      @     MAXIMUM_CAPACITY == 536870912 &&
-      @     ((3 * expectedMaxSize) / (\bigint)2) < 0;
+      @     (expectedMaxSize * (\bigint)3) / (\bigint)2 < 0 || 
+      @     (expectedMaxSize * (\bigint)3) / (\bigint)2 > MAXIMUM_CAPACITY;
       @   ensures
       @     \result == MAXIMUM_CAPACITY;
       @
       @ also
       @ private normal_behavior
       @   requires
-      @     MAXIMUM_CAPACITY == 536870912 &&
-      @     ((3 * expectedMaxSize) / (\bigint)2) > MAXIMUM_CAPACITY;
+      @     (expectedMaxSize * (\bigint)3) / (\bigint)2 >= MINIMUM_CAPACITY &&
+      @     (expectedMaxSize * (\bigint)3) / (\bigint)2 <= MAXIMUM_CAPACITY;
       @   ensures
-      @     \result == MAXIMUM_CAPACITY;
+      @     \result >= (expectedMaxSize * (\bigint)3) / (\bigint)2 &&
+      @     \result < (expectedMaxSize * (\bigint)3);
       @
       @ also
       @ private normal_behavior
       @   requires
-      @     MINIMUM_CAPACITY == 4 &&
-      @     MAXIMUM_CAPACITY == 536870912 &&
-      @     ((3 * expectedMaxSize) / (\bigint)2) >= MINIMUM_CAPACITY &&
-      @     ((3 * expectedMaxSize) / (\bigint)2) <= MAXIMUM_CAPACITY;
+      @     (expectedMaxSize * (\bigint)3) / (\bigint)2 >= 0 &&
+      @     (expectedMaxSize * (\bigint)3) / (\bigint)2 < MINIMUM_CAPACITY;
       @   ensures
-      @     \result >= (((\bigint)3 * expectedMaxSize) / (\bigint)2) &&
-      @     \result < ((\bigint)3 * expectedMaxSize) &&
-      @     (\exists \bigint i;
-      @       0 <= i < \result;
-      @       \dl_pow(2,i) == \result); // result is a power of two
-      @
-      @ also
-      @ private normal_behavior
-      @   requires
-      @     MINIMUM_CAPACITY == 4 &&
-      @     ((3 * expectedMaxSize) / (\bigint)2) >= 0 &&
-      @     ((3 * expectedMaxSize) / (\bigint)2) < MINIMUM_CAPACITY;
-      @   ensures
-      @     \result < MINIMUM_CAPACITY * (\bigint)2 &&
       @     \result >= MINIMUM_CAPACITY &&
+      @     \result < MINIMUM_CAPACITY * (\bigint)2;
+      @
+      @ also
+      @ private normal_behavior
+      @   ensures
       @     (\exists \bigint i;
       @       0 <= i < \result;
       @       \dl_pow(2,i) == \result); // result is a power of two
       @*/
     /*+OPENJML@ 
-      @ //private normal_behavior
-      @ //  requires
-      @ //    MAXIMUM_CAPACITY == 4 &&
-      @ //    ((3 * expectedMaxSize) / 2) < 0;
-      @ //  ensures
-      @ //    \result == MAXIMUM_CAPACITY;
-      @
-      @ //also
-      @ //private normal_behavior
-      @ //  requires
-      @ //    MAXIMUM_CAPACITY == 4 &&
-      @ //    ((3 * expectedMaxSize) / 2) > MAXIMUM_CAPACITY;
-      @ //  ensures
-      @ //    \result == MAXIMUM_CAPACITY;
-      @
-      @ //also
       @ private normal_behavior
       @   requires
-      @     MINIMUM_CAPACITY == 4 &&
-      @     MAXIMUM_CAPACITY == 4 &&
       @     ((3 * expectedMaxSize) / 2) >= MINIMUM_CAPACITY &&
       @     ((3 * expectedMaxSize) / 2) <= MAXIMUM_CAPACITY;
       @   ensures
       @     \result >= ((3 * expectedMaxSize) / 2) &&
       @     \result < (3 * expectedMaxSize) &&
       @     (\result & (\result - 1)) == 0; // result is a power of two
-      @
-      @ //also
-      @ //private normal_behavior
-      @ //  requires
-      @ //    MINIMUM_CAPACITY == 4 &&
-      @ //    ((3 * expectedMaxSize) / 2) >= 0 &&
-      @ //    ((3 * expectedMaxSize) / 2) < MINIMUM_CAPACITY;
-      @ //  ensures
-      @ //    \result < MINIMUM_CAPACITY * 2 &&
-      @ //    \result >= MINIMUM_CAPACITY &&
-      @ //    (\result & (\result - 1)) == 0; // result is a power of two
       @*/
     private /*@ pure @*/ int capacity(int expectedMaxSize)
     // Compute min capacity for expectedMaxSize given a load factor of 2/3
@@ -506,8 +468,6 @@ public class VerifiedIdentityHashMap
       @ private normal_behavior
       @   requires
       @     !initialised &&
-      @     MINIMUM_CAPACITY == 4 &&
-      @     MAXIMUM_CAPACITY == 536870912 &&
       @     (\exists \bigint i; 0 <= i < initCapacity; \dl_pow(2,i) == initCapacity) &&
       @     initCapacity >= MINIMUM_CAPACITY &&
       @     initCapacity <= MAXIMUM_CAPACITY &&
@@ -523,8 +483,6 @@ public class VerifiedIdentityHashMap
       @ private normal_behavior
       @   requires
       @     !initialised &&
-      @     MINIMUM_CAPACITY == 4 &&
-      @     MAXIMUM_CAPACITY == 4 &&
       @     (initCapacity & (initCapacity - 1)) == 0 &&
       @     initCapacity >= MINIMUM_CAPACITY &&
       @     initCapacity <= MAXIMUM_CAPACITY &&
@@ -566,7 +524,6 @@ public class VerifiedIdentityHashMap
       @ public exceptional_behavior
       @   requires
       @     m != null &&
-      @     MAXIMUM_CAPACITY == 536870912 &&
       @     m.size() >= MAXIMUM_CAPACITY;
       @   signals_only
       @     IllegalStateException;
@@ -576,7 +533,6 @@ public class VerifiedIdentityHashMap
       @ public normal_behavior
       @   requires
       @     m != null &&
-      @     MAXIMUM_CAPACITY == 536870912 &&
       @     m.size() < MAXIMUM_CAPACITY;
       @   ensures
       @     size == m.size() &&
@@ -588,7 +544,6 @@ public class VerifiedIdentityHashMap
       @ public normal_behavior
       @   requires
       @     m != null &&
-      @     MAXIMUM_CAPACITY == 4 &&
       @     m.size() < MAXIMUM_CAPACITY;
       @   ensures
       @     size == m.size() &&
@@ -859,15 +814,15 @@ public class VerifiedIdentityHashMap
       @ private normal_behavior
       @   ensures
       @     \result <==> (\exists \bigint i;
-      @         0 <= i < table.length / (\bigint)2;
-      @         table[i * 2] == maskNull(key) && table[i * 2 + 1] == value);
+      @       0 <= i < table.length / (\bigint)2;
+      @       table[i * 2] == maskNull(key) && table[i * 2 + 1] == value);
       @*/
     /*+OPENJML@ 
       @ private normal_behavior
       @   ensures
       @     \result <==> (\exists int i;
-      @         0 <= i < table.length / 2;
-      @         table[i * 2] == maskNull(key) && table[i * 2 + 1] == value);
+      @       0 <= i < table.length / 2;
+      @       table[i * 2] == maskNull(key) && table[i * 2 + 1] == value);
       @*/
     private /*@ spec_public @*/ /*@ strictly_pure @*/ boolean containsMapping(Object key, Object value) {
         Object k =  maskNull(key);
@@ -911,7 +866,6 @@ public class VerifiedIdentityHashMap
       @ also
       @ public exceptional_behavior
       @   requires
-      @     MAXIMUM_CAPACITY == 536870912 &&
       @     size + 1 >= threshold &&
       @     table.length == 2 * MAXIMUM_CAPACITY &&
       @     threshold == MAXIMUM_CAPACITY - 1;
@@ -1056,7 +1010,6 @@ public class VerifiedIdentityHashMap
     /*+KEY@ 
       @ private exceptional_behavior
       @   requires
-      @     MAXIMUM_CAPACITY == 536870912 &&
       @     table.length == 2 * MAXIMUM_CAPACITY &&
       @     threshold == MAXIMUM_CAPACITY - 1;
       @   assignable
@@ -1068,7 +1021,6 @@ public class VerifiedIdentityHashMap
       @
       @ private normal_behavior
       @   requires
-      @     MAXIMUM_CAPACITY == 536870912 &&
       @     (\exists \bigint i;
       @       0 <= i < newCapacity;
       @       \dl_pow(2,i) == newCapacity) &&
@@ -1086,15 +1038,14 @@ public class VerifiedIdentityHashMap
       @   ensures
       @     // After execution, all old entries are still present
       @     (\forall \bigint i;
-      @         0 <= i < \old(table.length) && i % 2 == 0;
-      @         (\exists \bigint j;
-      @             0 <= j < table.length && j % 2 == 0;
-      @             \old(table[i]) == table[j] && \old(table[i+1]) == table[j+1]));
+      @       0 <= i < \old(table.length) && i % 2 == 0;
+      @       (\exists \bigint j;
+      @         0 <= j < table.length && j % 2 == 0;
+      @         \old(table[i]) == table[j] && \old(table[i + 1]) == table[j + 1]));
       @*/
     /*+OPENJML@ 
       @ private normal_behavior
       @   requires
-      @     MAXIMUM_CAPACITY == 4 &&
       @     (newCapacity & (newCapacity - 1)) == 0 &&
       @     table.length < 2 * MAXIMUM_CAPACITY &&
       @     threshold < MAXIMUM_CAPACITY - 1;
@@ -1110,10 +1061,10 @@ public class VerifiedIdentityHashMap
       @   ensures
       @     // After execution, all old entries are still present
       @     (\forall int i;
-      @         0 <= i < \old(table.length) / 2;
-      @         (\exists int j;
-      @             0 <= j < table.length / 2;
-      @             \old(table[i*2]) == table[j*2] && \old(table[i*2+1]) == table[j*2+1]));
+      @       0 <= i < \old(table.length) / 2;
+      @       (\exists int j;
+      @         0 <= j < table.length / 2;
+      @         \old(table[i * 2]) == table[j * 2] && \old(table[i * 2 + 1]) == table[j * 2 + 1]));
       @*/
     private void resize(int newCapacity)
     // assert (newCapacity & -newCapacity) == newCapacity; // power of 2
@@ -1173,7 +1124,6 @@ public class VerifiedIdentityHashMap
       @ also
       @ public exceptional_behavior
       @   requires
-      @     MAXIMUM_CAPACITY == 536870912 &&
       @     m.size() >= MAXIMUM_CAPACITY;
       @   signals_only
       @     IllegalStateException;
@@ -1184,27 +1134,25 @@ public class VerifiedIdentityHashMap
       @ public normal_behavior
       @   requires
       @     m != null &&
-      @     MAXIMUM_CAPACITY == 536870912 &&
       @     m.size() < (MAXIMUM_CAPACITY);
       @   assignable
       @     threshold, table, table[*], size, modCount;
       @   ensures
       @     size <= \old(size) + m.entrySet().size() &&
       @     (\forall \bigint i;
-      @         0 <= i < \old(table.length) - 1 ;
-      @         i % 2 == 0 ==> (\old(table[i] != null ==> \old(table[i]) == table[i] && \old(table[i + 1]) == table[i + 1]))) &&
+      @       0 <= i < \old(table.length) - 1 ;
+      @       i % 2 == 0 ==> (\old(table[i] != null ==> \old(table[i]) == table[i] && \old(table[i + 1]) == table[i + 1]))) &&
       @     (\forall Map.Entry e;
-      @         m.entrySet().contains(e);
-      @         (\exists \bigint i;
-      @             0 <= i < table.length - 1 && i % 2 == 0;
-      @             table[i] == e.getKey() && table[i+1] == e.getValue()));
+      @       m.entrySet().contains(e);
+      @       (\exists \bigint i;
+      @         0 <= i < table.length - 1 && i % 2 == 0;
+      @         table[i] == e.getKey() && table[i + 1] == e.getValue()));
       @*/
     /*+OPENJML@
       @ also
       @ public normal_behavior
       @   requires
       @     m != null &&
-      @     MAXIMUM_CAPACITY == 4 &&
       @     m.size() < MAXIMUM_CAPACITY;
       @   assignable
       @     threshold, table, table[*], size, modCount;
@@ -1248,7 +1196,7 @@ public class VerifiedIdentityHashMap
       @     // key does not exist in old table?
       @     (\forall \bigint i;
       @        0 <= i < table.length / (\bigint)2;
-      @        table[i*2] != maskNull(key));
+      @        table[i * 2] != maskNull(key));
       @   assignable
       @     \nothing;
       @   ensures
@@ -1260,7 +1208,7 @@ public class VerifiedIdentityHashMap
       @     // key exists in old table?
       @     (\exists int i;
       @        0 <= i < table.length / 2;
-      @        table[i*2] == maskNull(key));
+      @        table[i * 2] == maskNull(key));
       @   assignable
       @     size, table, table[*], modCount;
       @   ensures
@@ -1280,8 +1228,8 @@ public class VerifiedIdentityHashMap
       @       0 <= i < \old(table.length) / (\bigint)2;
       @       \old(table[i * 2]) != maskNull(key) ==>
       @         (\exists \bigint j;
-      @            0 <= j < table.length / (\bigint)2;
-      @            table[j * 2] == \old(table[i * 2]) && table[j * 2 + 1] == \old(table[i * 2 + 1]))) &&
+      @           0 <= j < table.length / (\bigint)2;
+      @           table[j * 2] == \old(table[i * 2]) && table[j * 2 + 1] == \old(table[i * 2 + 1]))) &&
       @
       @     // The deleted key no longer exists in the table
       @     !(\exists \bigint i;
@@ -1314,13 +1262,13 @@ public class VerifiedIdentityHashMap
       @       0 <= i < \old(table.length) / 2;
       @       \old(table[i * 2]) != maskNull(key) ==>
       @         (\exists int j;
-      @            0 <= j < table.length / 2;
-      @            table[j * 2] == \old(table[i * 2]) && table[j * 2 + 1] == \old(table[i * 2 + 1]))) &&
+      @           0 <= j < table.length / 2;
+      @           table[j * 2] == \old(table[i * 2]) && table[j * 2 + 1] == \old(table[i * 2 + 1]))) &&
       @
       @     // The deleted key no longer exists in the table
       @     !(\exists int i;
       @        0 <= i < table.length / 2;
-      @        table[i*2] == maskNull(key));
+      @        table[i * 2] == maskNull(key));
       @*/
     public /*@ nullable @*/ java.lang.Object remove(Object key) {
         Object k =  maskNull(key);
