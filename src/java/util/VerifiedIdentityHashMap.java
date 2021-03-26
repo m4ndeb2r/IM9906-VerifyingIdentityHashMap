@@ -853,11 +853,28 @@ public class VerifiedIdentityHashMap
         int len =  tab.length;
         int i =  hash(k, len);
 
-        //+KEY@ ghost \bigint hash = i;
+        //+KEY@ ghost int hash = i;
         
-        /*+KEY@ 
-          @ loop_invariant true; // TODO: see containsKey()
-          @ decreasing len - (len + i - hash) % len;
+        /*+KEY@
+          @ // Index i is always an even value within the array bounds
+          @ maintaining 
+          @   i >= 0 && i < len && i % (\bigint)2 == 0;
+          @
+          @ // Suppose i > hash. This can only be the case when no key k and no null is present
+          @ // at an even index of tab in the interval [hash..i-2]. 
+          @ maintaining
+          @   (i > hash) ==>
+          @   (\forall \bigint n; hash <= (2 * n) < i; tab[2 * n] != k && tab[2 * n] != null);
+          @ 
+          @ // Suppose i < hash. This can only be the case when no key k and no null is present
+          @ // at an even index of tab in the intervals [0..i-2] and [hash..len-2]. 
+          @ maintaining
+          @   (i < hash) ==>
+          @   (\forall \bigint n; hash <= (2 * n) < len; tab[2 * n] != k && tab[2 * n] != null) &&
+          @   (\forall \bigint m; 0 <= (2 * m) < i; tab[2 * m] != k && tab[2 * m] != null);
+          @   
+          @ decreasing (\bigint)len - ((\bigint)len + i - hash) % (\bigint)len;
+          @ 
           @ assignable \strictly_nothing;
           @*/
         while (true) {
