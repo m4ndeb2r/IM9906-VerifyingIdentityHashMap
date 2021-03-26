@@ -439,7 +439,8 @@ public class VerifiedIdentityHashMap
     private /*@ pure @*/ int capacity(int expectedMaxSize)
     // Compute min capacity for expectedMaxSize given a load factor of 2/3
     {
-        int minCapacity =  (3 * expectedMaxSize) / 2;
+        // int minCapacity =  (3 * expectedMaxSize) / 2; // Original calculation
+        int minCapacity = expectedMaxSize % 2 + (expectedMaxSize / 2) * 3; // Improved calculation
 
         // Compute the appropriate capacity
         int result;
