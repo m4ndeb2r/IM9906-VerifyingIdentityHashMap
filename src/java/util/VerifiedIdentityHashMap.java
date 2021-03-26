@@ -339,7 +339,13 @@ public class VerifiedIdentityHashMap
     /*@ public normal_behavior
       @   ensures
       @     table.length == 2 * DEFAULT_CAPACITY &&
-      @     size == 0;
+      @     keySet == null &&
+      @     values == null &&
+      @     entrySet == null &&
+      @     modCount == 0 &&
+      @     threshold == (DEFAULT_CAPACITY * 2) / 3 &&
+      @     size == 0 &&
+      @     initialised == true;
       @*/
     public /*@ pure @*/ VerifiedIdentityHashMap() {
         init(DEFAULT_CAPACITY);
@@ -728,7 +734,7 @@ public class VerifiedIdentityHashMap
         int len =  tab.length;
         int i =  hash(k, len);
         
-        //+KEY@ ghost \bigint hash = i;
+        //+KEY@ ghost int hash = i;
         
         /*+KEY@
           @ // Index i is always an even value within the array bounds
