@@ -752,7 +752,7 @@ public class VerifiedIdentityHashMap
         int len =  tab.length;
         int i =  hash(k, len);
         
-        //+KEY@ ghost int hash = i;
+        //+KEY@ ghost \bigint hash = i;
         
         /*+KEY@
           @ // Index i is always an even value within the array bounds
@@ -854,7 +854,7 @@ public class VerifiedIdentityHashMap
         int len =  tab.length;
         int i =  hash(k, len);
 
-        //+KEY@ ghost int hash = i;
+        //+KEY@ ghost \bigint hash = i;
         
         /*+KEY@
           @ // Index i is always an even value within the array bounds
@@ -939,6 +939,27 @@ public class VerifiedIdentityHashMap
       @         i % 2 == 0 && \old(table[i]) == maskNull(key))
       @         ==> (size == \old(size) + 1) && modCount != \old(modCount) && \result == null) &&
       @
+      @
+      @
+      @
+      @
+      @     // If the key does not exist, and \old(size) + 1) >= \old(threshold), 
+      @     // table must be resized
+      @     (!(\exists \bigint i;
+      @         0 <= i < \old(table.length) - 1;
+      @         i % 2 == 0 && \old(table[i]) == maskNull(key)) &&
+      @         \old(size) + 1 >= \old(threshold))
+      @         ==>
+      @         ((\old(table.length) == 2 * MAXIMUM_CAPACITY) ==>
+      @            (threshold == MAXIMUM_CAPACITY - 1 && table.length == \old(table.length)) &&
+      @          (\old(table.length) < 2 * MAXIMUM_CAPACITY) ==>
+      @            (threshold == table.length / 3 && table.length == \old(table.length) * 2)) &&
+      @
+      @
+      @
+      @
+      @
+      @
       @     // After execution, all old keys are still present
       @     (\forall \bigint i;
       @         0 <= i < \old(table.length) && i % 2 == 0;
@@ -1014,10 +1035,27 @@ public class VerifiedIdentityHashMap
 
         //+KEY@ ghost \bigint hash = i;
         
-        /*+KEY@ 
-          @ loop_invariant true; // TODO: see containsKey()
-          @ decreasing len - (len + i - hash) % len;
-          @ assignable item, i, tab[*];
+        /*+KEY@
+          @ // Index i is always an even value within the array bounds
+          @ maintaining 
+          @   i >= 0 && i < len && i % (\bigint)2 == 0;
+          @
+          @ // Suppose i > hash. This can only be the case when no key k and no null is present
+          @ // at an even index of tab in the interval [hash..i-2]. 
+          @ maintaining
+          @   (i > hash) ==>
+          @   (\forall \bigint n; hash <= (2 * n) < i; tab[2 * n] != k && tab[2 * n] != null);
+          @ 
+          @ // Suppose i < hash. This can only be the case when no key k and no null is present
+          @ // at an even index of tab in the intervals [0..i-2] and [hash..len-2]. 
+          @ maintaining
+          @   (i < hash) ==>
+          @   (\forall \bigint n; hash <= (2 * n) < len; tab[2 * n] != k && tab[2 * n] != null) &&
+          @   (\forall \bigint m; 0 <= (2 * m) < i; tab[2 * m] != k && tab[2 * m] != null);
+          @   
+          @ decreasing (\bigint)len - ((\bigint)len + i - hash) % (\bigint)len;
+          @ 
+          @ assignable tab[*];
           @*/
         while ( (item = tab[i]) != null) {
             if (item == k) {
@@ -1028,14 +1066,7 @@ public class VerifiedIdentityHashMap
             i = nextKeyIndex(i, len);
         }
 
-        /*+KEY@
-          @ ensures modCount != \old(modCount);
-          @ ensures \dl_inInt(modCount);  // perhaps needed
-          @ assignable modCount;
-          @*/
-        {
-            modCount++;
-        }
+        modCount++;
         tab[i] = k;
         tab[i + 1] = value;
         if (++size >= threshold)
@@ -1755,6 +1786,7 @@ public class VerifiedIdentityHashMap
           @ public invariant
           @   0 <= index && index <= table.length &&
           @   -1 <= lastReturnedIndex && lastReturnedIndex <= table.length &&
+          @   traversalTable != null && 
           @   traversalTable.length == table.length &&
           @   (\forall \bigint i;
           @       0 <= i && i < table.length;
@@ -1776,6 +1808,7 @@ public class VerifiedIdentityHashMap
           @       traversalTable[i * 2] != null);
           @   ensures
           @     index == (\min \bigint i; \old(index) <= i < traversalTable.length && traversalTable[i] != null; i) &&
+          @     indexValid == true &&
           @     \result == true;
           @   assignable
           @     index, indexValid;
@@ -1788,9 +1821,10 @@ public class VerifiedIdentityHashMap
           @       traversalTable[i * 2] == null);
           @   ensures
           @     index == traversalTable.length &&
+          @     indexValid == false &&
           @     \result == false;
           @   assignable
-          @     index;
+          @     index, indexValid;
           @*/
         /*+OPENJML@ 
           @ also
@@ -1801,6 +1835,7 @@ public class VerifiedIdentityHashMap
           @       traversalTable[i*2] != null);
           @   ensures
           @     index == (\min int i; \old(index) <= i < traversalTable.length && traversalTable[i] != null; i) &&
+          @     indexValid == true &&
           @     \result == true;
           @   assignable
           @     index, indexValid;
@@ -1813,9 +1848,10 @@ public class VerifiedIdentityHashMap
           @       traversalTable[i * 2] == null);
           @   ensures
           @     index == traversalTable.length &&
+          @     indexValid == false &&
           @     \result == false;
           @   assignable
-          @     index;
+          @     index, indexValid;
           @*/
         public boolean hasNext() {
             Object[] tab =  traversalTable;
@@ -2625,9 +2661,35 @@ public class VerifiedIdentityHashMap
         }
     }
 
+//    /**
+//     * Reconstitute the <tt>VerifiedIdentityHashMap</tt> instance from a stream (i.e.,
+//     * deserialize it).
+//     */
+//    private void readObject(java.io.ObjectInputStream s)
+//            throws java.io.IOException, ClassNotFoundException  {
+//        // Read in any hidden stuff
+//        s.defaultReadObject();
+//
+//        // Read in size (number of Mappings)
+//        int size =  s.readInt();
+//
+//        //@ set initialised = false;
+//
+//        // Allow for 33% growth (i.e., capacity is >= 2* size()).
+//        init(capacity((size * 4) / 3));
+//
+//        // Read the keys and values, and put the mappings in the table
+//        for (int i =  0; i < size; i++) {
+//            java.lang.Object key =  (java.lang.Object) s.readObject();
+//            java.lang.Object value =  (java.lang.Object) s.readObject();
+//            putForCreate(key, value);
+//        }
+//    }
+
     /**
      * Reconstitute the <tt>VerifiedIdentityHashMap</tt> instance from a stream (i.e.,
-     * deserialize it).
+     * deserialize it). This is an improved version of the orignal readObject method.
+     * It is extended with some arbitrary input validation.
      */
     private void readObject(java.io.ObjectInputStream s)
             throws java.io.IOException, ClassNotFoundException  {
@@ -2638,8 +2700,16 @@ public class VerifiedIdentityHashMap
         int size =  s.readInt();
 
         //@ set initialised = false;
-
+        
         // Allow for 33% growth (i.e., capacity is >= 2* size()).
+        int initCapacity = capacity(size % 3 + (size / 3) * 4);
+        
+        if (!((initCapacity & -initCapacity) == initCapacity) ||  // power of 2
+           initCapacity < MINIMUM_CAPACITY || 
+           initCapacity > MAXIMUM_CAPACITY) {
+        	   throw new java.io.StreamCorruptedException();  
+        }
+        
         init(capacity((size * 4) / 3));
 
         // Read the keys and values, and put the mappings in the table
@@ -2649,7 +2719,7 @@ public class VerifiedIdentityHashMap
             putForCreate(key, value);
         }
     }
-
+    
     /**
      * The put method for readObject.  It does not resize the table,
      * update modCount, etc.
