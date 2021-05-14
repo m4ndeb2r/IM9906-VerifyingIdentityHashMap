@@ -911,7 +911,7 @@ public class VerifiedIdentityHashMap
       @     table.length == 2 * MAXIMUM_CAPACITY &&
       @     threshold == MAXIMUM_CAPACITY - 1;
       @   assignable
-      @     \nothing;
+      @     size, table[*], modCount;
       @   signals_only
       @     IllegalStateException;
       @   signals
@@ -919,8 +919,12 @@ public class VerifiedIdentityHashMap
       @
       @ also
       @ public normal_behavior
+      @   requires
+      @     !(size + 1 >= threshold &&
+      @     table.length == 2 * MAXIMUM_CAPACITY &&
+      @     threshold == MAXIMUM_CAPACITY - 1);
       @   assignable
-      @     size, table, table[*], threshold, modCount;
+      @     size, table[*], threshold, modCount;
       @   ensures
       @     // If the key already exists, size must not change, modCount must not change,
       @     // and the old value associated with the key is returned
@@ -939,10 +943,6 @@ public class VerifiedIdentityHashMap
       @         i % 2 == 0 && \old(table[i]) == maskNull(key))
       @         ==> (size == \old(size) + 1) && modCount != \old(modCount) && \result == null) &&
       @
-      @
-      @
-      @
-      @
       @     // If the key does not exist, and \old(size) + 1) >= \old(threshold), 
       @     // table must be resized
       @     (!(\exists \bigint i;
@@ -954,11 +954,6 @@ public class VerifiedIdentityHashMap
       @            (threshold == MAXIMUM_CAPACITY - 1 && table.length == \old(table.length)) &&
       @          (\old(table.length) < 2 * MAXIMUM_CAPACITY) ==>
       @            (threshold == table.length / 3 && table.length == \old(table.length) * 2)) &&
-      @
-      @
-      @
-      @
-      @
       @
       @     // After execution, all old keys are still present
       @     (\forall \bigint i;
@@ -985,7 +980,7 @@ public class VerifiedIdentityHashMap
       @ also
       @ public normal_behavior
       @   assignable
-      @     size, table, table[*], threshold, modCount;
+      @     size, table[*], threshold, modCount;
       @   ensures
 //      @     // If the key already exists, size must not change, modCount must not change,
 //      @     // and the old value associated with the key is returned
@@ -1038,7 +1033,8 @@ public class VerifiedIdentityHashMap
         /*+KEY@
           @ // Index i is always an even value within the array bounds
           @ maintaining 
-          @   i >= 0 && i < len && i % (\bigint)2 == 0;
+          @   tab == table && len == tab.length &&
+          @   i >= 0 && i < (len - (\bigint)1) && i % (\bigint)2 == 0;
           @
           @ // Suppose i > hash. This can only be the case when no key k and no null is present
           @ // at an even index of tab in the interval [hash..i-2]. 
@@ -1055,7 +1051,7 @@ public class VerifiedIdentityHashMap
           @   
           @ decreasing (\bigint)len - ((\bigint)len + i - hash) % (\bigint)len;
           @ 
-          @ assignable tab[*];
+          @ assignable table[*], tab[*], i, item;
           @*/
         while ( (item = tab[i]) != null) {
             if (item == k) {
@@ -1065,13 +1061,45 @@ public class VerifiedIdentityHashMap
             }
             i = nextKeyIndex(i, len);
         }
-
-        modCount++;
-        tab[i] = k;
-        tab[i + 1] = value;
-        if (++size >= threshold)
-            resize(len); // len == 2 * current capacity.
-        return null;
+        
+        /*+KEY@
+         @ requires
+         @   // The key does not yet exist in table
+         @   (!(\exists \bigint i;
+         @       0 <= i < \old(tab.length) - 1;
+         @       i % 2 == 0 && \old(tab[i]) == k));
+         @       
+         @ ensures
+         @   // The key does exist in tab, and refers to value
+         @   (!(\exists \bigint i;
+         @       0 <= i < tab.length - 1;
+         @       i % 2 == 0 && tab[i] == k && tab[i + 1] == value));
+         @   
+         @ ensures
+         @   // modCount has changed (possibly overflowed, but that is not a problem)
+         @   \old(modCount) != modCount;
+         @   
+         @ ensures
+         @   // size increases by 1
+         @   (\old(size) + 1) == size;
+         @ 
+         @ assignable
+         @   modCount, size, threshold, table[*], tab[*];
+         @   
+         @ signals_only
+         @   \nothing;
+         @   
+         @ returns
+         @   \result == null;
+         @*/
+        {
+            modCount++;
+            tab[i] = k;
+            tab[i + 1] = value;
+            if (++size >= threshold)
+                resize(len); // len == 2 * current capacity.
+            return null;
+        }
     }
 
     /**
