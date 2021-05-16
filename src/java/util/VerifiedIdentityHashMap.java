@@ -135,8 +135,6 @@ public class VerifiedIdentityHashMap
         extends AbstractMap
         implements Map, java.io.Serializable, Cloneable {
 
-    //@ private ghost boolean initialised;
-
     /*+KEY@ // JML specifically for KeY
       @ public invariant
       @   table != null &&
@@ -338,14 +336,14 @@ public class VerifiedIdentityHashMap
      */
     /*@ public normal_behavior
       @   ensures
+      @     table != null &&
       @     table.length == 2 * DEFAULT_CAPACITY &&
       @     keySet == null &&
       @     values == null &&
       @     entrySet == null &&
       @     modCount == 0 &&
       @     threshold == (DEFAULT_CAPACITY * 2) / 3 &&
-      @     size == 0 &&
-      @     initialised == true;
+      @     size == 0;
       @*/
     public /*@ pure @*/ VerifiedIdentityHashMap() {
         init(DEFAULT_CAPACITY);
@@ -474,7 +472,9 @@ public class VerifiedIdentityHashMap
     /*+KEY@ 
       @ private normal_behavior
       @   requires
-      @     !initialised &&
+      @     MINIMUM_CAPACITY == 4 &&
+      @     DEFAULT_CAPACITY == 32 &&
+      @     MAXIMUM_CAPACITY == 536870912 &&
       @     (\exists \bigint i; 0 <= i < initCapacity; \dl_pow(2,i) == initCapacity) &&
       @     initCapacity >= MINIMUM_CAPACITY &&
       @     initCapacity <= MAXIMUM_CAPACITY &&
@@ -482,14 +482,15 @@ public class VerifiedIdentityHashMap
       @   assignable
       @     table, threshold;
       @   ensures
-      @     initialised &&
       @     threshold == ((\bigint)2 * initCapacity) / (\bigint)3 &&
       @     table.length == (\bigint)2 * initCapacity;
       @*/
     /*+OPENJML@ 
       @ private normal_behavior
       @   requires
-      @     !initialised &&
+      @     MINIMUM_CAPACITY == 4 &&
+      @     DEFAULT_CAPACITY == 4 &&
+      @     MAXIMUM_CAPACITY == 4 &&
       @     (initCapacity & (initCapacity - 1)) == 0 &&
       @     initCapacity >= MINIMUM_CAPACITY &&
       @     initCapacity <= MAXIMUM_CAPACITY &&
@@ -497,19 +498,16 @@ public class VerifiedIdentityHashMap
       @   assignable
       @     table, threshold;
       @   ensures
-      @     initialised &&
       @     threshold == (2 * initCapacity) / 3 &&
       @     table.length == 2 * initCapacity;
       @*/
-    private void init(int initCapacity) {
+    private /*@ helper @*/ void init(int initCapacity) {
         // assert (initCapacity & -initCapacity) == initCapacity; // power of 2
         // assert initCapacity >= MINIMUM_CAPACITY;
         // assert initCapacity <= MAXIMUM_CAPACITY;
 
         threshold = (initCapacity * 2) / 3;
         table = new Object[2 * initCapacity];
-
-        //@ set initialised = true;
     }
 
     /**
@@ -1048,10 +1046,21 @@ public class VerifiedIdentityHashMap
           @   (i < hash) ==>
           @   (\forall \bigint n; hash <= (2 * n) < len; tab[2 * n] != k && tab[2 * n] != null) &&
           @   (\forall \bigint m; 0 <= (2 * m) < i; tab[2 * m] != k && tab[2 * m] != null);
+          @
+          @ // Only elements of tab at odd indices can be changed in this loop: 
+          @ // keys (elements at even indices) will not be updated here. 
+          @ maintaining
+          @   (\forall \bigint n; 0 <= n < (len / (\bigint)2); tab[2 * n] == \old(tab[2 * n]));
+          @   
+          @ // If an element of tab at an odd index (an entry's value) changes, the element 
+          @ // at the previous even element (the entry's key) must be equal to k. 
+          @ maintaining
+          @   (\forall \bigint n; 0 <= n < (len / (\bigint)2); 
+          @     tab[2 * n + 1] != \old(tab[2 * n + 1]) ==> tab[2 * n] == k);
           @   
           @ decreasing (\bigint)len - ((\bigint)len + i - hash) % (\bigint)len;
           @ 
-          @ assignable table[*], tab[*], i, item;
+          @ assignable tab[*], i, item;
           @*/
         while ( (item = tab[i]) != null) {
             if (item == k) {
@@ -2701,8 +2710,6 @@ public class VerifiedIdentityHashMap
 //        // Read in size (number of Mappings)
 //        int size =  s.readInt();
 //
-//        //@ set initialised = false;
-//
 //        // Allow for 33% growth (i.e., capacity is >= 2* size()).
 //        init(capacity((size * 4) / 3));
 //
@@ -2727,8 +2734,6 @@ public class VerifiedIdentityHashMap
         // Read in size (number of Mappings)
         int size =  s.readInt();
 
-        //@ set initialised = false;
-        
         // Allow for 33% growth (i.e., capacity is >= 2* size()).
         int initCapacity = capacity(size % 3 + (size / 3) * 4);
         
