@@ -334,7 +334,27 @@ public class VerifiedIdentityHashMap
      * Constructs a new, empty identity hash map with a default expected
      * maximum size (21).
      */
-    /*@ public normal_behavior
+    /*+KEY@ 
+      @ also
+      @ public normal_behavior
+      @   requires
+      @     DEFAULT_CAPACITY == 32;
+      @   ensures
+      @     table != null &&
+      @     table.length == (\bigint)2 * DEFAULT_CAPACITY &&
+      @     keySet == null &&
+      @     values == null &&
+      @     entrySet == null &&
+      @     modCount == 0 &&
+      @     threshold == (DEFAULT_CAPACITY * (\bigint)2) / (\bigint)3 &&
+      @     size == 0 &&
+      @     (\forall \bigint i; 0 <= i && i < table.length; table[i] == null); 
+      @*/
+    /*+OPENJML@ 
+      @ also
+      @ public normal_behavior
+      @   requires
+      @     DEFAULT_CAPACITY == 4;
       @   ensures
       @     table != null &&
       @     table.length == 2 * DEFAULT_CAPACITY &&
@@ -343,9 +363,10 @@ public class VerifiedIdentityHashMap
       @     entrySet == null &&
       @     modCount == 0 &&
       @     threshold == (DEFAULT_CAPACITY * 2) / 3 &&
-      @     size == 0;
+      @     size == 0 &&
+      @     (\forall \bigint i; 0 <= i && i < table.length; table[i] == null); 
       @*/
-    public /*@ pure @*/ VerifiedIdentityHashMap() {
+    public VerifiedIdentityHashMap() {
         init(DEFAULT_CAPACITY);
     }
 
@@ -358,8 +379,9 @@ public class VerifiedIdentityHashMap
      * @param expectedMaxSize the expected maximum size of the map
      * @throws IllegalArgumentException if <tt>expectedMaxSize</tt> is negative
      */
-    /*+KEY@ 
-      @ private exceptional_behavior
+    /*+KEY@
+      @ also 
+      @ public exceptional_behavior
       @   requires
       @     expectedMaxSize < 0;
       @   signals_only
@@ -368,15 +390,37 @@ public class VerifiedIdentityHashMap
       @     (IllegalArgumentException e) true;
       @   assignable 
       @     \nothing;
-      @*/
-    /*@ private normal_behavior
+      @
+      @ also
+      @ public normal_behavior
       @   requires
       @     expectedMaxSize >= 0;
       @   ensures
-      @     table.length == 2 * capacity(expectedMaxSize) &&
+      @     table != null &&
+      @     table.length == (\bigint)2 * capacity(expectedMaxSize) &&
+      @     keySet == null &&
+      @     values == null &&
+      @     entrySet == null &&
+      @     modCount == 0 &&
+      @     threshold == (capacity(expectedMaxSize) * (\bigint)2) / (\bigint)3 &&
       @     size == 0;
       @*/
-    public /*@ pure @*/ VerifiedIdentityHashMap(int expectedMaxSize) {
+    /*+OPENJML@ 
+      @ also
+      @ public normal_behavior
+      @   requires
+      @     expectedMaxSize >= 0;
+      @   ensures
+      @     table != null &&
+      @     table.length == 2 * capacity(expectedMaxSize) &&
+      @     keySet == null &&
+      @     values == null &&
+      @     entrySet == null &&
+      @     modCount == 0 &&
+      @     threshold == (capacity(expectedMaxSize) * 2) / 3 &&
+      @     size == 0;
+      @*/
+    public VerifiedIdentityHashMap(int expectedMaxSize) {
         if (expectedMaxSize < 0)
             throw new IllegalArgumentException("expectedMaxSize is negative: "
                     + expectedMaxSize);
