@@ -364,7 +364,7 @@ public class VerifiedIdentityHashMap
       @     modCount == 0 &&
       @     threshold == (DEFAULT_CAPACITY * 2) / 3 &&
       @     size == 0 &&
-      @     (\forall \bigint i; 0 <= i && i < table.length; table[i] == null); 
+      @     (\forall int i; 0 <= i && i < table.length; table[i] == null); 
       @*/
     public VerifiedIdentityHashMap() {
         init(DEFAULT_CAPACITY);
