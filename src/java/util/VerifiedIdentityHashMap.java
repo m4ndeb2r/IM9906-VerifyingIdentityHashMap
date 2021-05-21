@@ -1366,7 +1366,7 @@ public class VerifiedIdentityHashMap
      *         (A <tt>null</tt> return can also indicate that the map
      *         previously associated <tt>null</tt> with <tt>key</tt>.)
      */
-    /*KEY@ 
+    /*+KEY@ 
       @ also
       @ public normal_behavior
       @   requires
