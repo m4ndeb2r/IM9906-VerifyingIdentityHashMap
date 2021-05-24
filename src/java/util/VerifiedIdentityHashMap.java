@@ -1116,34 +1116,110 @@ public class VerifiedIdentityHashMap
         }
         
         /*+KEY@
-         @ requires
-         @   // The key does not yet exist in table
-         @   (!(\exists \bigint i;
-         @       0 <= i < \old(tab.length) - 1;
-         @       i % 2 == 0 && \old(tab[i]) == k));
+         @ public exceptional_behavior
+         @   requires
+         @     size + 1 >= threshold &&
+         @     tab.length == 2 * MAXIMUM_CAPACITY &&
+         @     threshold == MAXIMUM_CAPACITY - 1;
+         @
+         @   assignable
+         @     size, tab[*], modCount;
+         @
+         @   signals_only
+         @     IllegalStateException;
+         @
+         @   signals
+         @     (IllegalStateException e) true;
+         @
+         @ public normal_behaviour
+         @   requires
+         @     // Inverted precondition of exceptional behavior
+         @     !(size + 1 >= threshold &&
+         @     tab.length == 2 * MAXIMUM_CAPACITY &&
+         @     threshold == MAXIMUM_CAPACITY - 1);
+         @
+         @   requires
+         @     tab != null && 
+         @     i >= 0 && i < tab.length - 1 &&
+         @     k != null;
+         @
+         @   requires
+         @     // The key does not yet exist in table
+         @     (!(\exists \bigint n;
+         @         0 <= n < tab.length - 1;
+         @         n % 2 == 0 && tab[n] == k));
          @       
-         @ ensures
-         @   // The key does exist in tab, and refers to value
-         @   (!(\exists \bigint i;
-         @       0 <= i < tab.length - 1;
-         @       i % 2 == 0 && tab[i] == k && tab[i + 1] == value));
+         @   ensures
+         @     // Without a resize, the key does exist in tab, at index i, 
+         @     // and refers to value, at index i + 1
+         @     \old(size + 1) < threshold <==> 
+         @       tab[i] == k && tab[i + 1] == value &&
+         @       \old(tab.length) == tab.length;
+         @
+         @   ensures
+         @     // If a resize is performed, the key does exist in tab, and refers to value
+         @     // at the next index
+         @     \old(size + 1) >= threshold ==> 
+         @       (!(\exists \bigint j;
+         @         0 <= j < tab.length - 1;
+         @         j % 2 == 0 && tab[j] == k && tab[j + 1] == value)) &&
+         @       \old(tab.length) < tab.length;
          @   
-         @ ensures
-         @   // modCount has changed (possibly overflowed, but that is not a problem)
-         @   \old(modCount) != modCount;
+         @   ensures 
+         @     threshold < MAXIMUM_CAPACITY;
+         @
+         @   ensures 
+         @     // Size equals the number of non-empty keys in the table
+         @     size == (\num_of \bigint j;
+         @       0 <= j < tab.length / (\bigint)2;
+         @       tab[2 * j] != null);
+         @
+         @   ensures 
+         @     // Table length is a power of two
+         @     (\exists \bigint j;
+         @       0 <= j < tab.length;
+         @       \dl_pow(2,j) == tab.length);
+         @
+         @   ensures
+         @     // Table must have at least one empty key-element to prevent
+         @     // get-method from endlessly looping when a key is not present.
+         @     (\exists \bigint j;
+         @       0 <= j < tab.length / (\bigint)2;
+         @       tab[2 * j] == null);
+         @
+         @   ensures
+         @     // There are no gaps between a key's hashed index and its actual
+         @     // index (if the key is at a higher index than the hash code)
+         @     (\forall \bigint j;
+         @       0 <= j < tab.length / (\bigint)2;
+         @          tab[2 * j] != null && 2 * j > hash ==>
+         @          (\forall \bigint n;
+         @           hash / (\bigint)2 <= n < j;
+         @           tab[2 * n] != null));
+         @
+         @   ensures
+         @     // There are no gaps between a key's hashed index and its actual
+         @     // index (if the key is at a lower index than the hash code)
+         @     (\forall \bigint j;
+         @       0 <= j < tab.length / (\bigint)2;
+         @       tab[2 * j] != null && 2 * j < hash ==>
+         @         (\forall \bigint n;
+         @           hash <= 2 * n < tab.length || 0 <= 2 * n < 2 * j;
+         @           tab[2 * n] != null));
+         @
+         @   ensures
+         @     // modCount has changed (possibly overflowed, but that is not a problem)
+         @     \old(modCount) != modCount;
          @   
-         @ ensures
-         @   // size increases by 1
-         @   (\old(size) + 1) == size;
+         @   ensures
+         @     // size increases by 1
+         @     (\old(size) + 1) == size;
          @ 
-         @ assignable
-         @   modCount, size, threshold, table[*], tab[*];
-         @   
-         @ signals_only
-         @   \nothing;
-         @   
-         @ returns
-         @   \result == null;
+         @   ensures
+         @     \result == null;
+         @
+         @   assignable
+         @     modCount, size, threshold, tab;   
          @*/
         {
             modCount++;
@@ -2768,7 +2844,7 @@ public class VerifiedIdentityHashMap
     /**
      * Reconstitute the <tt>VerifiedIdentityHashMap</tt> instance from a stream (i.e.,
      * deserialize it). This is an improved version of the orignal readObject method.
-     * It is extended with some arbitrary input validation.
+     * It is extended with extra input validation.
      */
     private void readObject(java.io.ObjectInputStream s)
             throws java.io.IOException, ClassNotFoundException  {
@@ -2777,16 +2853,11 @@ public class VerifiedIdentityHashMap
 
         // Read in size (number of Mappings)
         int size =  s.readInt();
-
-        // Allow for 33% growth (i.e., capacity is >= 2* size()).
-        int initCapacity = capacity(size % 3 + (size / 3) * 4);
         
-        if (!((initCapacity & -initCapacity) == initCapacity) ||  // power of 2
-           initCapacity < MINIMUM_CAPACITY || 
-           initCapacity > MAXIMUM_CAPACITY) {
-        	   throw new java.io.StreamCorruptedException();  
+        if (size > MAXIMUM_CAPACITY) {
+     	   throw new java.io.StreamCorruptedException();  
         }
-        
+
         init(capacity((size * 4) / 3));
 
         // Read the keys and values, and put the mappings in the table
