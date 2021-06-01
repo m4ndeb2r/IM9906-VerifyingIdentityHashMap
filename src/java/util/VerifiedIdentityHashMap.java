@@ -2843,7 +2843,7 @@ public class VerifiedIdentityHashMap
 
     /**
      * Reconstitute the <tt>VerifiedIdentityHashMap</tt> instance from a stream (i.e.,
-     * deserialize it). This is an improved version of the orignal readObject method.
+     * deserialize it). This is an improved version of the original readObject method.
      * It is extended with extra input validation.
      */
     private void readObject(java.io.ObjectInputStream s)
