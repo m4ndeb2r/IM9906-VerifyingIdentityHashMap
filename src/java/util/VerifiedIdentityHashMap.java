@@ -173,7 +173,7 @@ public class VerifiedIdentityHashMap
       @       \dl_pow(2,i) == table.length);
       @
       @ // Table must have at least one empty key-element to prevent
-      @ // get-method from endlessly looping when a key is not present.
+      @ // infinite loops when a key is not present.
       @ public invariant
       @   (\exists \bigint i;
       @       0 <= i < table.length / (\bigint)2;
@@ -1116,119 +1116,134 @@ public class VerifiedIdentityHashMap
         }
         
         /*+KEY@
-         @ public exceptional_behavior
-         @   requires
-         @     size + 1 >= threshold &&
-         @     tab.length == 2 * MAXIMUM_CAPACITY &&
-         @     threshold == MAXIMUM_CAPACITY - 1;
-         @
-         @   assignable
-         @     size, tab[*], modCount;
-         @
-         @   signals_only
-         @     IllegalStateException;
-         @
-         @   signals
-         @     (IllegalStateException e) true;
-         @
-         @ public normal_behaviour
-         @   requires
-         @     // Inverted precondition of exceptional behavior
-         @     !(size + 1 >= threshold &&
-         @     tab.length == 2 * MAXIMUM_CAPACITY &&
-         @     threshold == MAXIMUM_CAPACITY - 1);
-         @
-         @   requires
-         @     tab != null && 
-         @     i >= 0 && i < tab.length - 1 &&
-         @     k != null;
-         @
-         @   requires
-         @     // The key does not yet exist in table
-         @     (!(\exists \bigint n;
-         @         0 <= n < tab.length - 1;
-         @         n % 2 == 0 && tab[n] == k));
-         @       
-         @   ensures
-         @     // Without a resize, the key does exist in tab, at index i, 
-         @     // and refers to value, at index i + 1
-         @     \old(size + 1) < threshold <==> 
-         @       tab[i] == k && tab[i + 1] == value &&
-         @       \old(tab.length) == tab.length;
-         @
-         @   ensures
-         @     // If a resize is performed, the key does exist in tab, and refers to value
-         @     // at the next index
-         @     \old(size + 1) >= threshold ==> 
-         @       (!(\exists \bigint j;
-         @         0 <= j < tab.length - 1;
-         @         j % 2 == 0 && tab[j] == k && tab[j + 1] == value)) &&
-         @       \old(tab.length) < tab.length;
-         @   
-         @   ensures 
-         @     threshold < MAXIMUM_CAPACITY;
-         @
-         @   ensures 
-         @     // Size equals the number of non-empty keys in the table
-         @     size == (\num_of \bigint j;
-         @       0 <= j < tab.length / (\bigint)2;
-         @       tab[2 * j] != null);
-         @
-         @   ensures 
-         @     // Table length is a power of two
-         @     (\exists \bigint j;
-         @       0 <= j < tab.length;
-         @       \dl_pow(2,j) == tab.length);
-         @
-         @   ensures
-         @     // Table must have at least one empty key-element to prevent
-         @     // get-method from endlessly looping when a key is not present.
-         @     (\exists \bigint j;
-         @       0 <= j < tab.length / (\bigint)2;
-         @       tab[2 * j] == null);
-         @
-         @   ensures
-         @     // There are no gaps between a key's hashed index and its actual
-         @     // index (if the key is at a higher index than the hash code)
-         @     (\forall \bigint j;
-         @       0 <= j < tab.length / (\bigint)2;
-         @          tab[2 * j] != null && 2 * j > hash ==>
-         @          (\forall \bigint n;
-         @           hash / (\bigint)2 <= n < j;
-         @           tab[2 * n] != null));
-         @
-         @   ensures
-         @     // There are no gaps between a key's hashed index and its actual
-         @     // index (if the key is at a lower index than the hash code)
-         @     (\forall \bigint j;
-         @       0 <= j < tab.length / (\bigint)2;
-         @       tab[2 * j] != null && 2 * j < hash ==>
-         @         (\forall \bigint n;
-         @           hash <= 2 * n < tab.length || 0 <= 2 * n < 2 * j;
-         @           tab[2 * n] != null));
-         @
-         @   ensures
-         @     // modCount has changed (possibly overflowed, but that is not a problem)
-         @     \old(modCount) != modCount;
-         @   
-         @   ensures
-         @     // size increases by 1
-         @     (\old(size) + 1) == size;
-         @ 
-         @   ensures
-         @     \result == null;
-         @
-         @   assignable
-         @     modCount, size, threshold, tab;   
-         @*/
+          @ public normal_behavior
+          @   requires
+          @     tab != null && 
+          @     i >= 0 && i < tab.length - 1 &&
+          @     k != null;
+          @   requires
+          @     // The key does not yet exist in table
+          @     (!(\exists \bigint n;
+          @         0 <= n < tab.length - 1;
+          @         n % 2 == 0 && tab[n] == k));
+          @   ensures
+          @     tab[i] == k && tab[i + 1] == value;
+          @   ensures
+          @     // modCount has changed (possibly overflowed, but that is not a problem)
+          @     \old(modCount) != modCount;
+          @   assignable
+          @     modCount, tab[i], tab[i+1];   
+          @*/
         {
             modCount++;
             tab[i] = k;
             tab[i + 1] = value;
-            if (++size >= threshold)
-                resize(len); // len == 2 * current capacity.
-            return null;
         }
+
+        /*+KEY@
+          @ public exceptional_behavior
+          @   requires
+          @     size + 1 >= threshold &&
+          @     tab.length == 2 * MAXIMUM_CAPACITY &&
+          @     threshold == MAXIMUM_CAPACITY - 1;
+          @   assignable
+          @     size, tab[*], modCount;
+          @   signals_only
+          @     IllegalStateException;
+          @   signals
+          @     (IllegalStateException e) true;
+          @
+          @ // Normal behavior with resize
+          @ public normal_behavior
+          @   requires
+          @     // Inverted precondition of exceptional behavior
+          @     !(size + 1 >= threshold &&
+          @     tab.length == 2 * MAXIMUM_CAPACITY &&
+          @     threshold == MAXIMUM_CAPACITY - 1);
+          @   requires
+          @     // No resize
+          @     \old(size + 1) < threshold;
+          @   ensures
+          @     // size increases by 1
+          @     (\old(size) + 1) == size;
+          @   ensures
+          @     // Table must have at least one empty key-element to prevent
+          @     // get-method from endlessly looping when a key is not present.
+          @     (\exists \bigint j;
+          @       0 <= j < tab.length / (\bigint)2;
+          @       tab[2 * j] == null);
+          @   ensures
+          @     // There are no gaps between a key's hashed index and its actual
+          @     // index (if the key is at a higher index than the hash code)
+          @     (\forall \bigint j;
+          @       0 <= j < tab.length / (\bigint)2;
+          @          tab[2 * j] != null && 2 * j > hash ==>
+          @          (\forall \bigint n;
+          @           hash / (\bigint)2 <= n < j;
+          @           tab[2 * n] != null));
+          @   ensures
+          @     // There are no gaps between a key's hashed index and its actual
+          @     // index (if the key is at a lower index than the hash code)
+          @     (\forall \bigint j;
+          @       0 <= j < tab.length / (\bigint)2;
+          @       tab[2 * j] != null && 2 * j < hash ==>
+          @         (\forall \bigint n;
+          @           hash <= 2 * n < tab.length || 0 <= 2 * n < 2 * j;
+          @           tab[2 * n] != null));
+          @   ensures
+          @     \result == null;
+          @   assignable
+          @     size;
+          @   
+          @ // Normal behavior with resize
+          @ public normal_behavior
+          @   requires
+          @     // Inverted precondition of exceptional behavior
+          @     !(size + 1 >= threshold &&
+          @     tab.length == 2 * MAXIMUM_CAPACITY &&
+          @     threshold == MAXIMUM_CAPACITY - 1);
+          @   requires
+          @     // Resize required 
+          @     \old(size + 1) >= threshold;
+          @   ensures 
+          @     threshold < MAXIMUM_CAPACITY;
+          @   ensures
+          @     // size increases by 1
+          @     (\old(size) + 1) == size;
+          @   ensures
+          @     // Table must have at least one empty key-element to prevent
+          @     // get-method from endlessly looping when a key is not present.
+          @     (\exists \bigint j;
+          @       0 <= j < tab.length / (\bigint)2;
+          @       tab[2 * j] == null);
+          @   ensures
+          @     // There are no gaps between a key's hashed index and its actual
+          @     // index (if the key is at a higher index than the hash code)
+          @     (\forall \bigint j;
+          @       0 <= j < tab.length / (\bigint)2;
+          @          tab[2 * j] != null && 2 * j > hash ==>
+          @          (\forall \bigint n;
+          @           hash / (\bigint)2 <= n < j;
+          @           tab[2 * n] != null));
+          @   ensures
+          @     // There are no gaps between a key's hashed index and its actual
+          @     // index (if the key is at a lower index than the hash code)
+          @     (\forall \bigint j;
+          @       0 <= j < tab.length / (\bigint)2;
+          @       tab[2 * j] != null && 2 * j < hash ==>
+          @         (\forall \bigint n;
+          @           hash <= 2 * n < tab.length || 0 <= 2 * n < 2 * j;
+          @           tab[2 * n] != null));
+          @   ensures
+          @     \result == null;
+          @   assignable
+          @     size, threshold, tab; 
+          @*/
+       {
+           if (++size >= threshold)
+               resize(len); // len == 2 * current capacity.
+           return null;
+       }
     }
 
     /**
