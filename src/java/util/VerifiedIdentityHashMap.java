@@ -229,7 +229,7 @@ public class VerifiedIdentityHashMap
       @   (table.length & (table.length - 1)) == 0;
       @
       @ // Table must have at least one empty key-element to prevent
-      @ // get-method from endlessly looping when a key is not present.
+      @ // infinite loops when a key is not present.
       @ public invariant
       @   (\exists int i;
       @       0 <= i < table.length / 2;
@@ -1168,7 +1168,7 @@ public class VerifiedIdentityHashMap
           @     (\old(size) + 1) == size;
           @   ensures
           @     // Table must have at least one empty key-element to prevent
-          @     // get-method from endlessly looping when a key is not present.
+          @     // infinite loops when a key is not present.
           @     (\exists \bigint j;
           @       0 <= j < tab.length / (\bigint)2;
           @       tab[2 * j] == null);
@@ -1212,7 +1212,7 @@ public class VerifiedIdentityHashMap
           @     (\old(size) + 1) == size;
           @   ensures
           @     // Table must have at least one empty key-element to prevent
-          @     // get-method from endlessly looping when a key is not present.
+          @     // infinite loops when a key is not present.
           @     (\exists \bigint j;
           @       0 <= j < tab.length / (\bigint)2;
           @       tab[2 * j] == null);
