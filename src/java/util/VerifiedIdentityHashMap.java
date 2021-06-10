@@ -198,6 +198,16 @@ public class VerifiedIdentityHashMap
       @       (\forall \bigint j;
       @           hash(table[2 * i], table.length) <= 2 * j < table.length || 0 <= 2 * j < 2 * i;
       @           table[2 * j] != null));
+      @
+      @ // All keys and values are of type Object
+      @ public invariant
+      @   \typeof(table) == \type(Object[]);
+      @
+      @ // Fields modCount and threshold are of type integer (limits: 
+      @ // Integer.MIN_VALUE and Integer.MAX_VALUE)
+      @ public invariant
+      @   \dl_inInt(modCount) && \dl_inInt(threshold);
+      @
       @*/
     /*+OPENJML@ // JML for non-KeY tools, i.e. JJBMC
       @ public invariant
@@ -254,6 +264,15 @@ public class VerifiedIdentityHashMap
       @ //      (\forall int j;
       @ //          hash(table[2*i], table.length) <= 2*j < table.length || 0 <= 2*j < hash(table[2*i], table.length);
       @ //          table[2*j] != null));
+      @
+      @ // All keys and values are of type Object
+      @ //public invariant
+      @ //  \typeof(table) == \type(Object[]);
+      @
+      @ // Fields modCount and threshold are of type integer (limits: 
+      @ // Integer.MIN_VALUE and Integer.MAX_VALUE)
+      @ //public invariant
+      @ //  \dl_inInt(modCount) && \dl_inInt(threshold);
       @*/
 
     /**
@@ -1126,6 +1145,10 @@ public class VerifiedIdentityHashMap
           @     (!(\exists \bigint n;
           @         0 <= n < tab.length - 1;
           @         n % 2 == 0 && tab[n] == k));
+          @   requires
+          @     \typeof(tab) == \type(Object[]);
+          @   requires
+          @     \dl_inInt(modCount);
           @   ensures
           @     tab[i] == k && tab[i + 1] == value;
           @   ensures
@@ -1143,26 +1166,21 @@ public class VerifiedIdentityHashMap
         /*+KEY@
           @ public exceptional_behavior
           @   requires
-          @     size + 1 >= threshold &&
-          @     tab.length == 2 * MAXIMUM_CAPACITY &&
-          @     threshold == MAXIMUM_CAPACITY - 1;
+          @     (size + 1 >= threshold && tab.length == 2 * MAXIMUM_CAPACITY && threshold == MAXIMUM_CAPACITY - 1);
           @   assignable
-          @     size, tab[*], modCount;
+          @     size;
           @   signals_only
           @     IllegalStateException;
           @   signals
           @     (IllegalStateException e) true;
           @
-          @ // Normal behavior with resize
+          @ // Normal behavior without resize
           @ public normal_behavior
           @   requires
-          @     // Inverted precondition of exceptional behavior
-          @     !(size + 1 >= threshold &&
-          @     tab.length == 2 * MAXIMUM_CAPACITY &&
-          @     threshold == MAXIMUM_CAPACITY - 1);
+          @     !(size + 1 >= threshold && tab.length == 2 * MAXIMUM_CAPACITY && threshold == MAXIMUM_CAPACITY - 1);
           @   requires
           @     // No resize
-          @     \old(size + 1) < threshold;
+          @     size + 1 < threshold;
           @   ensures
           @     // size increases by 1
           @     (\old(size) + 1) == size;
@@ -1198,13 +1216,10 @@ public class VerifiedIdentityHashMap
           @ // Normal behavior with resize
           @ public normal_behavior
           @   requires
-          @     // Inverted precondition of exceptional behavior
-          @     !(size + 1 >= threshold &&
-          @     tab.length == 2 * MAXIMUM_CAPACITY &&
-          @     threshold == MAXIMUM_CAPACITY - 1);
+          @     !(size + 1 >= threshold && tab.length == 2 * MAXIMUM_CAPACITY && threshold == MAXIMUM_CAPACITY - 1);
           @   requires
           @     // Resize required 
-          @     \old(size + 1) >= threshold;
+          @     size + 1 >= threshold;
           @   ensures 
           @     threshold < MAXIMUM_CAPACITY;
           @   ensures
@@ -1237,7 +1252,7 @@ public class VerifiedIdentityHashMap
           @   ensures
           @     \result == null;
           @   assignable
-          @     size, threshold, tab; 
+          @     size, threshold, tab, tab[*]; 
           @*/
        {
            if (++size >= threshold)
