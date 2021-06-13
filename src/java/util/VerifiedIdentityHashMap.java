@@ -173,7 +173,7 @@ public class VerifiedIdentityHashMap
       @       \dl_pow(2,i) == table.length);
       @
       @ // Table must have at least one empty key-element to prevent
-      @ // get-method from endlessly looping when a key is not present.
+      @ // infinite loops when a key is not present.
       @ public invariant
       @   (\exists \bigint i;
       @       0 <= i < table.length / (\bigint)2;
@@ -198,6 +198,16 @@ public class VerifiedIdentityHashMap
       @       (\forall \bigint j;
       @           hash(table[2 * i], table.length) <= 2 * j < table.length || 0 <= 2 * j < 2 * i;
       @           table[2 * j] != null));
+      @
+      @ // All keys and values are of type Object
+      @ public invariant
+      @   \typeof(table) == \type(Object[]);
+      @
+      @ // Fields modCount and threshold are of type integer (limits: 
+      @ // Integer.MIN_VALUE and Integer.MAX_VALUE)
+      @ public invariant
+      @   \dl_inInt(modCount) && \dl_inInt(threshold);
+      @
       @*/
     /*+OPENJML@ // JML for non-KeY tools, i.e. JJBMC
       @ public invariant
@@ -229,7 +239,7 @@ public class VerifiedIdentityHashMap
       @   (table.length & (table.length - 1)) == 0;
       @
       @ // Table must have at least one empty key-element to prevent
-      @ // get-method from endlessly looping when a key is not present.
+      @ // infinite loops when a key is not present.
       @ public invariant
       @   (\exists int i;
       @       0 <= i < table.length / 2;
@@ -254,6 +264,15 @@ public class VerifiedIdentityHashMap
       @ //      (\forall int j;
       @ //          hash(table[2*i], table.length) <= 2*j < table.length || 0 <= 2*j < hash(table[2*i], table.length);
       @ //          table[2*j] != null));
+      @
+      @ // All keys and values are of type Object
+      @ //public invariant
+      @ //  \typeof(table) == \type(Object[]);
+      @
+      @ // Fields modCount and threshold are of type integer (limits: 
+      @ // Integer.MIN_VALUE and Integer.MAX_VALUE)
+      @ //public invariant
+      @ //  \dl_inInt(modCount) && \dl_inInt(threshold);
       @*/
 
     /**
@@ -1116,43 +1135,107 @@ public class VerifiedIdentityHashMap
         }
         
         /*+KEY@
-         @ requires
-         @   // The key does not yet exist in table
-         @   (!(\exists \bigint i;
-         @       0 <= i < \old(tab.length) - 1;
-         @       i % 2 == 0 && \old(tab[i]) == k));
-         @       
-         @ ensures
-         @   // The key does exist in tab, and refers to value
-         @   (!(\exists \bigint i;
-         @       0 <= i < tab.length - 1;
-         @       i % 2 == 0 && tab[i] == k && tab[i + 1] == value));
-         @   
-         @ ensures
-         @   // modCount has changed (possibly overflowed, but that is not a problem)
-         @   \old(modCount) != modCount;
-         @   
-         @ ensures
-         @   // size increases by 1
-         @   (\old(size) + 1) == size;
-         @ 
-         @ assignable
-         @   modCount, size, threshold, table[*], tab[*];
-         @   
-         @ signals_only
-         @   \nothing;
-         @   
-         @ returns
-         @   \result == null;
-         @*/
+          @ public normal_behavior
+          @   requires
+          @     tab != null && 
+          @     i >= 0 && i < tab.length - 1 &&
+          @     i % (\bigint)2 == 0 &&
+          @     k != null;
+          @   requires
+          @     // The key does not yet exist in table
+          @     (!(\exists \bigint n;
+          @         0 <= n < tab.length - 1;
+          @         n % 2 == 0 && tab[n] == k));
+          @   requires
+          @     \typeof(tab) == \type(Object[]);
+          @   requires
+          @     \dl_inInt(modCount) &&
+          @     \old(modCount) == modCount;
+          @   ensures
+          @     tab[i] == k && 
+          @     tab[i + 1] == value;
+          @   ensures
+          @     // modCount has changed (possibly overflowed, but that is not a problem)
+          @     \old(modCount) != modCount &&
+          @     \dl_inInt(modCount);
+          @   assignable
+          @     modCount, tab[i], tab[i+1];   
+          @*/
         {
             modCount++;
             tab[i] = k;
             tab[i + 1] = value;
-            if (++size >= threshold)
-                resize(len); // len == 2 * current capacity.
-            return null;
         }
+
+        /*+KEY@
+          @ public exceptional_behavior
+          @   requires
+          @     // Table exhausted
+          @     size + 1 >= threshold && 
+          @     tab.length == 2 * MAXIMUM_CAPACITY && 
+          @     threshold == MAXIMUM_CAPACITY - 1;
+          @   assignable
+          @     size;
+          @   signals_only
+          @     IllegalStateException;
+          @   signals
+          @     (IllegalStateException e) true;
+          @
+          @ // Normal behavior without resize
+          @ public normal_behavior
+          @   // Not exhausted, resize is possible without an exception
+          @   requires
+          @     // Table not exhausted
+          @     !(size + 1 >= threshold && 
+          @     tab.length == 2 * MAXIMUM_CAPACITY && 
+          @     threshold == MAXIMUM_CAPACITY - 1);
+          @   requires
+          @     // The class invariant holds
+          @     \invariant_for(this);
+          @   requires
+          @     // No resize
+          @     size + 1 < threshold;
+          @   ensures
+          @     // size increases by 1
+          @     (\old(size) + 1) == size;
+          @   ensures
+          @     // The class invariant holds
+          @     \invariant_for(this);
+          @   assignable
+          @     size;
+          @    
+          @ // Normal behavior with resize
+          @ public normal_behavior
+          @   // Not exhausted, resize is possible without an exception
+          @   requires
+          @     // Table not exhausted
+          @     !(size + 1 >= threshold && 
+          @     tab.length == 2 * MAXIMUM_CAPACITY && 
+          @     threshold == MAXIMUM_CAPACITY - 1);
+          @   requires
+          @     // The class invariant holds
+          @     \invariant_for(this);
+          @   requires
+          @     // Will resize
+          @     size + 1 >= threshold;
+          @   ensures
+          @     // size increases by 1
+          @     (\old(size) + 1) == size;
+          @   ensures
+          @     // threshold increases
+          @     \old(threshold) < threshold;
+          @   ensures
+          @     // The class invariant holds
+          @     \invariant_for(this);
+          @   assignable
+          @     size, threshold, tab, tab[*]; 
+          @*/
+       {
+           if (++size >= threshold)
+               resize(len); // len == 2 * current capacity.
+       }
+       return null;
+       
     }
 
     /**
@@ -1366,7 +1449,7 @@ public class VerifiedIdentityHashMap
      *         (A <tt>null</tt> return can also indicate that the map
      *         previously associated <tt>null</tt> with <tt>key</tt>.)
      */
-    /*KEY@ 
+    /*+KEY@ 
       @ also
       @ public normal_behavior
       @   requires
@@ -2767,8 +2850,8 @@ public class VerifiedIdentityHashMap
 
     /**
      * Reconstitute the <tt>VerifiedIdentityHashMap</tt> instance from a stream (i.e.,
-     * deserialize it). This is an improved version of the orignal readObject method.
-     * It is extended with some arbitrary input validation.
+     * deserialize it). This is an improved version of the original readObject method.
+     * It is extended with extra input validation.
      */
     private void readObject(java.io.ObjectInputStream s)
             throws java.io.IOException, ClassNotFoundException  {
@@ -2777,16 +2860,11 @@ public class VerifiedIdentityHashMap
 
         // Read in size (number of Mappings)
         int size =  s.readInt();
-
-        // Allow for 33% growth (i.e., capacity is >= 2* size()).
-        int initCapacity = capacity(size % 3 + (size / 3) * 4);
         
-        if (!((initCapacity & -initCapacity) == initCapacity) ||  // power of 2
-           initCapacity < MINIMUM_CAPACITY || 
-           initCapacity > MAXIMUM_CAPACITY) {
-        	   throw new java.io.StreamCorruptedException();  
+        if (size > MAXIMUM_CAPACITY) {
+     	   throw new java.io.StreamCorruptedException();  
         }
-        
+
         init(capacity((size * 4) / 3));
 
         // Read the keys and values, and put the mappings in the table
