@@ -422,7 +422,8 @@ public class VerifiedIdentityHashMap
       @     entrySet == null &&
       @     modCount == 0 &&
       @     threshold == (capacity(expectedMaxSize) * (\bigint)2) / (\bigint)3 &&
-      @     size == 0;
+      @     size == 0 &&
+      @     (\forall \bigint i; 0 <= i && i < table.length; table[i] == null);
       @*/
     /*+OPENJML@ 
       @ also
@@ -437,7 +438,8 @@ public class VerifiedIdentityHashMap
       @     entrySet == null &&
       @     modCount == 0 &&
       @     threshold == (capacity(expectedMaxSize) * 2) / 3 &&
-      @     size == 0;
+      @     size == 0 &&
+      @     (\forall \bigint i; 0 <= i && i < table.length; table[i] == null);
       @*/
     public VerifiedIdentityHashMap(int expectedMaxSize) {
         if (expectedMaxSize < 0)
