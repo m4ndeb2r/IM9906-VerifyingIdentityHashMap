@@ -767,21 +767,6 @@ public class VerifiedIdentityHashMap
         }
     }
 
-    // TODO: spec this and use where appropriate
-    /* +key@ // ensures table[\result] == null;
-      @ //ensures 0 <= result < table.length; //
-      @ //ensures \result % 2 == 0;
-      @ //(\forall \bigint i; i%2==0 && .....; table[(2*hash(k, len) + i) % table.length] != null)
-      @ //assignable \strictly_nothing;
-      @ */
-    private int theKeyIndex(Object k) {
-        int len = table.length;
-        int i = hash(maskNull(k), len);
-        while(table[i] != null && table[i] != k)
-            i = nextKeyIndex(i, len);
-        return i;
-    }
-
     /**
      * Tests whether the specified object reference is a key in this identity
      * hash map.
