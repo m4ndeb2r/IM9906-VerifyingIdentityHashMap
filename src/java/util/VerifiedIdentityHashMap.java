@@ -354,7 +354,6 @@ public class VerifiedIdentityHashMap
      * maximum size (21).
      */
     /*+KEY@ 
-      @ also
       @ public normal_behavior
       @   requires
       @     DEFAULT_CAPACITY == 32;
@@ -370,7 +369,6 @@ public class VerifiedIdentityHashMap
       @     (\forall \bigint i; 0 <= i && i < table.length; table[i] == null); 
       @*/
     /*+OPENJML@ 
-      @ also
       @ public normal_behavior
       @   requires
       @     DEFAULT_CAPACITY == 4;
@@ -399,7 +397,6 @@ public class VerifiedIdentityHashMap
      * @throws IllegalArgumentException if <tt>expectedMaxSize</tt> is negative
      */
     /*+KEY@
-      @ also 
       @ public exceptional_behavior
       @   requires
       @     expectedMaxSize < 0;
@@ -410,7 +407,6 @@ public class VerifiedIdentityHashMap
       @   assignable 
       @     \nothing;
       @
-      @ also
       @ public normal_behavior
       @   requires
       @     expectedMaxSize >= 0;
@@ -426,7 +422,6 @@ public class VerifiedIdentityHashMap
       @     (\forall \bigint i; 0 <= i && i < table.length; table[i] == null);
       @*/
     /*+OPENJML@ 
-      @ also
       @ public normal_behavior
       @   requires
       @     expectedMaxSize >= 0;
