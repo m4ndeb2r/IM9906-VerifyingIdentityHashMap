@@ -49,7 +49,7 @@ jobs:
           
           
       - name: Check compilation
-        run:  javac src/java/util/VerifiedIdentityHashMap.java
+        run:  javac src/java/util/VerifiedIdentityHashMap.java; true
 
       # Runs a single command using the runners shell
       - name: Download KeY's ci-tool
