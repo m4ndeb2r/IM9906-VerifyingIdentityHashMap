@@ -49,7 +49,7 @@ jobs:
           
           
       - name: Check compilation
-      - run:  javac src/java/util/VerifiedIdentityHashMap.java
+        run:  javac src/java/util/VerifiedIdentityHashMap.java
 
       # Runs a single command using the runners shell
       - name: Download KeY's ci-tool
@@ -57,5 +57,4 @@ jobs:
 
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
-        run: |
-          java -jar ci-tool.jar src/java/util/VerifiedIdentityHashMap.java          
+        run:  java -jar ci-tool.jar src/java/util/VerifiedIdentityHashMap.java          
