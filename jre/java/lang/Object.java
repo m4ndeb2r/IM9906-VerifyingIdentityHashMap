@@ -7,12 +7,11 @@ public class Object {
    /**
     * @generated
     */
-   /*@ public behavior
-     @ requires true;
-     @ ensures true;
-     @ assignable \everything;
+   /*@ public normal_behavior
+     @   requires true;
+     @   ensures \result == self.equals(param0);
      @*/
-   public Object();
+   public /*@ helper strictly_pure @*/ boolean equals(/*@ nullable */ java.lang.Object param0);
 
    /**
     * @generated
@@ -22,7 +21,7 @@ public class Object {
      @ ensures true;
      @ assignable \everything;
      @*/
-   protected java.lang.Object[] clone();
+   protected java.lang.Object clone() throws java.lang.CloneNotSupportedException;
 
    /**
     * @generated
@@ -32,7 +31,7 @@ public class Object {
      @ ensures true;
      @ assignable \everything;
      @*/
-   public boolean equals(java.lang.Object param0);
+   public final java.lang.Class getClass();
 
    /**
     * @generated
@@ -53,16 +52,6 @@ public class Object {
      @ assignable \everything;
      @*/
    public java.lang.String toString();
-
-   /**
-    * @generated
-    */
-   /*@ public behavior
-     @ requires true;
-     @ ensures true;
-     @ assignable \everything;
-     @*/
-   public final java.lang.Class getClass();
 
    /**
     * @generated
