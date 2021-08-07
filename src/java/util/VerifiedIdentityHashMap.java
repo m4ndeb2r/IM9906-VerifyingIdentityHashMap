@@ -533,15 +533,15 @@ public class VerifiedIdentityHashMap
       @ private normal_behavior
       @   requires
       @     MINIMUM_CAPACITY == 4 &&
-      @     DEFAULT_CAPACITY == 32 &&
       @     MAXIMUM_CAPACITY == 536870912 &&
       @     (\exists \bigint i; 0 <= i < initCapacity; \dl_pow(2,i) == initCapacity) &&
       @     initCapacity >= MINIMUM_CAPACITY &&
       @     initCapacity <= MAXIMUM_CAPACITY &&
-      @     size == 0;
+      @     \dl_inInt(modCount);
       @   assignable
       @     table, threshold;
       @   ensures
+      @     (\forall \bigint i; 0 <= i < table.length; table[i] == null) &&
       @     threshold == ((\bigint)2 * initCapacity) / (\bigint)3 &&
       @     table.length == (\bigint)2 * initCapacity;
       @*/
@@ -549,15 +549,14 @@ public class VerifiedIdentityHashMap
       @ private normal_behavior
       @   requires
       @     MINIMUM_CAPACITY == 4 &&
-      @     DEFAULT_CAPACITY == 4 &&
       @     MAXIMUM_CAPACITY == 4 &&
       @     (initCapacity & (initCapacity - 1)) == 0 &&
       @     initCapacity >= MINIMUM_CAPACITY &&
-      @     initCapacity <= MAXIMUM_CAPACITY &&
-      @     size == 0;
+      @     initCapacity <= MAXIMUM_CAPACITY;
       @   assignable
       @     table, threshold;
       @   ensures
+      @     (\forall int i; 0 <= i < table.length; table[i] == null) &&
       @     threshold == (2 * initCapacity) / 3 &&
       @     table.length == 2 * initCapacity;
       @*/
