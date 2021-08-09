@@ -266,13 +266,13 @@ public class VerifiedIdentityHashMap
       @ //          table[2*j] != null));
       @
       @ // All keys and values are of type Object
-      @ //public invariant
-      @ //  \typeof(table) == \type(Object[]);
+      @ public invariant
+      @   \typeof(table) == \type(Object[]);
       @
       @ // Fields modCount and threshold are of type integer (limits: 
       @ // Integer.MIN_VALUE and Integer.MAX_VALUE)
-      @ //public invariant
-      @ //  \dl_inInt(modCount) && \dl_inInt(threshold);
+      @ public invariant
+      @   \dl_inInt(modCount) && \dl_inInt(threshold);
       @*/
 
     /**
@@ -303,7 +303,7 @@ public class VerifiedIdentityHashMap
     /**
      * The table, resized as necessary. Length MUST always be a power of two.
      */
-    private /*@ spec_public @*/ transient Object[] table;
+    private /*@ spec_public nullable @*/ transient Object[] table;
 
     /**
      * The number of key-value mappings contained in this identity hash map.
@@ -541,6 +541,8 @@ public class VerifiedIdentityHashMap
       @   assignable
       @     table, threshold;
       @   ensures
+      @     table != null &&
+      @     \typeof(table) == \type(Object[]) &&
       @     (\forall \bigint i; 0 <= i < table.length; table[i] == null) &&
       @     threshold == ((\bigint)2 * initCapacity) / (\bigint)3 &&
       @     table.length == (\bigint)2 * initCapacity;
@@ -556,6 +558,7 @@ public class VerifiedIdentityHashMap
       @   assignable
       @     table, threshold;
       @   ensures
+      @     table != null &&
       @     (\forall int i; 0 <= i < table.length; table[i] == null) &&
       @     threshold == (2 * initCapacity) / 3 &&
       @     table.length == 2 * initCapacity;
@@ -2343,7 +2346,7 @@ public class VerifiedIdentityHashMap
      * view the first time this view is requested.  The view is stateless,
      * so there's no reason to create more than one.
      */
-    private /*@ spec_public @*/ transient Set entrySet =  null;
+    private /*@ spec_public nullable @*/ transient Set entrySet =  null;
 
     /**
      * Returns an identity-based set view of the keys contained in this map.
