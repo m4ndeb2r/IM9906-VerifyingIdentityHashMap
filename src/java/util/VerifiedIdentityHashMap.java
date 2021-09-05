@@ -1307,7 +1307,12 @@ public class VerifiedIdentityHashMap
 
         /*+KEY@
           @ maintaining 
-          @   true; 
+          @   // All processed entries are copied to newTable
+          @   (\forall \bigint k;
+          @     0 <= k < j && k % 2 == 0;
+          @     (\exists \bigint l;
+          @         0 <= l < newTable.length && l % 2 == 0;
+          @         \old(table[k]) == newTable[l] && \old(table[k + 1]) == newTable[l + 1]));
           @
           @ assignable
           @   table[*];
@@ -1754,7 +1759,7 @@ public class VerifiedIdentityHashMap
       @ also
       @ public normal_behavior
       @   assignable
-      @     modCount, size, table, table[*];
+      @     modCount, size, table[*];
       @   ensures
       @     \old(modCount) != modCount &&
       @     \old(table.length) == table.length &&
@@ -1767,7 +1772,7 @@ public class VerifiedIdentityHashMap
       @ also
       @ public normal_behavior
       @   assignable
-      @     modCount, size, table, table[*];
+      @     modCount, size, table[*];
       @   ensures
       @     \old(modCount) != modCount &&
       @     \old(table.length) == table.length &&
