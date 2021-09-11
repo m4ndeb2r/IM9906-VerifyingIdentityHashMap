@@ -1314,6 +1314,34 @@ public class VerifiedIdentityHashMap
           @         0 <= l < newTable.length && l % 2 == 0;
           @         \old(table[k]) == newTable[l] && \old(table[k + 1]) == newTable[l + 1]));
           @
+          @ maintaining
+          @   // The number of non-null keys in newTable equals the number of non-null keys processed
+          @   (\num_of \bigint a; 0 <= a < j / (\bigint)2; \old(table[2 * a]) != null) == 
+          @   (\num_of \bigint b; 0 <= b < newLength / (\bigint)2; newTable[2 * b] != null);
+          @
+          @ // There are no gaps between a key's hashed index and its actual
+          @ // index (if the key is at a higher index than the hash code)
+          @ maintaining
+          @   (\forall \bigint g;
+          @       0 <= g < newTable.length / (\bigint)2;
+          @       newTable[2 * g] != null && 2 * g > hash(newTable[2 * g], newTable.length) ==>
+          @       (\forall \bigint h;
+          @           hash(newTable[2 * g], newTable.length) / (\bigint)2 <= h < g;
+          @           newTable[2 * h] != null));
+          @
+          @ // There are no gaps between a key's hashed index and its actual
+          @ // index (if the key is at a lower index than the hash code)
+          @ maintaining
+          @   (\forall \bigint g;
+          @       0 <= g < newTable.length / (\bigint)2;
+          @       newTable[2 * g] != null && 2 * g < hash(newTable[2 * g], newTable.length) ==>
+          @       (\forall \bigint h;
+          @           hash(newTable[2 * g], newTable.length) <= 2 * h < newTable.length || 0 <= 2 * h < 2 * g;
+          @           newTable[2 * h] != null));
+          @
+          @ maintaining
+          @   j >= 0 && j <= oldLength;
+          @ 
           @ assignable
           @   table[*];
           @
@@ -1334,6 +1362,20 @@ public class VerifiedIdentityHashMap
                   @ // Index i is always an even value within the array bounds
                   @ maintaining 
                   @   i >= 0 && i < newLength && i % (\bigint)2 == 0;
+                  @
+                  @ // There are no gaps between a key's hashed index and its actual
+                  @ // index (if the key is at a higher index than the hash code)
+                  @ maintaining
+                  @   (\forall \bigint g;
+                  @       hash <= 2 * g < i;
+                  @       newTable[2 * g] != null);
+                  @
+                  @ // There are no gaps between a key's hashed index and its actual
+                  @ // index (if the key is at a lower index than the hash code)
+                  @ maintaining
+                  @   (\forall \bigint g;
+                  @       0 <= 2 * g < i && i < hash;
+                  @       newTable[2 * g] != null);
                   @
                   @ assignable
                   @   \strictly_nothing;
