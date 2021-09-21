@@ -659,20 +659,12 @@ public class VerifiedIdentityHashMap
      */
     /*+KEY@ 
       @ private normal_behavior
-      @   requires
-      @     x != null;
       @   ensures
+      @     (x == null ==> \result == 0) &&
       @     \result == \dl_genHash(x, length) && 
       @     \result % 2 == 0 &&
       @     \result < length && 
       @     \result >= 0;
-      @
-      @ also
-      @ private normal_behavior
-      @   requires
-      @     x == null;
-      @   ensures
-      @     \result == 0;
       @*/
     public static /*@ strictly_pure @*/ int hash(Object x, int length) {
         int h =  System.identityHashCode(x);
