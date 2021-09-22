@@ -1332,7 +1332,7 @@ public class VerifiedIdentityHashMap
           @           newTable[2 * h] != null));
           @
           @ maintaining
-          @   j >= 0 && j <= oldLength;
+          @   j >= 0 && j <= oldLength && j % (\bigint)2 == 0;
           @ 
           @ assignable
           @   table[*];
