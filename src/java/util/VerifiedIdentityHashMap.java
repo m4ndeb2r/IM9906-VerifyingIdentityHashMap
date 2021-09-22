@@ -184,9 +184,9 @@ public class VerifiedIdentityHashMap
       @ public invariant
       @   (\forall \bigint i;
       @       0 <= i < table.length / (\bigint)2;
-      @       table[2 * i] != null && 2 * i > hash(table[2 * i], table.length) ==>
+      @       table[2 * i] != null && 2 * i > \dl_genHash(table[2 * i], table.length) ==>
       @       (\forall \bigint j;
-      @           hash(table[2 * i], table.length) / (\bigint)2 <= j < i;
+      @           \dl_genHash(table[2 * i], table.length) / (\bigint)2 <= j < i;
       @           table[2 * j] != null));
       @
       @ // There are no gaps between a key's hashed index and its actual
@@ -194,9 +194,9 @@ public class VerifiedIdentityHashMap
       @ public invariant
       @   (\forall \bigint i;
       @       0 <= i < table.length / (\bigint)2;
-      @       table[2 * i] != null && 2 * i < hash(table[2 * i], table.length) ==>
+      @       table[2 * i] != null && 2 * i < \dl_genHash(table[2 * i], table.length) ==>
       @       (\forall \bigint j;
-      @           hash(table[2 * i], table.length) <= 2 * j < table.length || 0 <= 2 * j < 2 * i;
+      @           \dl_genHash(table[2 * i], table.length) <= 2 * j < table.length || 0 <= 2 * j < 2 * i;
       @           table[2 * j] != null));
       @
       @ // All keys and values are of type Object
@@ -266,13 +266,13 @@ public class VerifiedIdentityHashMap
       @ //          table[2*j] != null));
       @
       @ // All keys and values are of type Object
-      @ public invariant
-      @   \typeof(table) == \type(Object[]);
+      @ //public invariant
+      @ //  \typeof(table) == \type(Object[]);
       @
       @ // Fields modCount and threshold are of type integer (limits: 
       @ // Integer.MIN_VALUE and Integer.MAX_VALUE)
-      @ public invariant
-      @   \dl_inInt(modCount) && \dl_inInt(threshold);
+      @ //public invariant
+      @ //  \dl_inInt(modCount) && \dl_inInt(threshold);
       @*/
 
     /**
@@ -1316,9 +1316,9 @@ public class VerifiedIdentityHashMap
           @ maintaining
           @   (\forall \bigint g;
           @       0 <= g < newTable.length / (\bigint)2;
-          @       newTable[2 * g] != null && 2 * g > hash(newTable[2 * g], newTable.length) ==>
+          @       newTable[2 * g] != null && 2 * g > \dl_genHash(newTable[2 * g], newTable.length) ==>
           @       (\forall \bigint h;
-          @           hash(newTable[2 * g], newTable.length) / (\bigint)2 <= h < g;
+          @           \dl_genHash(newTable[2 * g], newTable.length) / (\bigint)2 <= h < g;
           @           newTable[2 * h] != null));
           @
           @ // There are no gaps between a key's hashed index and its actual
@@ -1326,9 +1326,9 @@ public class VerifiedIdentityHashMap
           @ maintaining
           @   (\forall \bigint g;
           @       0 <= g < newTable.length / (\bigint)2;
-          @       newTable[2 * g] != null && 2 * g < hash(newTable[2 * g], newTable.length) ==>
+          @       newTable[2 * g] != null && 2 * g < \dl_genHash(newTable[2 * g], newTable.length) ==>
           @       (\forall \bigint h;
-          @           hash(newTable[2 * g], newTable.length) <= 2 * h < newTable.length || 0 <= 2 * h < 2 * g;
+          @           \dl_genHash(newTable[2 * g], newTable.length) <= 2 * h < newTable.length || 0 <= 2 * h < 2 * g;
           @           newTable[2 * h] != null));
           @
           @ maintaining
