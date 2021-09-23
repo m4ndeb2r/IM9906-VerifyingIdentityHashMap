@@ -494,7 +494,7 @@ public class VerifiedIdentityHashMap
       @     \result < (3 * expectedMaxSize) &&
       @     (\result & (\result - 1)) == 0; // result is a power of two
       @*/
-    private /*@ pure @*/ int capacity(int expectedMaxSize)
+    private /*@ strictly_pure @*/ int capacity(int expectedMaxSize)
     // Compute min capacity for expectedMaxSize given a load factor of 2/3
     {
         // int minCapacity =  (3 * expectedMaxSize) / 2; // Original calculation
