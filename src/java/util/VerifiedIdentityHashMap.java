@@ -1298,16 +1298,22 @@ public class VerifiedIdentityHashMap
         threshold = newLength / 3;
 
         /*+KEY@
+          @ // All processed entries are copied to newTable
           @ maintaining 
-          @   // All processed entries are copied to newTable
           @   (\forall \bigint k;
           @     0 <= k < j && k % 2 == 0;
           @     (\exists \bigint l;
           @         0 <= l < newTable.length && l % 2 == 0;
           @         \old(table[k]) == newTable[l] && \old(table[k + 1]) == newTable[l + 1]));
           @
+          @ // All unprocessed entries are still untouched in old table
+          @ maintaining 
+          @   (\forall \bigint k;
+          @     j <= k < \old(table.length);
+          @     \old(table[k]) == oldTable[k]);
+          @
+          @ // The number of non-null keys in newTable equals the number of non-null keys processed
           @ maintaining
-          @   // The number of non-null keys in newTable equals the number of non-null keys processed
           @   (\num_of \bigint a; 0 <= a < j / (\bigint)2; \old(table[2 * a]) != null) == 
           @   (\num_of \bigint b; 0 <= b < newLength / (\bigint)2; newTable[2 * b] != null);
           @
@@ -1335,7 +1341,7 @@ public class VerifiedIdentityHashMap
           @   j >= 0 && j <= oldLength && j % (\bigint)2 == 0;
           @ 
           @ assignable
-          @   table[*];
+          @   table[*], newTable[*];
           @
           @ decreasing
           @   oldLength - j;
