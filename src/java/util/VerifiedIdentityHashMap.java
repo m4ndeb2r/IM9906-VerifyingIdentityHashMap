@@ -677,8 +677,8 @@ public class VerifiedIdentityHashMap
      */
     /*@ private normal_behavior
       @   ensures
-      @     i + 2 < len ==> \result == i + 2 &&
-      @     i + 2 >= len ==> \result == 0;
+      @     (i + 2 < len ==> \result == i + 2) &&
+      @     (i + 2 >= len ==> \result == 0);
       @*/
     private static /*@ strictly_pure @*/ int nextKeyIndex(int i, int len) {
         return (i + 2 < len ? i + 2 : 0);
@@ -1306,16 +1306,34 @@ public class VerifiedIdentityHashMap
           @         0 <= l < newTable.length && l % 2 == 0;
           @         \old(table[k]) == newTable[l] && \old(table[k + 1]) == newTable[l + 1]));
           @
+          @ // All (non-null) entries in newTable are also present in \old(table)
+          @ maintaining 
+          @   (\forall \bigint n;
+          @     0 <= n < newTable.length && n % 2 == 0 && newTable[n] != null;
+          @     (\exists \bigint m;
+          @         0 <= m < j && m % 2 == 0;
+          @         newTable[n] == \old(table[m]) && newTable[n + 1] == \old(table[m + 1])));
+          @
+//          @ // All entries in newTable are also present in \old(table)
+//          @ maintaining 
+//          @   (\forall \bigint n;
+//          @     0 <= n < newTable.length && n % 2 == 0;
+//          @     (\exists \bigint m;
+//          @         0 <= m < \old(table.length) && m % 2 == 0;
+//          @         newTable[n] == \old(table[m]) && newTable[n + 1] == \old(table[m + 1])));
+          @
           @ // All unprocessed entries are still untouched in old table
           @ maintaining 
           @   (\forall \bigint k;
           @     j <= k < \old(table.length);
           @     \old(table[k]) == oldTable[k]);
           @
-          @ // The number of non-null keys in newTable equals the number of non-null keys processed
+          @ // Non-empty keys in newTable are unique
           @ maintaining
-          @   (\num_of \bigint a; 0 <= a < j / (\bigint)2; \old(table[2 * a]) != null) == 
-          @   (\num_of \bigint b; 0 <= b < newLength / (\bigint)2; newTable[2 * b] != null);
+          @   (\forall \bigint p; 0 <= p && p < newTable.length / (\bigint)2;
+          @       (\forall \bigint q;
+          @       p <= q && q < newTable.length / (\bigint)2;
+          @       (newTable[2 * p] != null && newTable[2 * p] == newTable[2 * q]) ==> p == q));
           @
           @ // There are no gaps between a key's hashed index and its actual
           @ // index (if the key is at a higher index than the hash code)
