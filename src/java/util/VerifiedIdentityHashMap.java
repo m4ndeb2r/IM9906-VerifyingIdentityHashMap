@@ -184,9 +184,9 @@ public class VerifiedIdentityHashMap
       @ public invariant
       @   (\forall \bigint i;
       @       0 <= i < table.length / (\bigint)2;
-      @       table[2 * i] != null && 2 * i > hash(table[2 * i], table.length) ==>
+      @       table[2 * i] != null && 2 * i > \dl_genHash(table[2 * i], table.length) ==>
       @       (\forall \bigint j;
-      @           hash(table[2 * i], table.length) / (\bigint)2 <= j < i;
+      @           \dl_genHash(table[2 * i], table.length) / (\bigint)2 <= j < i;
       @           table[2 * j] != null));
       @
       @ // There are no gaps between a key's hashed index and its actual
@@ -194,9 +194,9 @@ public class VerifiedIdentityHashMap
       @ public invariant
       @   (\forall \bigint i;
       @       0 <= i < table.length / (\bigint)2;
-      @       table[2 * i] != null && 2 * i < hash(table[2 * i], table.length) ==>
+      @       table[2 * i] != null && 2 * i < \dl_genHash(table[2 * i], table.length) ==>
       @       (\forall \bigint j;
-      @           hash(table[2 * i], table.length) <= 2 * j < table.length || 0 <= 2 * j < 2 * i;
+      @           \dl_genHash(table[2 * i], table.length) <= 2 * j < table.length || 0 <= 2 * j < 2 * i;
       @           table[2 * j] != null));
       @
       @ // All keys and values are of type Object
@@ -303,7 +303,7 @@ public class VerifiedIdentityHashMap
     /**
      * The table, resized as necessary. Length MUST always be a power of two.
      */
-    private /*@ spec_public @*/ transient Object[] table;
+    private /*@ spec_public nullable @*/ transient Object[] table;
 
     /**
      * The number of key-value mappings contained in this identity hash map.
@@ -494,7 +494,7 @@ public class VerifiedIdentityHashMap
       @     \result < (3 * expectedMaxSize) &&
       @     (\result & (\result - 1)) == 0; // result is a power of two
       @*/
-    private /*@ pure @*/ int capacity(int expectedMaxSize)
+    private /*@ strictly_pure @*/ int capacity(int expectedMaxSize)
     // Compute min capacity for expectedMaxSize given a load factor of 2/3
     {
         // int minCapacity =  (3 * expectedMaxSize) / 2; // Original calculation
@@ -533,15 +533,17 @@ public class VerifiedIdentityHashMap
       @ private normal_behavior
       @   requires
       @     MINIMUM_CAPACITY == 4 &&
-      @     DEFAULT_CAPACITY == 32 &&
       @     MAXIMUM_CAPACITY == 536870912 &&
       @     (\exists \bigint i; 0 <= i < initCapacity; \dl_pow(2,i) == initCapacity) &&
       @     initCapacity >= MINIMUM_CAPACITY &&
       @     initCapacity <= MAXIMUM_CAPACITY &&
-      @     size == 0;
+      @     \dl_inInt(modCount);
       @   assignable
       @     table, threshold;
       @   ensures
+      @     table != null &&
+      @     \typeof(table) == \type(Object[]) &&
+      @     (\forall \bigint i; 0 <= i < table.length; table[i] == null) &&
       @     threshold == ((\bigint)2 * initCapacity) / (\bigint)3 &&
       @     table.length == (\bigint)2 * initCapacity;
       @*/
@@ -549,15 +551,15 @@ public class VerifiedIdentityHashMap
       @ private normal_behavior
       @   requires
       @     MINIMUM_CAPACITY == 4 &&
-      @     DEFAULT_CAPACITY == 4 &&
       @     MAXIMUM_CAPACITY == 4 &&
       @     (initCapacity & (initCapacity - 1)) == 0 &&
       @     initCapacity >= MINIMUM_CAPACITY &&
-      @     initCapacity <= MAXIMUM_CAPACITY &&
-      @     size == 0;
+      @     initCapacity <= MAXIMUM_CAPACITY;
       @   assignable
       @     table, threshold;
       @   ensures
+      @     table != null &&
+      @     (\forall int i; 0 <= i < table.length; table[i] == null) &&
       @     threshold == (2 * initCapacity) / 3 &&
       @     table.length == 2 * initCapacity;
       @*/
@@ -657,20 +659,12 @@ public class VerifiedIdentityHashMap
      */
     /*+KEY@ 
       @ private normal_behavior
-      @   requires
-      @     x != null;
       @   ensures
+      @     (x == null ==> \result == 0) &&
       @     \result == \dl_genHash(x, length) && 
       @     \result % 2 == 0 &&
       @     \result < length && 
       @     \result >= 0;
-      @
-      @ also
-      @ private normal_behavior
-      @   requires
-      @     x == null;
-      @   ensures
-      @     \result == 0;
       @*/
     public static /*@ strictly_pure @*/ int hash(Object x, int length) {
         int h =  System.identityHashCode(x);
@@ -683,8 +677,8 @@ public class VerifiedIdentityHashMap
      */
     /*@ private normal_behavior
       @   ensures
-      @     i + 2 < len ==> \result == i + 2 &&
-      @     i + 2 >= len ==> \result == 0;
+      @     (i + 2 < len ==> \result == i + 2) &&
+      @     (i + 2 >= len ==> \result == 0);
       @*/
     private static /*@ strictly_pure @*/ int nextKeyIndex(int i, int len) {
         return (i + 2 < len ? i + 2 : 0);
@@ -815,7 +809,8 @@ public class VerifiedIdentityHashMap
           @   (\forall \bigint n; hash <= (2 * n) < len; tab[2 * n] != k && tab[2 * n] != null) &&
           @   (\forall \bigint m; 0 <= (2 * m) < i; tab[2 * m] != k && tab[2 * m] != null);
           @   
-          @ decreasing (\bigint)len - ((\bigint)len + i - hash) % (\bigint)len;
+          @ decreasing hash > i ? hash - i : hash + len - i;
+          @ // decreasing (\bigint)len - ((\bigint)len + i - hash) % (\bigint)len;
           @ 
           @ assignable \strictly_nothing;
           @*/
@@ -1304,11 +1299,68 @@ public class VerifiedIdentityHashMap
         threshold = newLength / 3;
 
         /*+KEY@
+          @ // All processed entries are copied to newTable
           @ maintaining 
-          @   true; 
+          @   (\forall \bigint k;
+          @     0 <= k < j && k % 2 == 0;
+          @     (\exists \bigint l;
+          @         0 <= l < newTable.length && l % 2 == 0;
+          @         \old(table[k]) == newTable[l] && \old(table[k + 1]) == newTable[l + 1]));
           @
+          @ // All (non-null) entries in newTable are also present in \old(table)
+          @ maintaining 
+          @   (\forall \bigint n;
+          @     0 <= n < newTable.length && n % 2 == 0 && newTable[n] != null;
+          @     (\exists \bigint m;
+          @         0 <= m < j && m % 2 == 0;
+          @         newTable[n] == \old(table[m]) && newTable[n + 1] == \old(table[m + 1])));
+          @
+//          @ // All entries in newTable are also present in \old(table)
+//          @ maintaining 
+//          @   (\forall \bigint n;
+//          @     0 <= n < newTable.length && n % 2 == 0;
+//          @     (\exists \bigint m;
+//          @         0 <= m < \old(table.length) && m % 2 == 0;
+//          @         newTable[n] == \old(table[m]) && newTable[n + 1] == \old(table[m + 1])));
+          @
+          @ // All unprocessed entries are still untouched in old table
+          @ maintaining 
+          @   (\forall \bigint k;
+          @     j <= k < \old(table.length);
+          @     \old(table[k]) == oldTable[k]);
+          @
+          @ // Non-empty keys in newTable are unique
+          @ maintaining
+          @   (\forall \bigint p; 0 <= p && p < newTable.length / (\bigint)2;
+          @       (\forall \bigint q;
+          @       p <= q && q < newTable.length / (\bigint)2;
+          @       (newTable[2 * p] != null && newTable[2 * p] == newTable[2 * q]) ==> p == q));
+          @
+          @ // There are no gaps between a key's hashed index and its actual
+          @ // index (if the key is at a higher index than the hash code)
+          @ maintaining
+          @   (\forall \bigint g;
+          @       0 <= g < newTable.length / (\bigint)2;
+          @       newTable[2 * g] != null && 2 * g > \dl_genHash(newTable[2 * g], newTable.length) ==>
+          @       (\forall \bigint h;
+          @           \dl_genHash(newTable[2 * g], newTable.length) / (\bigint)2 <= h < g;
+          @           newTable[2 * h] != null));
+          @
+          @ // There are no gaps between a key's hashed index and its actual
+          @ // index (if the key is at a lower index than the hash code)
+          @ maintaining
+          @   (\forall \bigint g;
+          @       0 <= g < newTable.length / (\bigint)2;
+          @       newTable[2 * g] != null && 2 * g < \dl_genHash(newTable[2 * g], newTable.length) ==>
+          @       (\forall \bigint h;
+          @           \dl_genHash(newTable[2 * g], newTable.length) <= 2 * h < newTable.length || 0 <= 2 * h < 2 * g;
+          @           newTable[2 * h] != null));
+          @
+          @ maintaining
+          @   j >= 0 && j <= oldLength && j % (\bigint)2 == 0;
+          @ 
           @ assignable
-          @   table[*];
+          @   table[*], newTable[*];
           @
           @ decreasing
           @   oldLength - j;
@@ -1327,6 +1379,20 @@ public class VerifiedIdentityHashMap
                   @ // Index i is always an even value within the array bounds
                   @ maintaining 
                   @   i >= 0 && i < newLength && i % (\bigint)2 == 0;
+                  @
+                  @ // There are no gaps between a key's hashed index and its actual
+                  @ // index (if the key is at a higher index than the hash code)
+                  @ maintaining
+                  @   (\forall \bigint g;
+                  @       hash <= 2 * g < i;
+                  @       newTable[2 * g] != null);
+                  @
+                  @ // There are no gaps between a key's hashed index and its actual
+                  @ // index (if the key is at a lower index than the hash code)
+                  @ maintaining
+                  @   (\forall \bigint g;
+                  @       0 <= 2 * g < i && i < hash;
+                  @       newTable[2 * g] != null);
                   @
                   @ assignable
                   @   \strictly_nothing;
@@ -1752,7 +1818,7 @@ public class VerifiedIdentityHashMap
       @ also
       @ public normal_behavior
       @   assignable
-      @     modCount, size, table, table[*];
+      @     modCount, size, table[*];
       @   ensures
       @     \old(modCount) != modCount &&
       @     \old(table.length) == table.length &&
@@ -1765,7 +1831,7 @@ public class VerifiedIdentityHashMap
       @ also
       @ public normal_behavior
       @   assignable
-      @     modCount, size, table, table[*];
+      @     modCount, size, table[*];
       @   ensures
       @     \old(modCount) != modCount &&
       @     \old(table.length) == table.length &&
@@ -2344,7 +2410,7 @@ public class VerifiedIdentityHashMap
      * view the first time this view is requested.  The view is stateless,
      * so there's no reason to create more than one.
      */
-    private /*@ spec_public @*/ transient Set entrySet =  null;
+    private /*@ spec_public nullable @*/ transient Set entrySet =  null;
 
     /**
      * Returns an identity-based set view of the keys contained in this map.
