@@ -1328,6 +1328,11 @@ public class VerifiedIdentityHashMap
           @   (\forall \bigint k;
           @     j <= k < \old(table.length);
           @     \old(table[k]) == oldTable[k]);
+		  @
+		  @ // The number of non-null keys in newTable equals the number of copied keys
+		  @ maintaining
+          @    (\num_of \bigint i; 0 <= i < j / (\bigint)2; \old(table[2 * i]) != null)
+		  @ == (\num_of \bigint i; 0 <= i < newTable.length / (\bigint)2; newTable[2 * i] != null);
           @
           @ // Non-empty keys in newTable are unique
           @ maintaining
