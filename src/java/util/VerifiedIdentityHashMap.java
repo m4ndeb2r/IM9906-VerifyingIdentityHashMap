@@ -1306,21 +1306,21 @@ public class VerifiedIdentityHashMap
           @         0 <= l < newTable.length && l % 2 == 0;
           @         \old(table[k]) == newTable[l] && \old(table[k + 1]) == newTable[l + 1]));
           @
-          @ // All (non-null) entries in newTable are also present in \old(table)
-          @ maintaining 
-          @   (\forall \bigint n;
-          @     0 <= n < newTable.length && n % 2 == 0 && newTable[n] != null;
-          @     (\exists \bigint m;
-          @         0 <= m < j && m % 2 == 0;
-          @         newTable[n] == \old(table[m]) && newTable[n + 1] == \old(table[m + 1])));
-          @
-//          @ // All entries in newTable are also present in \old(table)
+//          @ // All (non-null) entries in newTable are also present in \old(table)
 //          @ maintaining 
 //          @   (\forall \bigint n;
-//          @     0 <= n < newTable.length && n % 2 == 0;
+//          @     0 <= n < newTable.length && n % 2 == 0 && newTable[n] != null;
 //          @     (\exists \bigint m;
-//          @         0 <= m < \old(table.length) && m % 2 == 0;
+//          @         0 <= m < j && m % 2 == 0;
 //          @         newTable[n] == \old(table[m]) && newTable[n + 1] == \old(table[m + 1])));
+          @
+          @ // All entries in newTable are also present in \old(table)
+          @ maintaining 
+          @   (\forall \bigint n;
+          @     0 <= n < newTable.length && n % 2 == 0;
+          @     (\exists \bigint m;
+          @         0 <= m < \old(table.length) && m % 2 == 0;
+          @         newTable[n] == \old(table[m]) && newTable[n + 1] == \old(table[m + 1])));
           @
           @ // All unprocessed entries are still untouched in old table
           @ maintaining 
