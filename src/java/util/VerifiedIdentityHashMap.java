@@ -809,7 +809,8 @@ public class VerifiedIdentityHashMap
           @   (\forall \bigint n; hash <= (2 * n) < len; tab[2 * n] != k && tab[2 * n] != null) &&
           @   (\forall \bigint m; 0 <= (2 * m) < i; tab[2 * m] != k && tab[2 * m] != null);
           @   
-          @ decreasing (\bigint)len - ((\bigint)len + i - hash) % (\bigint)len;
+          @ decreasing hash > i ? hash - i : hash + len - i;
+          @ // decreasing (\bigint)len - ((\bigint)len + i - hash) % (\bigint)len;
           @ 
           @ assignable \strictly_nothing;
           @*/
