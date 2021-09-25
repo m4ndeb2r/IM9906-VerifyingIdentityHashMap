@@ -1333,6 +1333,12 @@ public class VerifiedIdentityHashMap
 		  @ maintaining
           @    (\num_of \bigint i; 0 <= i < j / (\bigint)2; \old(table[2 * i]) != null)
 		  @ == (\num_of \bigint i; 0 <= i < newTable.length / (\bigint)2; newTable[2 * i] != null);
+		  @
+		  @ // For all key-value pairs: if key == null, then value == null
+          @ maintaining
+          @   (\forall \bigint i;
+          @         0 <= i && i < newTable.length / (\bigint)2;
+          @         (newTable[i * (\bigint)2] == null ==> newTable[i * (\bigint)2 + 1] == null));
           @
           @ // Non-empty keys in newTable are unique
           @ maintaining
