@@ -1391,25 +1391,26 @@ public class VerifiedIdentityHashMap
                   @ maintaining 
                   @   i >= 0 && i < newLength && i % (\bigint)2 == 0;
                   @
-                  @ // There are no gaps between a key's hashed index and its actual
-                  @ // index (if the key is at a higher index than the hash code)
+                  @ // There are no gaps in the segment [hash .. i)
+                  @ // (if the current index is higher than the hash)
                   @ maintaining
                   @   (\forall \bigint g;
                   @       hash <= 2 * g < i;
                   @       newTable[2 * g] != null);
                   @
-                  @ // There are no gaps between a key's hashed index and its actual
-                  @ // index (if the key is at a lower index than the hash code)
+                  @ // There are no gaps in the segment [0 .. i) and [hash .. newLength)
+                  @ // (if the current index is lower (wrap around) than the hash)
                   @ maintaining
-                  @   (\forall \bigint g;
-                  @       0 <= 2 * g < i && i < hash;
-                  @       newTable[2 * g] != null);
+				  @   (i < hash) ==>
+                  @      (\forall \bigint g;
+                  @          (0 <= 2 * g < i) || (hash <= 2 * g < newLength);
+                  @          newTable[2 * g] != null);
                   @
                   @ assignable
                   @   \strictly_nothing;
                   @
                   @ decreasing
-                  @   newLength - (newLength + i - hash) % newLength;
+                  @   hash > i ? hash - i : newLength + hash - i;
                   @*/
                 while (newTable[i] != null)
                     i = nextKeyIndex(i, newLength);
