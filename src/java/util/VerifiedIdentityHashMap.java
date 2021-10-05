@@ -208,6 +208,11 @@ public class VerifiedIdentityHashMap
       @ public invariant
       @   \dl_inInt(modCount) && \dl_inInt(threshold);
       @
+      @ // Bounds on size and threshold in relation to
+	  @ // each other and the table length
+      @ public invariant
+      @   size < threshold && 2*threshold < table.length;
+      @
       @*/
     /*+OPENJML@ // JML for non-KeY tools, i.e. JJBMC
       @ public invariant
@@ -1098,7 +1103,8 @@ public class VerifiedIdentityHashMap
           @   (\forall \bigint n; 0 <= n < (len / (\bigint)2); 
           @     tab[2 * n + 1] != \old(tab[2 * n + 1]) ==> tab[2 * n] == k);
           @   
-          @ decreasing (\bigint)len - ((\bigint)len + i - hash) % (\bigint)len;
+		  @ decreasing hash > i ? hash - i : (\bigint)len + hash - i;
+          @ // decreasing (\bigint)len - ((\bigint)len + i - hash) % (\bigint)len;
           @ 
           @ assignable tab[*], i, item;
           @*/
@@ -1144,73 +1150,73 @@ public class VerifiedIdentityHashMap
             tab[i + 1] = value;
         }
 
-        /*+KEY@
-          @ public exceptional_behavior
-          @   requires
-          @     // Table exhausted
-          @     size + 1 >= threshold && 
-          @     tab.length == 2 * MAXIMUM_CAPACITY && 
-          @     threshold == MAXIMUM_CAPACITY - 1;
-          @   assignable
-          @     size;
-          @   signals_only
-          @     IllegalStateException;
-          @   signals
-          @     (IllegalStateException e) true;
-          @
-          @ // Normal behavior without resize
-          @ public normal_behavior
-          @   // Not exhausted, resize is possible without an exception
-          @   requires
-          @     // Table not exhausted
-          @     !(size + 1 >= threshold && 
-          @     tab.length == 2 * MAXIMUM_CAPACITY && 
-          @     threshold == MAXIMUM_CAPACITY - 1);
-          @   requires
-          @     // The class invariant holds
-          @     \invariant_for(this);
-          @   requires
-          @     // No resize
-          @     size + 1 < threshold;
-          @   ensures
-          @     // size increases by 1
-          @     (\old(size) + 1) == size;
-          @   ensures
-          @     // The class invariant holds
-          @     \invariant_for(this);
-          @   assignable
-          @     size;
-          @    
-          @ // Normal behavior with resize
-          @ public normal_behavior
-          @   // Not exhausted, resize is possible without an exception
-          @   requires
-          @     // Table not exhausted
-          @     !(size + 1 >= threshold && 
-          @     tab.length == 2 * MAXIMUM_CAPACITY && 
-          @     threshold == MAXIMUM_CAPACITY - 1);
-          @   requires
-          @     // The class invariant holds
-          @     \invariant_for(this);
-          @   requires
-          @     // Will resize
-          @     size + 1 >= threshold;
-          @   ensures
-          @     // size increases by 1
-          @     (\old(size) + 1) == size;
-          @   ensures
-          @     // threshold increases
-          @     \old(threshold) < threshold;
-          @   ensures
-          @     // The class invariant holds
-          @     \invariant_for(this);
-          @   assignable
-          @     size, threshold, tab, tab[*]; 
-          @*/
-       {
+//        /*+KEY@
+//          @ public exceptional_behavior
+//          @   requires
+//          @     // Table exhausted
+//          @     size + 1 >= threshold && 
+//          @     tab.length == 2 * MAXIMUM_CAPACITY && 
+//          @     threshold == MAXIMUM_CAPACITY - 1;
+//          @   assignable
+//          @     size;
+//          @   signals_only
+//          @     IllegalStateException;
+//          @   signals
+//          @     (IllegalStateException e) true;
+//          @
+//          @ // Normal behavior without resize
+//          @ public normal_behavior
+//          @   // Not exhausted, resize is possible without an exception
+//          @   requires
+//          @     // Table not exhausted
+//          @     !(size + 1 >= threshold && 
+//          @     tab.length == 2 * MAXIMUM_CAPACITY && 
+//          @     threshold == MAXIMUM_CAPACITY - 1);
+//          @   requires
+//          @     // The class invariant holds
+//          @     \invariant_for(this);
+//          @   requires
+//          @     // No resize
+//          @     size + 1 < threshold;
+//          @   ensures
+//          @     // size increases by 1
+//          @     (\old(size) + 1) == size;
+//          @   ensures
+//          @     // The class invariant holds
+//          @     \invariant_for(this);
+//          @   assignable
+//          @     size;
+//          @    
+//          @ // Normal behavior with resize
+//          @ public normal_behavior
+//          @   // Not exhausted, resize is possible without an exception
+//          @   requires
+//          @     // Table not exhausted
+//          @     !(size + 1 >= threshold && 
+//          @     tab.length == 2 * MAXIMUM_CAPACITY && 
+//          @     threshold == MAXIMUM_CAPACITY - 1);
+//          @   requires
+//          @     // The class invariant holds
+//          @     \invariant_for(this);
+//          @   requires
+//          @     // Will resize
+//          @     size + 1 >= threshold;
+//          @   ensures
+//          @     // size increases by 1
+//          @     (\old(size) + 1) == size;
+//          @   ensures
+//          @     // threshold increases
+//          @     \old(threshold) < threshold;
+//          @   ensures
+//          @     // The class invariant holds
+//          @     \invariant_for(this);
+//          @   assignable
+//          @     size, threshold, tab, tab[*]; 
+//          @*/
+//       {
            if (++size >= threshold)
                resize(len); // len == 2 * current capacity.
-       }
+//       }
        return null;
        
     }
