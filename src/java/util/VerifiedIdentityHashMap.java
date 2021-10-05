@@ -211,7 +211,7 @@ public class VerifiedIdentityHashMap
       @ // Bounds on size and threshold in relation to
 	  @ // each other and the table length
       @ public invariant
-      @   size < threshold && 2*threshold < table.length;
+      @   size < threshold && (\bigint)2*threshold < table.length;
       @
       @*/
     /*+OPENJML@ // JML for non-KeY tools, i.e. JJBMC
@@ -1016,7 +1016,7 @@ public class VerifiedIdentityHashMap
       @
       @     // After execution, the table contains the new key associated with the new value
       @     (\exists \bigint i;
-      @         0 <= i < table.length - 1 ;
+      @         0 <= i < table.length - (\bigint)1 ;
       @         i % 2 == 0 && table[i] == maskNull(key) && table[i + 1] == value);
       @*/
     /*+OPENJML@ 
@@ -1376,7 +1376,7 @@ public class VerifiedIdentityHashMap
           @ // Table must have at least one empty key-element to prevent
           @ // infinite loops when a key is not present.
           @ maintaining
-          @   (\exists int i;
+          @   (\exists bigint i;
           @       0 <= i < newTable.length / (\bigint)2;
           @       newTable[2*i] == null);
           @
