@@ -2,7 +2,7 @@
 
 \settings {
 "#Proof-Settings-Config-File
-#Fri Sep 24 14:06:14 CEST 2021
+#Sat Oct 09 01:02:07 CEST 2021
 [Labels]UseOriginLabels=true
 [StrategyProperty]QUERYAXIOM_OPTIONS_KEY=QUERYAXIOM_ON
 [SMTSettings]invariantForall=false
@@ -49,7 +49,7 @@
 \include "../../../../functions.key";
 
 \proofObligation "#Proof Obligation Settings
-#Fri Sep 24 14:06:14 CEST 2021
+#Sat Oct 09 01:02:07 CEST 2021
 contract=java.util.VerifiedIdentityHashMap[java.util.VerifiedIdentityHashMap\\:\\:nextKeyIndex(int,int)].JML normal_behavior operation contract.0
 name=java.util.VerifiedIdentityHashMap[java.util.VerifiedIdentityHashMap\\:\\:nextKeyIndex(int,int)].JML normal_behavior operation contract.0
 class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
@@ -58,6 +58,7 @@ class=de.uka.ilkd.key.proof.init.FunctionalOperationContractPO
 \proof {
 (keyLog "0" (keyUser "martindeboer" ) (keyVersion "a6034b00a3"))
 (keyLog "1" (keyUser "martindeboer" ) (keyVersion "a6034b00a3"))
+(keyLog "2" (keyUser "martindeboer" ) (keyVersion "a6034b00a3"))
 
 (autoModeTime "1491")
 
