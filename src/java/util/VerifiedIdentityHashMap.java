@@ -209,12 +209,15 @@ public class VerifiedIdentityHashMap
       @ public invariant
       @   \dl_inInt(modCount) && \dl_inInt(threshold);
       @
-      @ // TODO: reconsider the bounds' condition below ... This is not tight enough.
-      @ // TODO: Strengthen threshold bounds
-      @ // Bounds on size and threshold in relation to
-	  @ // each other and the table length
+      @ // Bounds on size in relation to threshold
       @ public invariant
-      @   size < threshold && (\bigint)2 * threshold < table.length;
+      @   size <= threshold &&
+      @   size == threshold ==> size == MAXIMUM_CAPACITY - 1;
+      @
+      @ // Bounds on threshold in relation to table.length and MAXIMUM_CAPACITY
+      @ public invariant
+      @   (threshold == table.length / 3 || threshold == MAXIMUM_CAPACITY - 1) &&
+      @   table.length < 2 * MAXIMUM_CAPACITY ==> threshold == table.length / 3;
       @
       @*/
     /*+OPENJML@ // JML for non-KeY tools, i.e. JJBMC
@@ -283,10 +286,16 @@ public class VerifiedIdentityHashMap
       @ //public invariant
       @ //  \dl_inInt(modCount) && \dl_inInt(threshold);
       @
-      @ // Bounds on size and threshold in relation to
-	  @ // each other and the table length
+      @ // Bounds on size in relation to threshold
       @ public invariant
-      @   size < threshold && 2 * threshold < table.length;
+      @   size <= threshold &&
+      @   size == threshold ==> size == MAXIMUM_CAPACITY - 1;
+      @
+      @ // Bounds on threshold in relation to table.length and MAXIMUM_CAPACITY
+      @ public invariant
+      @   (threshold == table.length / 3 || threshold == MAXIMUM_CAPACITY - 1) &&
+      @   table.length < 2 * MAXIMUM_CAPACITY ==> threshold == table.length / 3;
+      @
       @*/
 
     /**
