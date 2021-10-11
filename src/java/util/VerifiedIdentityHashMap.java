@@ -211,13 +211,13 @@ public class VerifiedIdentityHashMap
       @
       @ // Bounds on size in relation to threshold
       @ public invariant
-      @   size <= threshold &&
-      @   size == threshold ==> size == MAXIMUM_CAPACITY - 1;
+      @   (size <= threshold) &&
+      @   (size == threshold ==> size == MAXIMUM_CAPACITY - 1);
       @
       @ // Bounds on threshold in relation to table.length and MAXIMUM_CAPACITY
       @ public invariant
       @   (threshold == table.length / 3 || threshold == MAXIMUM_CAPACITY - 1) &&
-      @   table.length < 2 * MAXIMUM_CAPACITY ==> threshold == table.length / 3;
+      @   (table.length < 2 * MAXIMUM_CAPACITY ==> threshold == table.length / 3);
       @
       @*/
     /*+OPENJML@ // JML for non-KeY tools, i.e. JJBMC
@@ -288,13 +288,13 @@ public class VerifiedIdentityHashMap
       @
       @ // Bounds on size in relation to threshold
       @ public invariant
-      @   size <= threshold &&
-      @   size == threshold ==> size == MAXIMUM_CAPACITY - 1;
+      @   (size <= threshold) &&
+      @   (size == threshold ==> size == MAXIMUM_CAPACITY - 1);
       @
       @ // Bounds on threshold in relation to table.length and MAXIMUM_CAPACITY
       @ public invariant
       @   (threshold == table.length / 3 || threshold == MAXIMUM_CAPACITY - 1) &&
-      @   table.length < 2 * MAXIMUM_CAPACITY ==> threshold == table.length / 3;
+      @   (table.length < 2 * MAXIMUM_CAPACITY ==> threshold == table.length / 3);
       @
       @*/
 
