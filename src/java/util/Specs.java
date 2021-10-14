@@ -34,19 +34,40 @@ class Specs {
       @  requires a.length % 2 == 0;
       @  requires countEven(a) < a.length / 3;
       @  requires a.length >= 8;
-      @  ensures (\exists int nul1, nul2; 0 <= nul1 < nul2 < a.length;
-      @     a[nul1] == null && a[nul2] == null);
+      @  ensures (\exists int nul1, nul2; 0 <= nul1 < nul2 < a.length/2;
+      @     a[2 * nul1] == null && a[2 * nul2] == null);
       @  assignable \strictly_nothing;
       @*/
-    public static int lemmaTwoNulls(Object[] a) {
+    public static int lemmaTwoNulls(/*@nullable*/ Object[] a) {
+        lemmaSumOfNums(a);
         return 0;
     }
+
+    /*@ normal_behaviour
+      @  requires a != null;
+      @  requires a.length % 2 == 0;
+      @  ensures (\num_of \bigint i; 0 <= i < a.length / (\bigint)2; a[2*i] != null) +
+      @    (\num_of \bigint i; 0 <= i < a.length / (\bigint)2; a[2*i] == null) == a.length/2;
+      @  assignable \strictly_nothing;
+      @*/
+    private static void lemmaSumOfNums(/*@nullable*/ Object[] a) {
+
+        /*@ loop_invariant 0<=k<=a.length/2;
+          @ loop_invariant (\num_of \bigint i; 0 <= i < k; a[2*i] != null) +
+          @    (\num_of \bigint i; 0 <= i < k; a[2*i] == null) == k;
+          @ decreases a.length/2 - k;
+          @ assignable \strictly_nothing;
+          @*/
+        for(int k=0; k < a.length/2; k++) {
+        }
+    }
+        
 
     /*@ normal_behaviour 
       @  requires true; // ... specs missing
       @  ensures true; 
       @*/
-    void useCase(Object[] a) {
+    void useCase(/*@nullable*/ Object[] a) {
         //@ ghost int lemma;
         // somewhere in the code, we can invoke the lemma
 
