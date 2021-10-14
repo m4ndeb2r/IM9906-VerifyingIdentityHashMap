@@ -34,8 +34,8 @@ class Specs {
       @  requires a.length % 2 == 0;
       @  requires countEven(a) < a.length / 3;
       @  requires a.length >= 8;
-      @  ensures (\exists int x, y; 0 <= x < y < a.length;
-      @     a[x] == null && a[y] == null);
+      @  ensures (\exists int nul1, nul2; 0 <= nul1 < nul2 < a.length;
+      @     a[nul1] == null && a[nul2] == null);
       @  assignable \strictly_nothing;
       @*/
     public static int lemmaTwoNulls(Object[] a) {
