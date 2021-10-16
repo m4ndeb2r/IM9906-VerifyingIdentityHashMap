@@ -68,16 +68,8 @@ Now, the class can be loaded in KeY.
 Note: The KeY plugin Eclipse complains about the `remove` method on line 979 (Cycle detected). However, this does not seem to be a real problem. Threrefore, it is ignored. 
 
 ## Start the stand-alone KeY tool
-Version 2.7 of the stand-alone KeY tool is provided in the directory key2.7 this repository. First, unzip the file `key.zip` in your working directory of you choice. Then, start the tool in one of the following ways:
-* On the command line, type: 
-  `$ cd ./key/key`
-  `$ ./gradlew :key.ui:run --parallel`
-  or
-* `$ cd ./key/key`
-  `$ ./gradlew shadowJar`
-  `$ java -Xmx8G -jar ./key.ui/build/libs/key-2.9-exe.jar` 
-
-The second option allows you to claim extra memory resources (in this example, 8GB). 
+A version 2.9 of the stand-alone KeY tool is provided in the directory key2.9 this repository. You can start the tool as follows:
+* `$ java -Xmx8G -jar ./key-exe-weigl_ihmapCaseStudy-202110131052.jar` 
 
 ## Load VerifiedIdentityHashMap in KeY
 * Open the `IdentityHashMap.key` file that is available in the root of the project.
