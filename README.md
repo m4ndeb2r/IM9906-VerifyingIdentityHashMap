@@ -69,7 +69,7 @@ Note: The KeY plugin Eclipse complains about the `remove` method on line 979 (Cy
 
 ## Start the stand-alone KeY tool
 A version 2.9 of the stand-alone KeY tool is provided in the directory key2.9 this repository. You can start the tool as follows:
-* `$ java -Xmx8G -jar ./key-exe-weigl_ihmapCaseStudy-202110131052.jar` 
+* `$ java -Xmx8G -jar ./key-exe-weigl_ihmapCaseStudy-202110191646.jar` 
 
 ## Load VerifiedIdentityHashMap in KeY
 * Open the `IdentityHashMap.key` file that is available in the root of the project.
