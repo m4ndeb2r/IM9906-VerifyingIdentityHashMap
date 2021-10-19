@@ -32,7 +32,7 @@ class Specs {
     /*@ public normal_behaviour
       @  requires a != null;
       @  requires a.length % 2 == 0;
-      @  requires countEven(a) < a.length / 3;
+      @  requires countEven(a) < a.length / 2 - 1;
       @  requires a.length >= 8;
       @  ensures (\exists int nul1, nul2; 0 <= nul1 < nul2 < a.length/2;
       @     a[2 * nul1] == null && a[2 * nul2] == null);
