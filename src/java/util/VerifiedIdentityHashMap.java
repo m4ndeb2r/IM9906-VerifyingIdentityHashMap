@@ -475,17 +475,22 @@ public class VerifiedIdentityHashMap
      * is assumed that overflow has occurred, and MAXIMUM_CAPACITY is returned.
      */
     /*+KEY@ 
+      @ // TODO check this contract
+      @
+      @ // In case an overflow occurred while calculating minCapacity, or
+      @ // minCapacity is too large, return MAXIMUM_CAPACITY
       @ private normal_behavior
       @   requires
-      @     (expectedMaxSize * (\bigint)3) / (\bigint)2 < 0 || 
+      @     (expectedMaxSize * 3) / 2 < 0 || 
       @     (expectedMaxSize * (\bigint)3) / (\bigint)2 > MAXIMUM_CAPACITY;
       @   ensures
       @     \result == MAXIMUM_CAPACITY;
       @
+      @ // In case minCapacity is within the bounds [MIN..MAX]
       @ also
       @ private normal_behavior
       @   requires
-      @     (expectedMaxSize * (\bigint)3) / (\bigint)2 >= MINIMUM_CAPACITY &&
+      @     (expectedMaxSize * (\bigint)3) / (\bigint)2 > MINIMUM_CAPACITY &&
       @     (expectedMaxSize * (\bigint)3) / (\bigint)2 <= MAXIMUM_CAPACITY;
       @   ensures
       @     \result >= (expectedMaxSize * (\bigint)3) / (\bigint)2 &&
@@ -495,10 +500,9 @@ public class VerifiedIdentityHashMap
       @ private normal_behavior
       @   requires
       @     (expectedMaxSize * (\bigint)3) / (\bigint)2 >= 0 &&
-      @     (expectedMaxSize * (\bigint)3) / (\bigint)2 < MINIMUM_CAPACITY;
+      @     (expectedMaxSize * (\bigint)3) / (\bigint)2 <= MINIMUM_CAPACITY;
       @   ensures
-      @     \result >= MINIMUM_CAPACITY &&
-      @     \result < MINIMUM_CAPACITY * (\bigint)2;
+      @     \result == MINIMUM_CAPACITY;
       @
       @ also
       @ private normal_behavior
@@ -1245,6 +1249,8 @@ public class VerifiedIdentityHashMap
     /*+KEY@ 
       @ private exceptional_behavior
       @   requires
+      @     MAXIMUM_CAPACITY == 536870912 &&
+      @     table != null &&
       @     table.length == 2 * MAXIMUM_CAPACITY &&
       @     threshold == MAXIMUM_CAPACITY - 1;
       @   assignable
@@ -1254,24 +1260,109 @@ public class VerifiedIdentityHashMap
       @   signals
       @     (IllegalStateException e) true;
       @
-      @ // TODO: add preconditions from class invariant below (since it's turned into a helper method).
-      @ // TODO: are the specification cases exhaustive?
+      @ private normal_behavior
+      @   requires
+      @     table != null &&
+      @     MAXIMUM_CAPACITY == 536870912 &&
+      @     table.length == 2 * MAXIMUM_CAPACITY &&
+      @     threshold < MAXIMUM_CAPACITY - 1 &&
+      @     threshold == table.length / 3 &&
+      @     size <= threshold;
+      @   assignable
+      @     threshold;
+      @   ensures    
+      @     threshold == MAXIMUM_CAPACITY - 1;
+      @   ensures
+      @     \invariant_for(this);
       @
       @ private normal_behavior
+      @   requires
+      @     MINIMUM_CAPACITY == 4 &&
+      @     MAXIMUM_CAPACITY == 536870912 &&
+      @     table != null &&
+      @     table.length >= 2 * MINIMUM_CAPACITY &&
+      @     table.length < 2 * MAXIMUM_CAPACITY;
+      @
+      @   // Bounds on newCapacity: it is a power of two, and lte 2* MAX_CAPACITY
       @   requires
       @     (\exists \bigint i;
       @       0 <= i < newCapacity;
       @       \dl_pow(2,i) == newCapacity) &&
-      @     table.length < 2 * MAXIMUM_CAPACITY &&
-      @     threshold < MAXIMUM_CAPACITY - 1;
+      @     newCapacity <= 2 * MAXIMUM_CAPACITY;
+      @
+      @   // For all key-value pairs: if key == null, then value == null
+      @   requires
+      @     (\forall \bigint i;
+      @           0 <= i && i < table.length / (\bigint)2;
+      @           (table[i * 2] == null ==> table[i * 2 + 1] == null));
+      @
+      @   // Non-empty keys are unique
+      @   requires
+      @     (\forall \bigint i; 0 <= i && i < table.length / (\bigint)2;
+      @         (\forall \bigint j;
+      @         i <= j && j < table.length / (\bigint)2;
+      @         (table[2 * i] != null && table[2 * i] == table[2 * j]) ==> i == j));
+      @
+      @   // Size equals the number of non-empty keys in the table
+      @   requires
+      @     size == (\num_of \bigint i;
+      @         0 <= i < table.length / (\bigint)2;
+      @         table[2 * i] != null);
+      @
+      @   // Table length is a power of two
+      @   requires
+      @     (\exists \bigint i;
+      @         0 <= i < table.length;
+      @         \dl_pow(2,i) == table.length);
+      @
+      @   // Table length is always an even number
+      @   requires
+      @     table.length % (\bigint)2 == 0;
+      @
+      @   // Table must have at least one empty key-element to prevent
+      @   // infinite loops when a key is not present.
+      @   requires
+      @     (\exists \bigint i;
+      @         0 <= i < table.length / (\bigint)2;
+      @         table[2 * i] == null);
+      @
+      @   // There are no gaps between a key's hashed index and its actual
+      @   // index (if the key is at a higher index than the hash code)
+      @   requires
+      @     (\forall \bigint i;
+      @         0 <= i < table.length / (\bigint)2;
+      @         table[2 * i] != null && 2 * i > \dl_genHash(table[2 * i], table.length) ==>
+      @         (\forall \bigint j;
+      @             \dl_genHash(table[2 * i], table.length) / (\bigint)2 <= j < i;
+      @             table[2 * j] != null));
+      @
+      @   // There are no gaps between a key's hashed index and its actual
+      @   // index (if the key is at a lower index than the hash code)
+      @   requires
+      @     (\forall \bigint i;
+      @         0 <= i < table.length / (\bigint)2;
+      @         table[2 * i] != null && 2 * i < \dl_genHash(table[2 * i], table.length) ==>
+      @         (\forall \bigint j;
+      @             \dl_genHash(table[2 * i], table.length) <= 2 * j < table.length || 0 <= 2 * j < 2 * i;
+      @             table[2 * j] != null));
+      @
+      @   // All keys and values are of type Object
+      @   requires
+      @     \typeof(table) == \type(Object[]);
+      @
+      @   // Bounds on threshold in relation to table.length and MAXIMUM_CAPACITY
+      @   requires
+      @     threshold < MAXIMUM_CAPACITY - 1 &&
+      @     threshold == table.length / 3 &&
+      @     size <= threshold;
+      @
       @   assignable
       @     threshold, table, table[*];
+      @
       @   ensures
-      @     \old(table.length) == 2 * MAXIMUM_CAPACITY ==>
-      @       (threshold == MAXIMUM_CAPACITY - 1 && table.length == \old(table.length)) &&
-      @     (\old(table.length) != 2 * MAXIMUM_CAPACITY && \old(table.length) >= (newCapacity * 2)) ==>
+      @     (\old(table.length) >= (newCapacity * 2)) ==>
       @       table.length == \old(table.length) &&
-      @     (\old(table.length) != 2 * MAXIMUM_CAPACITY && \old(table.length) < (newCapacity * 2)) ==>
+      @     (\old(table.length) < (newCapacity * 2)) ==>
       @       table.length == (newCapacity * 2);
       @   ensures
       @     // After execution, all old entries are still present
@@ -1280,8 +1371,8 @@ public class VerifiedIdentityHashMap
       @       (\exists \bigint j;
       @         0 <= j < table.length && j % 2 == 0;
       @         \old(table[i]) == table[j] && \old(table[i + 1]) == table[j + 1]));
-      @  ensures
-      @    \invariant_for(this);
+      @   ensures
+      @     \invariant_for(this);
       @    
       @*/
     /*+OPENJML@ 
