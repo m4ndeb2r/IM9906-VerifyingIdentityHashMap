@@ -475,8 +475,6 @@ public class VerifiedIdentityHashMap
      * is assumed that overflow has occurred, and MAXIMUM_CAPACITY is returned.
      */
     /*+KEY@ 
-      @ // TODO check this contract
-      @
       @ // In case an overflow occurred while calculating minCapacity, or
       @ // minCapacity is too large, return MAXIMUM_CAPACITY
       @ private normal_behavior
