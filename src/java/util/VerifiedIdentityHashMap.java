@@ -479,8 +479,8 @@ public class VerifiedIdentityHashMap
       @ // minCapacity is too large, return MAXIMUM_CAPACITY
       @ private normal_behavior
       @   requires
-      @     (expectedMaxSize * 3) / 2 < 0 || 
-      @     (expectedMaxSize * (\bigint)3) / (\bigint)2 > MAXIMUM_CAPACITY;
+      @     (expectedMaxSize % 2 + (expectedMaxSize / 2) * 3) < 0 || 
+      @     (expectedMaxSize % 2 + (expectedMaxSize / 2) * 3) > MAXIMUM_CAPACITY;
       @   ensures
       @     \result == MAXIMUM_CAPACITY;
       @
@@ -488,17 +488,17 @@ public class VerifiedIdentityHashMap
       @ also
       @ private normal_behavior
       @   requires
-      @     (expectedMaxSize * (\bigint)3) / (\bigint)2 > MINIMUM_CAPACITY &&
-      @     (expectedMaxSize * (\bigint)3) / (\bigint)2 <= MAXIMUM_CAPACITY;
+      @     (expectedMaxSize % 2 + (expectedMaxSize / 2) * 3) > MINIMUM_CAPACITY &&
+      @     (expectedMaxSize % 2 + (expectedMaxSize / 2) * 3) <= MAXIMUM_CAPACITY;
       @   ensures
-      @     \result >= (expectedMaxSize * (\bigint)3) / (\bigint)2 &&
-      @     \result < (expectedMaxSize * (\bigint)3);
+      @     \result >= (expectedMaxSize % 2 + (expectedMaxSize / 2) * 3) &&
+      @     \result < (expectedMaxSize * 3);
       @
       @ also
       @ private normal_behavior
       @   requires
-      @     (expectedMaxSize * (\bigint)3) / (\bigint)2 >= 0 &&
-      @     (expectedMaxSize * (\bigint)3) / (\bigint)2 <= MINIMUM_CAPACITY;
+      @     (expectedMaxSize % 2 + (expectedMaxSize / 2) * 3) >= 0 &&
+      @     (expectedMaxSize % 2 + (expectedMaxSize / 2) * 3) <= MINIMUM_CAPACITY;
       @   ensures
       @     \result == MINIMUM_CAPACITY;
       @
