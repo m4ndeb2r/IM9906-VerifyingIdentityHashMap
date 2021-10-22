@@ -1245,6 +1245,8 @@ public class VerifiedIdentityHashMap
      * @param newCapacity the new capacity, must be a power of two.
      */
     /*+KEY@ 
+      @ // Throws an exception when table.length == 2 * MAXIMUM_CAPACITY &&
+      @ // threshold == MAXIMUM_CAPACITY - 1.
       @ private exceptional_behavior
       @   requires
       @     MAXIMUM_CAPACITY == 536870912 &&
@@ -1258,35 +1260,52 @@ public class VerifiedIdentityHashMap
       @   signals
       @     (IllegalStateException e) true;
       @
+      @ // Only the threshold changes if table.length == 2 * MAXIMUM_CAPACITY &&
+      @ // threshold < MAXIMUM_CAPACITY - 1.
       @ private normal_behavior
       @   requires
       @     table != null &&
       @     MAXIMUM_CAPACITY == 536870912 &&
       @     table.length == 2 * MAXIMUM_CAPACITY &&
-      @     threshold < MAXIMUM_CAPACITY - 1 &&
-      @     threshold == table.length / 3 &&
-      @     size <= threshold;
+      @     threshold < MAXIMUM_CAPACITY - 1;
       @   assignable
       @     threshold;
       @   ensures    
       @     threshold == MAXIMUM_CAPACITY - 1;
-      @   ensures
-      @     \invariant_for(this);
       @
+      @ // The heap stays unchanged when table.length >= 2 * newCapacity.
+      @ private normal_behavior
+      @   requires
+      @     table != null &&
+      @     table.length < 2 * MAXIMUM_CAPACITY &&
+      @     table.length >= 2 * newCapacity;
+      @
+      @   // Bounds on newCapacity: it is a power of two, and lte 2* MAX_CAPACITY
+      @   requires
+      @     newCapacity <= 2 * MAXIMUM_CAPACITY &&
+      @     newCapacity >= MINIMUM_CAPACITY;
+      @
+      @   assignable
+      @     \strictly_nothing;
+      @
+      @ // If we actually resize (table.length < 2 * MAXIMUM_CAPACITY && table.length < 2 * newCapacity)
+      @ // then rehash the table to re-establish the class invariant.
       @ private normal_behavior
       @   requires
       @     MINIMUM_CAPACITY == 4 &&
       @     MAXIMUM_CAPACITY == 536870912 &&
       @     table != null &&
       @     table.length >= 2 * MINIMUM_CAPACITY &&
-      @     table.length < 2 * MAXIMUM_CAPACITY;
+      @     table.length < 2 * MAXIMUM_CAPACITY &&
+      @     table.length < 2 * newCapacity;
       @
-      @   // Bounds on newCapacity: it is a power of two, and lte 2* MAX_CAPACITY
+      @   // Bounds on newCapacity: it is a power of two, and <= 2* MAX_CAPACITY
       @   requires
       @     (\exists \bigint i;
       @       0 <= i < newCapacity;
       @       \dl_pow(2,i) == newCapacity) &&
-      @     newCapacity <= 2 * MAXIMUM_CAPACITY;
+      @     newCapacity <= 2 * MAXIMUM_CAPACITY &&
+      @     newCapacity >= MINIMUM_CAPACITY;
       @
       @   // For all key-value pairs: if key == null, then value == null
       @   requires
@@ -1358,10 +1377,8 @@ public class VerifiedIdentityHashMap
       @     threshold, table, table[*];
       @
       @   ensures
-      @     (\old(table.length) >= (newCapacity * 2)) ==>
-      @       table.length == \old(table.length) &&
-      @     (\old(table.length) < (newCapacity * 2)) ==>
-      @       table.length == (newCapacity * 2);
+      @     table.length == (newCapacity * 2);
+      @
       @   ensures
       @     // After execution, all old entries are still present
       @     (\forall \bigint i;
@@ -1369,6 +1386,7 @@ public class VerifiedIdentityHashMap
       @       (\exists \bigint j;
       @         0 <= j < table.length && j % 2 == 0;
       @         \old(table[i]) == table[j] && \old(table[i + 1]) == table[j + 1]));
+      @
       @   ensures
       @     \invariant_for(this);
       @    
