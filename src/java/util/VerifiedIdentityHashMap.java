@@ -493,6 +493,10 @@ public class VerifiedIdentityHashMap
       @   ensures
       @     \result >= (expectedMaxSize % 2 + (expectedMaxSize / 2) * 3) &&
       @     \result < (expectedMaxSize * 3);
+      @   ensures
+      @     (\exists \bigint i;
+      @       0 <= i < \result;
+      @       \dl_pow(2,i) == \result); // result is a power of two
       @
       @ also
       @ private normal_behavior
@@ -501,13 +505,6 @@ public class VerifiedIdentityHashMap
       @     (expectedMaxSize % 2 + (expectedMaxSize / 2) * 3) <= MINIMUM_CAPACITY;
       @   ensures
       @     \result == MINIMUM_CAPACITY;
-      @
-      @ also
-      @ private normal_behavior
-      @   ensures
-      @     (\exists \bigint i;
-      @       0 <= i < \result;
-      @       \dl_pow(2,i) == \result); // result is a power of two
       @*/
     /*+OPENJML@ 
       @ private normal_behavior
