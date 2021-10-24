@@ -2903,11 +2903,11 @@ public class VerifiedIdentityHashMap
         /*+KEY@
           @ also
           @ public normal_behavior
-          @   assignable
-          @     size, table, modCount;
           @   requires
           @     o != null &&
           @     contains(o);
+          @   assignable
+          @     size, table, modCount;
           @   ensures
           @     !contains(o) &&
           @     \old(size()) - 1 == size() &&
